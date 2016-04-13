@@ -21,10 +21,17 @@
 **Transitions**
 
 Events: verb with params
-Move (someone from a to b)
-Talk (between 2 people)
 
-Every actor has to pick an event to transition with
+- Move (someone from a to b)
+- Talk/become friends (between 2 people)
 
-Attributes moving towards average (time): model with events
-Emotions like admiration: actually relations
+**Flow**
+
+Every iteration,
+
+- Every actor has to pick an event to transition with
+
+### Suggestions for how to implement certain things
+
+- Attributes moving towards average (time): model with events
+- Emotions like admiration: actually relations
