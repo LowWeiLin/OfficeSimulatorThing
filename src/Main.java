@@ -2,9 +2,9 @@
 public class Main {
     public static void main(String[] args) {
 
-        Engine engine = new Engine();
+        State state = new State();
         while (true) {
-            engine = engine.transition();
+            state = state.transition();
         }
 
     }
