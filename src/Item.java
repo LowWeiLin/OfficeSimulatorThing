@@ -1,6 +1,6 @@
 /**
  * Item
  */
-public class Item {
-
+public interface Item {
+    String id();
 }

@@ -1,5 +1,5 @@
 /**
- * Created by user on 18/11/2016.
+ * Movement action. Mutates the location of an actor in 4 possible directions.
  */
 public class Move implements Action {
     enum Direction {

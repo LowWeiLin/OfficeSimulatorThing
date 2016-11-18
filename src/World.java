@@ -1,16 +1,19 @@
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Global
+ * Global state to mutate.
  */
 public class World {
 
+    Map<String, Actor> actors = new HashMap<>();
+    Map<String, Item> items = new HashMap<>();
+    Map<Pair<Integer, Integer>, String> locationActor = new HashMap<>();
+    Map<Pair<Integer, Integer>, String> locationItems = new HashMap<>();
 
-    Map<String, Actor> actors;
-    Map<String, Item> items;
-    Map<Pair<Integer, Integer>, String> locationActor;
-    Map<Pair<Integer, Integer>, String> locationItems;
+
+
 
     /**
      * @param actorId identifier of the actor
