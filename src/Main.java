@@ -6,7 +6,7 @@ public class Main {
         while (true) {
             for (Actor actor : state.actors.values()) {
                 Action action = actor.act(state);
-                action.perform(state);
+                action.accept(state);
             }
         }
 
