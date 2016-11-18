@@ -12,9 +12,6 @@ public class World {
     Map<Pair<Integer, Integer>, String> locationActor = new HashMap<>();
     Map<Pair<Integer, Integer>, String> locationItems = new HashMap<>();
 
-
-
-
     /**
      * @param actorId identifier of the actor
      * @return (x, y) giving x and y position of the actor
@@ -27,6 +24,5 @@ public class World {
                 .orElseThrow(() -> new Exception("Cannot find actor"))
                 .getKey();
     }
-
-
+    
 }

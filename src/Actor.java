@@ -1,4 +1,3 @@
-import java.util.EnumMap;
 
 public interface Actor {
     String id();

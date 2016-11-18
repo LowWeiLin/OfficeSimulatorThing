@@ -1,5 +1,4 @@
 import java.util.EnumMap;
-import java.util.EnumSet;
 import java.util.UUID;
 
 public class Person implements Actor {
@@ -41,9 +40,10 @@ public class Person implements Actor {
 
     @Override
     public void changeNeed(ActorNeed need, int value) {
-        int current = this.needs.get(need);
-        this.needs.put(need, current + value);
+        int current = needs.get(need);
+        needs.put(need, current + value);
 
         System.err.println(need + " changed " + value);
+        System.err.println(need + " is now " + needs.get(need));
     }
 }

@@ -2,6 +2,17 @@
 public class Main {
     public static void main(String[] args) {
 
+        World state = initWorld();
+
+        while (true) {
+            for (Actor actor : state.actors.values()) {
+                Action action = actor.act(state);
+                action.accept(state);
+            }
+        }
+    }
+
+    private static World initWorld() {
         World state = new World();
         Actor coffeeDrinker = new Person("Coffee guy");
 
@@ -12,14 +23,6 @@ public class Main {
         Item coffeeMachine = new CoffeeMachine();
         state.locationItems.put(origin, coffeeMachine.id());
         state.items.put(coffeeMachine.id(), coffeeMachine);
-
-
-        while (true) {
-            for (Actor actor : state.actors.values()) {
-                Action action = actor.act(state);
-                action.accept(state);
-            }
-        }
-
+        return state;
     }
 }

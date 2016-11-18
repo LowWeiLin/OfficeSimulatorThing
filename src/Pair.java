@@ -1,6 +1,4 @@
-/**
- * Created by user on 18/11/2016.
- */
+
 public class Pair<T, K> {
     public final T first;
     public final K second;
