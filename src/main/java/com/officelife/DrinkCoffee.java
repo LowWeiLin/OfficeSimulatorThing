@@ -1,3 +1,5 @@
+package com.officelife;
+
 /**
  * Action representation of an actor sucking the coffee out of a coffee machine.
  * Will cups and the preparation of coffee be required?

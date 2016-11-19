@@ -1,3 +1,4 @@
+package com.officelife;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,10 +20,10 @@ public class World {
      */
     public Pair<Integer, Integer> actorLocation(String actorId) throws Exception {
         return locationActor.entrySet().stream()
-                .filter(entry -> entry.getValue() == actorId)
-                .findFirst()
-                .orElseThrow(() -> new Exception("Cannot find actor"))
-                .getKey();
+            .filter(entry -> entry.getValue().equals(actorId))
+            .findFirst()
+            .orElseThrow(() -> new Exception("Cannot find actor"))
+            .getKey();
     }
-    
+
 }

@@ -1,3 +1,5 @@
+package com.officelife;
+
 /**
  * Movement action. Mutates the location of an actor in 4 possible directions.
  */
@@ -34,7 +36,7 @@ public class Move implements Action {
     }
 
     private Pair<Integer, Integer> updatedLocation(Pair<Integer, Integer> location) throws Exception {
-        switch(direction) {
+        switch (direction) {
             case UP:
                 return new Pair<>(location.first, location.second + 1);
 

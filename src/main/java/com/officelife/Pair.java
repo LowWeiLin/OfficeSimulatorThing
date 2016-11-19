@@ -1,3 +1,4 @@
+package com.officelife;
 
 public class Pair<T, K> {
     public final T first;

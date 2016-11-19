@@ -1,3 +1,5 @@
+package com.officelife;
+
 import java.util.EnumMap;
 import java.util.UUID;
 
