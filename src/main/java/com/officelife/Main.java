@@ -1,11 +1,13 @@
 package com.officelife;
 
 public class Main {
+    private static final int NUM_ITERATIONS = 5;
+
     public static void main(String[] args) {
 
         World state = initWorld();
 
-        while (true) {
+        for (int i = 0; i < NUM_ITERATIONS; i ++) {
             for (Actor actor : state.actors.values()) {
                 Action action = actor.act(state);
                 action.accept(state);
@@ -22,7 +24,9 @@ public class Main {
         state.actors.put(coffeeDrinker.id(), coffeeDrinker);
 
         Item coffeeMachine = new CoffeeMachine();
-        state.locationItems.put(origin, coffeeMachine.id());
+        Pair<Integer, Integer> coffeeLocation = new Pair<>(origin.first + 1, origin.second - 1);
+
+        state.locationItems.put(coffeeLocation, coffeeMachine.id());
         state.items.put(coffeeMachine.id(), coffeeMachine);
         return state;
     }

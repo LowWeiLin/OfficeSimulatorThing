@@ -18,8 +18,5 @@ public class DrinkCoffee implements Action {
     public void accept(World world) {
         actor.changeNeed(ActorNeed.ENERGY, 5);
         actor.changeNeed(ActorNeed.HUNGER, -5);
-
-        System.out.println("The world changed");
-
     }
 }

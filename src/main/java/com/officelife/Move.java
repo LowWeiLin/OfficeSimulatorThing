@@ -5,10 +5,25 @@ package com.officelife;
  */
 public class Move implements Action {
     enum Direction {
-        UP, DOWN, LEFT, RIGHT
-    }
+        UP, DOWN, LEFT, RIGHT;
 
+        public static final Direction directionToMove(Pair<Integer, Integer> from, Pair<Integer, Integer> to) {
+            if (to.first > from.first) {
+                return Move.Direction.RIGHT;
+            } else if (to.first < from.first) {
+                return Move.Direction.LEFT;
+            } else if (to.second < from.second) {
+                return Move.Direction.DOWN;
+            } else if (to.second > from.second) {
+                return Move.Direction.UP;
+            } else {
+                throw new RuntimeException("Invalid direction logic");
+            }
+        }
+
+    }
     private final Actor actor;
+
     private final Direction direction;
 
     public Move(Actor actor, Direction direction) {
@@ -29,6 +44,8 @@ public class Move implements Action {
             }
             world.locationActor.remove(old);
             world.locationActor.put(updated, actor.id());
+
+            System.err.println("Moved");
         } catch (Exception e) {
             throw new RuntimeException("Unable to update", e);
         }

@@ -4,8 +4,8 @@ import java.util.EnumMap;
 import java.util.UUID;
 
 public class Person implements Actor {
-    private String id;
-    public String name;
+    private final String id;
+    private final String name;
 
     private EnumMap<ActorNeed, Integer> needs;
 
@@ -33,12 +33,28 @@ public class Person implements Actor {
             throw new RuntimeException("Unable to get actor location", e);
         }
 
-        Item item = state.items.get(
-            state.locationItems.get(location)
-        );
+        Item thingWanted = new CoffeeMachine();
+        Pair<Integer, Integer> itemLocation;
 
-        return new DrinkCoffee(this, (CoffeeMachine) item);
+        if (!state.items.containsKey(thingWanted.id())) {
+            // the thing is no longer in the world
+            return new DoNothing();
+        }
+
+        try {
+            itemLocation = state.itemLocation(thingWanted.id());
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to get item location", e);
+        }
+
+        if (itemLocation.equals(location)) {
+            return new DrinkCoffee(this, (CoffeeMachine) thingWanted);
+        }
+
+        return new Move(this, Move.Direction.directionToMove(location, itemLocation));
     }
+
+
 
     @Override
     public void changeNeed(ActorNeed need, int value) {

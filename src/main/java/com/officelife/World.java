@@ -26,4 +26,12 @@ public class World {
             .getKey();
     }
 
+    public Pair<Integer, Integer> itemLocation(String itemId) throws Exception {
+        return locationItems.entrySet().stream()
+                .filter(entry -> entry.getValue().equals(itemId))
+                .findFirst()
+                .orElseThrow(() -> new Exception("Cannot find actor"))
+                .getKey();
+    }
+
 }
