@@ -1,10 +1,11 @@
 package com.officelife.actors;
 
+import com.officelife.ui.Renderable;
 import com.officelife.World;
 import com.officelife.actions.Action;
 import com.officelife.items.Item;
 
-public interface Actor {
+public interface Actor extends Renderable {
     String id();
 
     Action act(World state);

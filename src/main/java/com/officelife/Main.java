@@ -6,6 +6,7 @@ import com.officelife.actors.Person;
 import com.officelife.common.Pair;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
+import com.officelife.ui.Renderer;
 
 public class Main {
     private static final int NUM_ITERATIONS = 5;
@@ -13,8 +14,11 @@ public class Main {
     public static void main(String[] args) {
 
         World state = initWorld();
+        Renderer renderer = new Renderer();
 
         for (int i = 0; i < NUM_ITERATIONS; i ++) {
+            System.out.println(renderer.render(state));
+
             for (Actor actor : state.actors.values()) {
                 Action action = actor.act(state);
                 action.accept(state);

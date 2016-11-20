@@ -1,14 +1,14 @@
 package com.officelife.actors;
 
-import com.officelife.*;
+import java.util.*;
+
+import com.officelife.World;
 import com.officelife.actions.*;
 import com.officelife.characteristics.Characteristic;
 import com.officelife.common.Pair;
 import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
-
-import java.util.*;
 
 public class Person implements Actor {
     private final String id;
@@ -42,8 +42,8 @@ public class Person implements Actor {
             inventory.put(Coffee.class, new ArrayList<>());
         }
         return inventory.get(Coffee.class).stream()
-                .findFirst()
-                .orElse(new CoffeeMachine());
+            .findFirst()
+            .orElse(new CoffeeMachine());
     }
 
     @Override
@@ -63,7 +63,7 @@ public class Person implements Actor {
         boolean inventoryContainsItemType = this.inventory.containsKey(thingWanted.getClass());
 
         if (!state.items.containsKey(thingWanted.id())
-                && !inventoryContainsItemType) {
+            && !inventoryContainsItemType) {
             // the thing is no longer in the world
             return new DoNothing();
         }
@@ -107,5 +107,10 @@ public class Person implements Actor {
     @Override
     public void removeItem(Item item) {
         inventory.get(item.getClass()).remove(item);
+    }
+
+    @Override
+    public char[][] asciiRepresentation() {
+        return new char[][]{{'P'}};
     }
 }

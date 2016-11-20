@@ -17,4 +17,9 @@ public class Coffee implements Item {
     public String id() {
         return id;
     }
+
+    @Override
+    public char[][] asciiRepresentation() {
+        return new char[][] {{'C'}};
+    }
 }
