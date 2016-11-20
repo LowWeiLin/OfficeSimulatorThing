@@ -14,7 +14,7 @@ import com.officelife.items.Item;
 public class Renderer {
 
     private static final TerminalSize windowSize = new TerminalSize(75, 20);
-    private static final Pair<Integer, Integer> viewOffset =
+    private Pair<Integer, Integer> viewOffset =
         new Pair<>(-windowSize.getColumns() / 2, -windowSize.getRows() / 2);
 
     private final char[][] buffer;
