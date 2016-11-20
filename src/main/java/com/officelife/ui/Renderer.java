@@ -13,14 +13,12 @@ import com.officelife.items.Item;
 
 public class Renderer {
 
-    private static final int PER_FRAME = 1000;
-
     private static final TerminalSize windowSize = new TerminalSize(75, 20);
-    private static Pair<Integer, Integer> viewOffset =
+    private static final Pair<Integer, Integer> viewOffset =
         new Pair<>(-windowSize.getColumns() / 2, -windowSize.getRows() / 2);
 
-    private char[][] buffer;
-    private GUI gui;
+    private final char[][] buffer;
+    private final GUI gui;
 
     public Renderer() throws IOException {
         buffer = new char[windowSize.getRows()][];
@@ -28,11 +26,11 @@ public class Renderer {
             buffer[y] = new char[windowSize.getColumns()];
         }
         clearBuffer();
-        gui = new GUI(getComponentRenderer(windowSize));
+        gui = new GUI(createComponentRenderer(windowSize));
     }
 
-    public void runGUI() throws IOException {
-        gui.run();
+    public GUI getGUI() {
+        return gui;
     }
 
     private void clearBuffer() {
@@ -110,18 +108,12 @@ public class Renderer {
     }
 
     public void render(World state) {
-        renderText(state); // TODO remove side effects
-        gui.update();
-        try {
-            Thread.sleep(PER_FRAME);
-        } catch (InterruptedException e) {
-            // TODO better logging
-            System.err.println("Failed to wait");
-            e.printStackTrace();
-        }
+        // Called for side effect
+        // TODO separate effects?
+        renderText(state);
     }
 
-    private ComponentRenderer<Panel> getComponentRenderer(TerminalSize screenSize) {
+    private ComponentRenderer<Panel> createComponentRenderer(TerminalSize screenSize) {
         return new ComponentRenderer<Panel>() {
             @Override
             public TerminalSize getPreferredSize(Panel component) {

@@ -9,7 +9,7 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.Terminal;
 
-class GUI {
+public class GUI {
 
     private MultiWindowTextGUI gui;
     private BasicWindow window;
@@ -37,15 +37,14 @@ class GUI {
         gamePanel.setRenderer(gameRenderer);
     }
 
-    void run() {
+    /**
+     * This blocks
+     */
+    public void start() {
         gui.addWindowAndWait(window);
     }
 
-    void update() {
-        runLater(gamePanel::invalidate);
-    }
-
-    private void runLater(Runnable action) {
+    public void runAndWait(Runnable action) {
         try {
             gui.getGUIThread().invokeAndWait(action);
         } catch (InterruptedException e) {
