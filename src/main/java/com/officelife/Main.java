@@ -6,6 +6,7 @@ import com.officelife.actors.Person;
 import com.officelife.common.Pair;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
+import com.officelife.ui.Renderer;
 
 public class Main {
     private static final int NUM_ITERATIONS = 5;

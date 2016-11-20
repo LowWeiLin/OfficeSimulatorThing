@@ -1,6 +1,6 @@
 package com.officelife.actors;
 
-import com.officelife.Renderable;
+import com.officelife.ui.Renderable;
 import com.officelife.World;
 import com.officelife.actions.Action;
 import com.officelife.items.Item;

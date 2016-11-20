@@ -1,6 +1,7 @@
-package com.officelife;
+package com.officelife.ui;
 
 
+import com.officelife.World;
 import com.officelife.actors.Actor;
 import com.officelife.common.Pair;
 import com.officelife.items.Item;
@@ -37,7 +38,7 @@ public class Renderer {
         return s;
     }
 
-    String render(World state) {
+    public String render(World state) {
         clearBuffer();
 
         for (Actor actor : state.actors.values()) {

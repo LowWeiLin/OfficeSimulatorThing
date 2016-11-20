@@ -1,6 +1,6 @@
 package com.officelife.items;
 
-import com.officelife.Renderable;
+import com.officelife.ui.Renderable;
 
 /**
  * Item
