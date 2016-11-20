@@ -1,5 +1,11 @@
 package com.officelife;
 
+import com.officelife.actions.Action;
+import com.officelife.actors.Actor;
+import com.officelife.actors.Person;
+import com.officelife.items.CoffeeMachine;
+import com.officelife.items.Item;
+
 public class Main {
     private static final int NUM_ITERATIONS = 5;
 

@@ -1,4 +1,7 @@
-package com.officelife;
+package com.officelife.commodity;
+
+import com.officelife.characteristics.Characteristic;
+import com.officelife.actors.Actor;
 
 import java.util.Set;
 

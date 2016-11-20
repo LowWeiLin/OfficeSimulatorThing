@@ -1,4 +1,7 @@
-package com.officelife;
+package com.officelife.actors;
+
+import com.officelife.World;
+import com.officelife.actions.Action;
 
 public interface Actor {
     String id();

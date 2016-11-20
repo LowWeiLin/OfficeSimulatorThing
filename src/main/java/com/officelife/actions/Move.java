@@ -1,10 +1,14 @@
-package com.officelife;
+package com.officelife.actions;
+
+import com.officelife.actors.Actor;
+import com.officelife.Pair;
+import com.officelife.World;
 
 /**
  * Movement action. Mutates the location of an actor in 4 possible directions.
  */
 public class Move implements Action {
-    enum Direction {
+    public enum Direction {
         UP, DOWN, LEFT, RIGHT;
 
         public static final Direction directionToMove(Pair<Integer, Integer> from, Pair<Integer, Integer> to) {

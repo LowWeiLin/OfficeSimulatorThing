@@ -1,4 +1,12 @@
-package com.officelife;
+package com.officelife.actors;
+
+import com.officelife.*;
+import com.officelife.actions.Action;
+import com.officelife.actions.DoNothing;
+import com.officelife.actions.DrinkCoffee;
+import com.officelife.actions.Move;
+import com.officelife.items.CoffeeMachine;
+import com.officelife.items.Item;
 
 import java.util.EnumMap;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.officelife;
+package com.officelife.actors;
 
 public enum ActorNeed {
     HUNGER, ENERGY

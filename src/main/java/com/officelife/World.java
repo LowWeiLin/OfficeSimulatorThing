@@ -1,5 +1,8 @@
 package com.officelife;
 
+import com.officelife.actors.Actor;
+import com.officelife.items.Item;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,10 +11,10 @@ import java.util.Map;
  */
 public class World {
 
-    Map<String, Actor> actors = new HashMap<>();
-    Map<String, Item> items = new HashMap<>();
-    Map<Pair<Integer, Integer>, String> locationActor = new HashMap<>();
-    Map<Pair<Integer, Integer>, String> locationItems = new HashMap<>();
+    public Map<String, Actor> actors = new HashMap<>();
+    public Map<String, Item> items = new HashMap<>();
+    public Map<Pair<Integer, Integer>, String> locationActor = new HashMap<>();
+    public Map<Pair<Integer, Integer>, String> locationItems = new HashMap<>();
 
     /**
      * @param actorId identifier of the actor

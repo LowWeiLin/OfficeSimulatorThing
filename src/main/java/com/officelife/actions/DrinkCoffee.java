@@ -1,4 +1,9 @@
-package com.officelife;
+package com.officelife.actions;
+
+import com.officelife.actors.Actor;
+import com.officelife.actors.ActorNeed;
+import com.officelife.items.CoffeeMachine;
+import com.officelife.World;
 
 /**
  * Action representation of an actor sucking the coffee out of a coffee machine.

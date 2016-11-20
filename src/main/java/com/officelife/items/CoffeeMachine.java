@@ -1,4 +1,6 @@
-package com.officelife;
+package com.officelife.items;
+
+import com.officelife.items.Item;
 
 public class CoffeeMachine implements Item {
     @Override
