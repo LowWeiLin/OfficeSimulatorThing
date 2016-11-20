@@ -64,4 +64,9 @@ public class Person implements Actor {
         System.err.println(need + " changed " + value);
         System.err.println(need + " is now " + needs.get(need));
     }
+
+    @Override
+    public char[][] asciiRepresentation() {
+        return new char[][] {{'P'}};
+    }
 }

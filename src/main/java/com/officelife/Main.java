@@ -6,8 +6,11 @@ public class Main {
     public static void main(String[] args) {
 
         World state = initWorld();
+        Renderer renderer = new Renderer();
 
         for (int i = 0; i < NUM_ITERATIONS; i ++) {
+            System.out.println(renderer.render(state));
+
             for (Actor actor : state.actors.values()) {
                 Action action = actor.act(state);
                 action.accept(state);

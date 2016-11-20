@@ -6,4 +6,9 @@ public class CoffeeMachine implements Item {
         // TODO the office can have more than 1 coffee machine
         return "Coffee_Machine_1";
     }
+
+    @Override
+    public char[][] asciiRepresentation() {
+        return new char[][] {{'C'}};
+    }
 }

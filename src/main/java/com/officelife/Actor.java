@@ -1,6 +1,6 @@
 package com.officelife;
 
-public interface Actor {
+public interface Actor extends Renderable{
     String id();
 
     Action act(World state);
