@@ -1,4 +1,7 @@
-package com.officelife;
+package com.officelife.actions;
+
+import com.officelife.World;
+import com.officelife.actions.Action;
 
 public class DoNothing implements Action {
     @Override

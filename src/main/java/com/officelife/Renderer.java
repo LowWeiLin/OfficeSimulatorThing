@@ -1,6 +1,10 @@
 package com.officelife;
 
 
+import com.officelife.actors.Actor;
+import com.officelife.common.Pair;
+import com.officelife.items.Item;
+
 public class Renderer {
     private static final Pair<Integer, Integer> windowSize = new Pair<>(75, 20);
     private char[][] buffer;

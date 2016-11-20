@@ -1,5 +1,12 @@
 package com.officelife;
 
+import com.officelife.actions.Action;
+import com.officelife.actors.Actor;
+import com.officelife.actors.Person;
+import com.officelife.common.Pair;
+import com.officelife.items.CoffeeMachine;
+import com.officelife.items.Item;
+
 public class Main {
     private static final int NUM_ITERATIONS = 5;
 
@@ -20,7 +27,7 @@ public class Main {
 
     private static World initWorld() {
         World state = new World();
-        Actor coffeeDrinker = new Person("Coffee guy");
+        Actor coffeeDrinker = new Person("Food guy");
 
         Pair<Integer, Integer> origin = new Pair<Integer, Integer>(0, 0);
         state.locationActor.put(origin, coffeeDrinker.id());

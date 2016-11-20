@@ -1,4 +1,4 @@
-package com.officelife;
+package com.officelife.characteristics;
 
 public class Characteristic {
     private final String name;

@@ -1,5 +1,9 @@
-package com.officelife;
+package com.officelife.items;
 
+/**
+ * This should produce {@code Coffee}.
+ * @see Coffee
+ */
 public class CoffeeMachine implements Item {
     @Override
     public String id() {
