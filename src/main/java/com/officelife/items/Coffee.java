@@ -2,6 +2,10 @@ package com.officelife.items;
 
 import java.util.UUID;
 
+/**
+ * This is a coffee.
+ * @see CoffeeMachine
+ */
 public class Coffee implements Item {
     private final String id;
 

@@ -1,6 +1,7 @@
 package com.officelife;
 
 import com.officelife.actors.Actor;
+import com.officelife.common.Pair;
 import com.officelife.items.Item;
 
 import java.util.HashMap;

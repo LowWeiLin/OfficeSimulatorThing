@@ -1,4 +1,4 @@
-package com.officelife;
+package com.officelife.common;
 
 import java.util.Objects;
 

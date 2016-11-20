@@ -1,7 +1,7 @@
 package com.officelife.actions;
 
 import com.officelife.actors.Actor;
-import com.officelife.Pair;
+import com.officelife.common.Pair;
 import com.officelife.World;
 
 /**

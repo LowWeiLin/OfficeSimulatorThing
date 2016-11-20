@@ -3,6 +3,7 @@ package com.officelife;
 import com.officelife.actions.Action;
 import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
+import com.officelife.common.Pair;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
 
