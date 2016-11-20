@@ -3,7 +3,7 @@ package com.officelife.actors;
 import com.officelife.*;
 import com.officelife.actions.Action;
 import com.officelife.actions.DoNothing;
-import com.officelife.actions.DrinkCoffee;
+import com.officelife.actions.UseCoffeeMachine;
 import com.officelife.actions.Move;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
@@ -56,7 +56,7 @@ public class Person implements Actor {
         }
 
         if (itemLocation.equals(location)) {
-            return new DrinkCoffee(this, (CoffeeMachine) thingWanted);
+            return new UseCoffeeMachine(this, (CoffeeMachine) thingWanted);
         }
 
         return new Move(this, Move.Direction.directionToMove(location, itemLocation));
