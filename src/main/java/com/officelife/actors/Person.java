@@ -110,7 +110,7 @@ public class Person implements Actor {
     }
 
     @Override
-    public char[][] asciiRepresentation() {
+    public char[][] textRepresentation() {
         return new char[][]{{'P'}};
     }
 }
