@@ -19,7 +19,7 @@ public class Coffee implements Item {
     }
 
     @Override
-    public char[][] asciiRepresentation() {
+    public char[][] textRepresentation() {
         return new char[][] {{'C'}};
     }
 }

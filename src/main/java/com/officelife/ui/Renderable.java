@@ -1,5 +1,5 @@
 package com.officelife.ui;
 
 public interface Renderable {
-    char[][] asciiRepresentation();
+    char[][] textRepresentation();
 }

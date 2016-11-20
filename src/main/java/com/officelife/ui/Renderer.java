@@ -1,36 +1,52 @@
 package com.officelife.ui;
 
+import java.io.IOException;
 
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.gui2.ComponentRenderer;
+import com.googlecode.lanterna.gui2.Panel;
+import com.googlecode.lanterna.gui2.TextGUIGraphics;
 import com.officelife.World;
 import com.officelife.actors.Actor;
 import com.officelife.common.Pair;
 import com.officelife.items.Item;
 
 public class Renderer {
-    private static final Pair<Integer, Integer> windowSize = new Pair<>(75, 20);
-    private char[][] buffer;
-    private Pair<Integer, Integer> viewOffset = new Pair<>(-windowSize.first/2,-windowSize.second/2);
 
-    public Renderer() {
-        buffer = new char[windowSize.second][];
-        for (int y=0 ; y<windowSize.second ; y++) {
-            buffer[y] = new char[windowSize.first];
+    private static final int PER_FRAME = 1000;
+
+    private static final TerminalSize windowSize = new TerminalSize(75, 20);
+    private static Pair<Integer, Integer> viewOffset =
+        new Pair<>(-windowSize.getColumns() / 2, -windowSize.getRows() / 2);
+
+    private char[][] buffer;
+    private GUI gui;
+
+    public Renderer() throws IOException {
+        buffer = new char[windowSize.getRows()][];
+        for (int y = 0; y < windowSize.getRows(); y++) {
+            buffer[y] = new char[windowSize.getColumns()];
         }
         clearBuffer();
+        gui = new GUI(getComponentRenderer(windowSize));
     }
 
-    void clearBuffer() {
-        for (int y=0 ; y<windowSize.second ; y++) {
-            for (int x=0 ; x<windowSize.first ; x++) {
+    public void runGUI() throws IOException {
+        gui.run();
+    }
+
+    private void clearBuffer() {
+        for (int y = 0; y < windowSize.getRows(); y++) {
+            for (int x = 0; x < windowSize.getColumns(); x++) {
                 buffer[y][x] = ' ';
             }
         }
     }
 
-    String bufferToString(char[][] buf) {
+    private String bufferToString() {
         String s = "";
-        for (int y=0 ; y<windowSize.second ; y++) {
-            for (int x=0 ; x<windowSize.first ; x++) {
+        for (int y = 0; y < windowSize.getRows(); y++) {
+            for (int x = 0; x < windowSize.getColumns(); x++) {
                 s += buffer[y][x];
             }
             s += '\n';
@@ -38,7 +54,7 @@ public class Renderer {
         return s;
     }
 
-    public String render(World state) {
+    public String renderText(World state) {
         clearBuffer();
 
         for (Actor actor : state.actors.values()) {
@@ -48,12 +64,12 @@ public class Renderer {
             } catch (Exception e) {
                 throw new RuntimeException("Unable to get actor location", e);
             }
-            char[][] representation = actor.asciiRepresentation();
-            for (int y = 0 ; y<representation.length ; y++) {
-                for (int x = 0 ; x<representation[y].length ; x++) {
+            char[][] representation = actor.textRepresentation();
+            for (int y = 0; y < representation.length; y++) {
+                for (int x = 0; x < representation[y].length; x++) {
                     char rep = representation[y][x];
-                    Pair<Integer, Integer> repLocation = new Pair<>(location.first + x - viewOffset.first ,
-                                                                    location.second + y - viewOffset.second );
+                    Pair<Integer, Integer> repLocation = new Pair<>(location.first + x - viewOffset.first,
+                        location.second + y - viewOffset.second);
                     if (inView(repLocation)) {
                         buffer[repLocation.second][repLocation.first] = rep;
                     }
@@ -68,12 +84,12 @@ public class Renderer {
             } catch (Exception e) {
                 throw new RuntimeException("Unable to get item location", e);
             }
-            char[][] representation = item.asciiRepresentation();
-            for (int y = 0 ; y<representation.length ; y++) {
-                for (int x = 0 ; x<representation[y].length ; x++) {
+            char[][] representation = item.textRepresentation();
+            for (int y = 0; y < representation.length; y++) {
+                for (int x = 0; x < representation[y].length; x++) {
                     char rep = representation[y][x];
-                    Pair<Integer, Integer> repLocation = new Pair<>(location.first + x - viewOffset.first ,
-                            location.second + y - viewOffset.second );
+                    Pair<Integer, Integer> repLocation = new Pair<>(location.first + x - viewOffset.first,
+                        location.second + y - viewOffset.second);
                     if (inView(repLocation)) {
                         buffer[repLocation.second][repLocation.first] = rep;
                     }
@@ -81,15 +97,49 @@ public class Renderer {
             }
         }
 
-        return bufferToString(buffer);
+        return bufferToString();
     }
 
     boolean inView(Pair<Integer, Integer> location) {
         System.out.println(location.first + ", " + location.second);
         if (location.first >= 0 && location.second >= 0 &&
-                location.first < windowSize.first && location.second < windowSize.second) {
+            location.first < windowSize.getColumns() && location.second < windowSize.getRows()) {
             return true;
         }
         return false;
+    }
+
+    public void render(World state) {
+        renderText(state); // TODO remove side effects
+        gui.update();
+        try {
+            Thread.sleep(PER_FRAME);
+        } catch (InterruptedException e) {
+            // TODO better logging
+            System.err.println("Failed to wait");
+            e.printStackTrace();
+        }
+    }
+
+    private ComponentRenderer<Panel> getComponentRenderer(TerminalSize screenSize) {
+        return new ComponentRenderer<Panel>() {
+            @Override
+            public TerminalSize getPreferredSize(Panel component) {
+                // TODO this should be the size of the game board.
+                // For now it's just a size that fits in the terminal.
+                TerminalSize buffer = new TerminalSize(1, 1);
+                return new TerminalSize(screenSize.getColumns() - buffer.getColumns(),
+                    screenSize.getRows() - buffer.getRows());
+            }
+
+            @Override
+            public void drawComponent(TextGUIGraphics graphics, Panel component) {
+                for (int y = 0; y < windowSize.getRows(); y++) {
+                    for (int x = 0; x < windowSize.getColumns(); x++) {
+                        graphics.setCharacter(x, y, Renderer.this.buffer[y][x]);
+                    }
+                }
+            }
+        };
     }
 }
