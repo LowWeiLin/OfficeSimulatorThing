@@ -6,6 +6,7 @@ import com.officelife.items.Item;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Global state to mutate.
@@ -34,7 +35,15 @@ public class World {
         return locationItems.entrySet().stream()
                 .filter(entry -> entry.getValue().equals(itemId))
                 .findFirst()
-                .orElseThrow(() -> new Exception("Cannot find actor"))
+                .orElseThrow(() -> new Exception("Cannot find item"))
                 .getKey();
+    }
+
+    public Optional<Item> itemWithClass(Class<? extends Item> itemClass) {
+        return locationItems.entrySet().stream()
+                .map(entry -> entry.getValue())
+                .map(itemId -> this.items.get(itemId))
+                .filter(item -> item.getClass() == itemClass)
+                .findFirst();
     }
 }

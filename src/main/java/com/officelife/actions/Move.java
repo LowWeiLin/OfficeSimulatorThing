@@ -26,9 +26,13 @@ public class Move implements Action {
         }
 
     }
-    private final Actor actor;
+    private Actor actor;
 
-    private final Direction direction;
+    private Direction direction;
+
+    public Move() {
+
+    }
 
     public Move(Actor actor, Direction direction) {
         this.actor = actor;

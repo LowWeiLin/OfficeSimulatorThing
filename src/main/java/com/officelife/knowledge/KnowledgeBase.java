@@ -1,8 +1,7 @@
 package com.officelife.knowledge;
 
-import com.officelife.actions.Action;
-import com.officelife.actions.DrinkCoffee;
-import com.officelife.actions.UseCoffeeMachine;
+import com.officelife.actions.*;
+import com.officelife.actors.Actor;
 import com.officelife.commodity.Commodity;
 import com.officelife.commodity.Food;
 import com.officelife.items.Coffee;
@@ -11,6 +10,7 @@ import com.officelife.items.Item;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 // TODO not static
 public class KnowledgeBase {
@@ -22,26 +22,28 @@ public class KnowledgeBase {
         throw new RuntimeException("not supported");
     }
 
-    public static Class<? extends Action> actionProducing(Item item) {
-        if (item.getClass() == Coffee.class) {
-            return DrinkCoffee.class;
+    public static Class<? extends Action> actionProducing(Class<? extends Item> item) {
+        if (item == Coffee.class) {
+            return UseCoffeeMachine.class;
         }
+
         throw new RuntimeException("not supported");
     }
 
     public static Collection<Class<? extends Item>> itemsRequiredForAction(Class<? extends Action> action) {
         if (action == DrinkCoffee.class) {
             return Arrays.asList(
-                    Coffee.class
+                Coffee.class
             );
         }
 
         if (action == UseCoffeeMachine.class) {
             return Arrays.asList(
-                    CoffeeMachine.class
+                CoffeeMachine.class
             );
         }
-        throw new RuntimeException("action not supported");
+
+        return Collections.emptyList();
     }
 
 }
