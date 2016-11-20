@@ -3,6 +3,7 @@ package com.officelife.actions;
 import com.officelife.actors.Actor;
 import com.officelife.commodity.Food;
 import com.officelife.commodity.Commodity;
+import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.World;
 
@@ -21,7 +22,9 @@ public class UseCoffeeMachine implements Action {
 
     @Override
     public void accept(World world) {
-        Commodity coffee = new Food();
-        coffee.applyToPerson(user);
+        Coffee newCoffee = new Coffee();
+        user.addItem(newCoffee);
+
+        System.err.println("Use coffee machine");
     }
 }

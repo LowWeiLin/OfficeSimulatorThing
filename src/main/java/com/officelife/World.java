@@ -36,5 +36,4 @@ public class World {
                 .orElseThrow(() -> new Exception("Cannot find actor"))
                 .getKey();
     }
-
 }

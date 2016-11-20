@@ -1,11 +1,9 @@
 package com.officelife.actors;
 
 import com.officelife.*;
-import com.officelife.actions.Action;
-import com.officelife.actions.DoNothing;
-import com.officelife.actions.UseCoffeeMachine;
-import com.officelife.actions.Move;
+import com.officelife.actions.*;
 import com.officelife.characteristics.Characteristic;
+import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
 
@@ -38,8 +36,19 @@ public class Person implements Actor {
         return id;
     }
 
+    private Item determineItemToObtain() {
+        if (!inventory.containsKey(Coffee.class)) {
+            inventory.put(Coffee.class, new ArrayList<>());
+        }
+        return inventory.get(Coffee.class).stream()
+                .findFirst()
+                .orElse(new CoffeeMachine());
+    }
+
     @Override
     public Action act(World state) {
+        // TODO the whole method is wrong
+
         Pair<Integer, Integer> actorLocation;
         try {
             actorLocation = state.actorLocation(id);
@@ -50,9 +59,16 @@ public class Person implements Actor {
         Item thingWanted = determineItemToObtain();
         Pair<Integer, Integer> itemLocation;
 
-        if (!state.items.containsKey(thingWanted.id())) {
+        boolean inventoryContainsItemType = this.inventory.containsKey(thingWanted.getClass());
+
+        if (!state.items.containsKey(thingWanted.id())
+                && !inventoryContainsItemType) {
             // the thing is no longer in the world
             return new DoNothing();
+        }
+
+        if (inventoryContainsItemType && thingWanted.getClass() == Coffee.class) {
+            return new DrinkCoffee(this, (Coffee) thingWanted);
         }
 
         try {
@@ -68,10 +84,6 @@ public class Person implements Actor {
         return new Move(this, Move.Direction.directionToMove(actorLocation, itemLocation));
     }
 
-    private Item determineItemToObtain() {
-        return new CoffeeMachine();
-    }
-
 
     @Override
     public void changeNeed(ActorState need, int value) {
@@ -84,9 +96,11 @@ public class Person implements Actor {
 
     @Override
     public void addItem(Item item) {
-        if (inventory.containsKey(item.getClass())) {
-            inventory.get(item.getClass()).add(item);
+        Class<? extends Item> itemClass = item.getClass();
+        if (!inventory.containsKey(itemClass)) {
+            inventory.put(itemClass, new ArrayList<>());
         }
+        inventory.get(itemClass).add(item);
     }
 
     @Override
