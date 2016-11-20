@@ -1,5 +1,6 @@
 package com.officelife.actors;
 
 public enum ActorState {
-    HUNGER, ENERGY
+    HUNGER, ENERGY, THIRST, SLEEP, HEALTH,
+    SANITY, SAFETY
 }

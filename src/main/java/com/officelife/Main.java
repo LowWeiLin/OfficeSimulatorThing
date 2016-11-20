@@ -23,7 +23,7 @@ public class Main {
 
     private static World initWorld() {
         World state = new World();
-        Actor coffeeDrinker = new Person("Coffee guy");
+        Actor coffeeDrinker = new Person("Food guy");
 
         Pair<Integer, Integer> origin = new Pair<Integer, Integer>(0, 0);
         state.locationActor.put(origin, coffeeDrinker.id());

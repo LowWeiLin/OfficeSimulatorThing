@@ -7,7 +7,7 @@ import com.officelife.actors.ActorState;
 
 import java.util.Set;
 
-public class Coffee implements Commodity {
+public class Food implements Commodity {
 
     @Override
     public void applyToPerson(Actor actor) {
