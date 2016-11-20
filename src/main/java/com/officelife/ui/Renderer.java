@@ -99,7 +99,6 @@ public class Renderer {
     }
 
     boolean inView(Pair<Integer, Integer> location) {
-        System.out.println(location.first + ", " + location.second);
         if (location.first >= 0 && location.second >= 0 &&
             location.first < windowSize.getColumns() && location.second < windowSize.getRows()) {
             return true;
