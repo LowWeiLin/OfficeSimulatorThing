@@ -8,5 +8,5 @@ public interface Actor {
 
     Action act(World state);
 
-    void changeNeed(ActorNeed need, int value);
+    void changeNeed(ActorState need, int value);
 }

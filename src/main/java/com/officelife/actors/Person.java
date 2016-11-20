@@ -15,14 +15,14 @@ public class Person implements Actor {
     private final String id;
     private final String name;
 
-    private EnumMap<ActorNeed, Integer> needs;
+    private EnumMap<ActorState, Integer> needs;
 
     public Person(String name) {
         this.id = UUID.randomUUID().toString();
         this.name = name;
 
-        this.needs = new EnumMap<>(ActorNeed.class);
-        for (ActorNeed need : ActorNeed.values()) {
+        this.needs = new EnumMap<>(ActorState.class);
+        for (ActorState need : ActorState.values()) {
             this.needs.put(need, 0);
         }
     }
@@ -65,7 +65,7 @@ public class Person implements Actor {
 
 
     @Override
-    public void changeNeed(ActorNeed need, int value) {
+    public void changeNeed(ActorState need, int value) {
         int current = needs.get(need);
         needs.put(need, current + value);
 

@@ -1,5 +1,5 @@
 package com.officelife.actors;
 
-public enum ActorNeed {
+public enum ActorState {
     HUNGER, ENERGY
 }
