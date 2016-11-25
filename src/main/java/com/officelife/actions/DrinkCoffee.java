@@ -9,8 +9,8 @@ import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
 
 public class DrinkCoffee implements Action {
-    private final Coffee coffee;
-    private final Actor user;
+    private Coffee coffee;
+    private Actor user;
 
     public DrinkCoffee(Actor user, Coffee coffee) {
         this.user = user;
@@ -23,5 +23,7 @@ public class DrinkCoffee implements Action {
         food.applyToPerson(user);
 
         user.removeItem(this.coffee);
+
+        System.err.println("Drink coffee");
     }
 }

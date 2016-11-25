@@ -1,8 +1,7 @@
 package com.officelife.actions;
 
 import com.officelife.actors.Actor;
-import com.officelife.commodity.Food;
-import com.officelife.commodity.Commodity;
+import com.officelife.common.Pair;
 import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.World;
@@ -12,18 +11,28 @@ import com.officelife.World;
  */
 public class UseCoffeeMachine implements Action {
 
-    private final Actor user;
-    private final CoffeeMachine coffee;
+    private Actor user;
+    private CoffeeMachine coffeeMachine;
 
     public UseCoffeeMachine(Actor user, CoffeeMachine coffeeMachine) {
         this.user = user;
-        this.coffee = coffeeMachine;
+        this.coffeeMachine = coffeeMachine;
     }
 
     @Override
     public void accept(World world) {
         Coffee newCoffee = new Coffee();
         user.addItem(newCoffee);
+
+        world.items.put(coffeeMachine.id(), coffeeMachine);
+
+        Pair<Integer, Integer> currentLocation;
+        try {
+            currentLocation = world.actorLocation(user.id());
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to find actor in world", e);
+        }
+        world.locationItems.put(currentLocation, coffeeMachine.id());
 
         System.err.println("Use coffee machine");
     }
