@@ -4,7 +4,7 @@ public class Characteristic {
     private final String name;
     private final int value;
 
-    public Characteristic(String name, int value) {
+    public  Characteristic(String name, int value) {
         this.name = name;
         this.value = value;
     }

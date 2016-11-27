@@ -8,6 +8,7 @@ import com.officelife.actors.Person;
 import com.officelife.common.Pair;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
+import com.officelife.locations.Cubicle;
 import com.officelife.ui.Renderer;
 
 public class Main {
@@ -43,6 +44,7 @@ public class Main {
 
         state.locationItems.put(coffeeLocation, coffeeMachine.id());
         state.items.put(coffeeMachine.id(), coffeeMachine);
+        state.addToLocation(origin, new Cubicle());
         return state;
     }
 

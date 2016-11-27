@@ -3,10 +3,9 @@ package com.officelife;
 import com.officelife.actors.Actor;
 import com.officelife.common.Pair;
 import com.officelife.items.Item;
+import com.officelife.locations.LocationTrait;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Global state to mutate.
@@ -17,6 +16,7 @@ public class World {
     public Map<String, Item> items = new HashMap<>();
     public Map<Pair<Integer, Integer>, String> locationActor = new HashMap<>();
     public Map<Pair<Integer, Integer>, String> locationItems = new HashMap<>();
+    private Map<Pair<Integer, Integer>, Set<LocationTrait>> locationTraits = new HashMap<>();
 
     /**
      * @param actorId identifier of the actor
@@ -45,5 +45,12 @@ public class World {
                 .map(itemId -> this.items.get(itemId))
                 .filter(item -> item.getClass() == itemClass)
                 .findFirst();
+    }
+
+    public void addToLocation(Pair<Integer, Integer> location, LocationTrait trait) {
+        if (!locationTraits.containsKey(location)) {
+            locationTraits.put(location, new HashSet<>());
+        }
+        locationTraits.get(location).add(trait);
     }
 }
