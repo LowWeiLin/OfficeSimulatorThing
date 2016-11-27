@@ -7,6 +7,6 @@ import java.util.function.Consumer;
 /**
  * In the current architecture, {@code #accept} should mutate the World directly.
  */
-public interface Action extends Consumer<World> {
-
+public interface Action {
+    public void accept(World world);
 }
