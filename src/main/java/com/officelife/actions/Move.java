@@ -21,7 +21,7 @@ public class Move implements Action {
             } else if (to.second > from.second) {
                 return Move.Direction.UP;
             } else {
-                throw new RuntimeException("Invalid direction logic");
+                throw new RuntimeException("Invalid direction logic from " + from + " to " + to);
             }
         }
 

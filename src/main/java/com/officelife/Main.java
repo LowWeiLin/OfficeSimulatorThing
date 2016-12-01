@@ -44,7 +44,7 @@ public class Main {
 
         state.locationItems.put(coffeeLocation, coffeeMachine.id());
         state.items.put(coffeeMachine.id(), coffeeMachine);
-        state.addToLocation(origin, new Cubicle());
+        state.addToLocation(new Pair<>(origin.first - 1, origin.second + 1), new Cubicle());
         return state;
     }
 

@@ -56,4 +56,12 @@ public class World {
     public LocationTrait locationTrait(Pair<Integer, Integer> location) {
         return locationTraits.containsKey(location) ? locationTraits.get(location) : new Default();
     }
+
+    public Pair<Integer, Integer> locationTraitLocation(Class<? extends LocationTrait> trait) throws Exception {
+        return locationTraits.entrySet().stream()
+                .filter(entry -> entry.getValue().getClass().equals(trait))
+                .findFirst()
+                .orElseThrow(() -> new Exception("Cannot find trait"))
+                .getKey();
+    }
 }

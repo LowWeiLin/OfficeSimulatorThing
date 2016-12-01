@@ -7,13 +7,14 @@ import com.officelife.World;
 import com.officelife.actions.*;
 import com.officelife.characteristics.Characteristic;
 import com.officelife.commodity.Commodity;
-import com.officelife.commodity.Food;
+import com.officelife.commodity.FakeWork;
 import com.officelife.common.Pair;
 import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
 import com.officelife.knowledge.KnowledgeBase;
 import com.officelife.locations.Cubicle;
+import com.officelife.locations.LocationTrait;
 
 public class Person implements Actor {
     private final String id;
@@ -43,7 +44,7 @@ public class Person implements Actor {
     }
 
     public Commodity commodityWanted() {
-        return new Food();
+        return new FakeWork();
     }
 
     public Action actionToTake(World state) throws IllegalAccessException, InstantiationException {
@@ -80,6 +81,10 @@ public class Person implements Actor {
         return Optional.of(state.items.get(itemId));
     }
 
+    public static LocationTrait locationTraitAtActorLocation(Pair<Integer, Integer> actorLocation, World state) {
+        return state.locationTrait(actorLocation);
+    }
+
     public Action fulfilRequirementsToTakeAction(Class<? extends Action> actionType, World state) {
         Pair<Integer, Integer> actorLocation;
         try {
@@ -98,8 +103,11 @@ public class Person implements Actor {
                         || (itemIsOfItemClass(itemAtActorLocation, itemClass))
                 );
 
-
-        if (hasSufficientItems) {
+        Class<? extends LocationTrait> locationTraitClass =
+                KnowledgeBase.locationTraitsRequiredForAction(actionType);
+        boolean isInRightLocation = locationTraitAtActorLocation(actorLocation, state).getClass().equals(locationTraitClass);
+        
+        if (hasSufficientItems && isInRightLocation) {
             List<Item> itemsFromInventoryAndFloor = itemClasses.stream()
                     .map(itemClass -> {
                         if (itemIsOfItemClass(itemAtActorLocation, itemClass)) {
@@ -114,29 +122,37 @@ public class Person implements Actor {
             items.addAll(itemsFromInventoryAndFloor);
 
             return initialiseWithoutParameters(actionType, actorLocation, state, items);
-        }
+        } else if (!hasSufficientItems) {
+            Class<? extends Item> itemTypeToAcquire = determineItemToObtain(actionType)
+                    .orElseThrow(() -> new RuntimeException("No item to get!"));
+            Optional<Item> itemToAcquire = state.itemWithClass(itemTypeToAcquire);
+            // if item exist in the world
+            // try to take it by moving to it
+            if (state.items.values().stream()
+                    .anyMatch(item -> itemToAcquire.isPresent() && item.getClass() == itemToAcquire.get().getClass())) {
 
-        Class<? extends Item> itemTypeToAcquire = determineItemToObtain(actionType)
-                .orElseThrow(() -> new RuntimeException("No item to get!"));
-        Optional<Item> itemToAcquire = state.itemWithClass(itemTypeToAcquire);
-        // if item exist in the world
-        // try to take it by moving to it
-        if (state.items.values().stream()
-                .anyMatch(item -> itemToAcquire.isPresent() && item.getClass() == itemToAcquire.get().getClass())) {
+                Item actualItemToAcquire = itemToAcquire.get();
+                Pair<Integer, Integer> itemLocation;
+                try {
+                    itemLocation = state.itemLocation(actualItemToAcquire.id());
+                } catch (Exception e) {
+                    throw new RuntimeException("Unable to get item location", e);
+                }
 
-            Item actualItemToAcquire = itemToAcquire.get();
-            Pair<Integer, Integer> itemLocation;
+                return new Move(this, Move.Direction.directionToMove(actorLocation, itemLocation));
+            }
+            Class<? extends Action> makeItemAction = KnowledgeBase.actionProducing(itemTypeToAcquire);
+            return fulfilRequirementsToTakeAction(makeItemAction, state);
+        } else if (!isInRightLocation) {
+            Pair<Integer, Integer> traitLocation;
             try {
-                itemLocation = state.itemLocation(actualItemToAcquire.id());
+                traitLocation = state.locationTraitLocation(locationTraitClass);
             } catch (Exception e) {
                 throw new RuntimeException("Unable to get item location", e);
             }
-
-            return new Move(this, Move.Direction.directionToMove(actorLocation, itemLocation));
+            return new Move(this, Move.Direction.directionToMove(actorLocation, traitLocation));
         }
-
-        Class<? extends Action> makeItemAction = KnowledgeBase.actionProducing(itemTypeToAcquire);
-        return fulfilRequirementsToTakeAction(makeItemAction, state);
+        throw new RuntimeException("No action");
     }
 
     private boolean itemIsOfItemClass(Optional<Item> itemAtActorLocation, Class<? extends Item> itemClass) {
