@@ -13,6 +13,7 @@ import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
 import com.officelife.items.Item;
 import com.officelife.knowledge.KnowledgeBase;
+import com.officelife.locations.Cubicle;
 
 public class Person implements Actor {
     private final String id;
@@ -60,6 +61,8 @@ public class Person implements Actor {
             return new DrinkCoffee(this, (Coffee) items.get(0));
         } else if (actionType == UseCoffeeMachine.class) {
             return new UseCoffeeMachine(this, (CoffeeMachine) items.get(0));
+        } else if (actionType == PretendToWork.class) {
+            return new PretendToWork(this, (Cubicle) state.locationTrait(actorLocation));
         }
         try {
             return actionType.newInstance();
@@ -68,30 +71,6 @@ public class Person implements Actor {
         }
     }
 
-//    private Action instantiateAction(Pair<Integer, Integer> actorLocation, World state, Constructor<?> ctor)
-//            throws InstantiationException, IllegalAccessException, InvocationTargetException {
-//        List<Class<?>> requiredTypes = Arrays.asList(ctor.getParameterTypes());
-//
-//        Optional<Item> actorLocationItem = itemAtActorLocation(actorLocation, state);
-//        List<Object> chosenParams = new ArrayList<>();
-//        for (Class<?> ctorParam : requiredTypes) {
-//            Object param = null;
-//            boolean standingOnItem =
-//                    actorLocationItem.isPresent() && ctorParam == actorLocationItem.get().getClass();
-//            if (standingOnItem) {
-//                param = actorLocationItem.get();
-//            }
-//            boolean hasInventory =
-//                    inventory.containsKey(ctorParam) && !inventory.get(ctorParam).isEmpty();
-//            if (hasInventory) {
-//                param = inventory.get(ctorParam).get(0);
-//            }
-//
-//            chosenParams.add(param);
-//        }
-//
-//        return (Action) ctor.newInstance(chosenParams);
-//    }
 
     public static Optional<Item> itemAtActorLocation(Pair<Integer, Integer> actorLocation, World state) {
         if (!state.locationItems.containsKey(actorLocation)) {

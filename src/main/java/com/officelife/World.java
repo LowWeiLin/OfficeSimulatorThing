@@ -3,6 +3,7 @@ package com.officelife;
 import com.officelife.actors.Actor;
 import com.officelife.common.Pair;
 import com.officelife.items.Item;
+import com.officelife.locations.Default;
 import com.officelife.locations.LocationTrait;
 
 import java.util.*;
@@ -16,7 +17,7 @@ public class World {
     public Map<String, Item> items = new HashMap<>();
     public Map<Pair<Integer, Integer>, String> locationActor = new HashMap<>();
     public Map<Pair<Integer, Integer>, String> locationItems = new HashMap<>();
-    private Map<Pair<Integer, Integer>, Set<LocationTrait>> locationTraits = new HashMap<>();
+    private Map<Pair<Integer, Integer>, LocationTrait> locationTraits = new HashMap<>();
 
     /**
      * @param actorId identifier of the actor
@@ -48,9 +49,11 @@ public class World {
     }
 
     public void addToLocation(Pair<Integer, Integer> location, LocationTrait trait) {
-        if (!locationTraits.containsKey(location)) {
-            locationTraits.put(location, new HashSet<>());
-        }
-        locationTraits.get(location).add(trait);
+
+        locationTraits.put(location, trait);
+    }
+
+    public LocationTrait locationTrait(Pair<Integer, Integer> location) {
+        return locationTraits.containsKey(location) ? locationTraits.get(location) : new Default();
     }
 }
