@@ -8,6 +8,7 @@ import com.officelife.actions.*;
 import com.officelife.characteristics.Characteristic;
 import com.officelife.commodity.Commodity;
 import com.officelife.commodity.FakeWork;
+import com.officelife.commodity.Food;
 import com.officelife.common.Pair;
 import com.officelife.items.Coffee;
 import com.officelife.items.CoffeeMachine;
@@ -44,7 +45,7 @@ public class Person implements Actor {
     }
 
     public Commodity commodityWanted() {
-        return new FakeWork();
+        return new Food();
     }
 
     public Action actionToTake(World state) throws IllegalAccessException, InstantiationException {
@@ -74,15 +75,8 @@ public class Person implements Actor {
 
 
     public static Optional<Item> itemAtActorLocation(Pair<Integer, Integer> actorLocation, World state) {
-        if (!state.locationItems.containsKey(actorLocation)) {
-            return Optional.empty();
-        }
-        String itemId = state.locationItems.get(actorLocation);
-        return Optional.of(state.items.get(itemId));
-    }
-
-    public static LocationTrait locationTraitAtActorLocation(Pair<Integer, Integer> actorLocation, World state) {
-        return state.locationTrait(actorLocation);
+        return Optional.ofNullable(state.locationItems.get(actorLocation))
+                .map(itemId -> state.items.get(itemId));
     }
 
     public Action fulfilRequirementsToTakeAction(Class<? extends Action> actionType, World state) {
@@ -105,8 +99,8 @@ public class Person implements Actor {
 
         Class<? extends LocationTrait> locationTraitClass =
                 KnowledgeBase.locationTraitsRequiredForAction(actionType);
-        boolean isInRightLocation = locationTraitAtActorLocation(actorLocation, state).getClass().equals(locationTraitClass);
-        
+        boolean isInRightLocation = state.locationTrait(actorLocation).getClass().equals(locationTraitClass);
+
         if (hasSufficientItems && isInRightLocation) {
             List<Item> itemsFromInventoryAndFloor = itemClasses.stream()
                     .map(itemClass -> {
