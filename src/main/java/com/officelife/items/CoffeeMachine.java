@@ -1,5 +1,7 @@
 package com.officelife.items;
 
+import java.util.UUID;
+
 /**
  * This should produce {@code Coffee}.
  * @see Coffee
@@ -7,8 +9,7 @@ package com.officelife.items;
 public class CoffeeMachine implements Item {
     @Override
     public String id() {
-        // TODO the office can have more than 1 coffee machine
-        return "Coffee_Machine_1";
+        return UUID.randomUUID().toString();
     }
 
     @Override
