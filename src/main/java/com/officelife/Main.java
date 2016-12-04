@@ -19,7 +19,7 @@ public class Main {
         renderWorld(state, renderer);
         for (Actor actor : state.actors.values()) {
             Action action = actor.act(state);
-            action.accept(state);
+            action.accept( state);
         }
     }
 
