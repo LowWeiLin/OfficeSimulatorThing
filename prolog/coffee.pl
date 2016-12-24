@@ -28,9 +28,10 @@ is_adjacent(A, B) :-
 can_reach(Person, Place) :-
   can_reach(Person, Place, _).
 
-% Returns a path as well
-can_reach(Person, Place, [Place|Path]) :-
-  once(can_reach_(Person, Place, [Place], Path)).
+% Returns a path as well, starting from the next place to go to
+can_reach(Person, Place, Path) :-
+  once(can_reach_(Person, Place, [Place], Path0)),
+  reverse([Place|Path0], [_|Path]).
 
 can_reach_(Person, Place, _, []) :-
   at(Person, Place).
