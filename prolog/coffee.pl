@@ -39,13 +39,16 @@ can_reach_(Person, Place, Been, [Adj|Path]) :-
   \+ member(Adj, Been),
   can_reach_(Person, Adj, [Adj|Been], Path).
 
-can_take(Person, Object) :-
+can_take(Person, Object, How) :-
   location(Place),
   at(Object, Place),
-  can_reach(Person, Place).
+  can_reach(Person, Place, Path),
+  Movement =.. [move|Path],
+  How = [Movement, take(Person, Object)].
 
 %% Rules
 
-drink_coffee(Person) :-
+drink_coffee(Person, How) :-
   person(Person), location(Place),
-  (has(Person, coffee_cup); at(coffee_cup, Place), can_take(Person, coffee_cup)).
+  (has(Person, coffee_cup), How = [];
+    at(coffee_cup, Place), can_take(Person, coffee_cup, How)).
