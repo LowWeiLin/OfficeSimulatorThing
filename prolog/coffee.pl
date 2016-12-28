@@ -43,6 +43,8 @@ can_reach(Person, Place, Path) :-
   once(can_reach_(Person, Place, [Place], Path0)),
   reverse([Place|Path0], [_|Path]).
 
+% A person can reach a place if they are there, or if they are at
+% some adjacent place they have not been to which is reachable
 can_reach_(Person, Place, _, []) :-
   at(Person, Place).
 can_reach_(Person, Place, Been, [Adj|Path]) :-
@@ -51,9 +53,12 @@ can_reach_(Person, Place, Been, [Adj|Path]) :-
   can_reach_(Person, Adj, [Adj|Been], Path).
 
 can_take(Person, Object, How) :-
+  % Logical meaning
   location(Place),
   has(Place, Object),
   can_reach(Person, Place, Path),
+
+  % State changes
   maplist(move_to(Person), Path, Movement),
   append(Movement, [take(Person, Place, Object)], How).
 
@@ -78,8 +83,9 @@ update_state(take(Person, From, Object), [Sub], [Add]) :-
 
 %% Rules
 
+% A person can drink coffee if they have a coffee cup or can get one
 drink_coffee(Person, How) :-
-  person(Person), location(Place),
+  person(Person),
   (has(Person, coffee_cup), How = [];
-    has(Place, coffee_cup), can_take(Person, coffee_cup, How)).
+    can_take(Person, coffee_cup, How)).
 
