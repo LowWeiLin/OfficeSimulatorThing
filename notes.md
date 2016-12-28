@@ -193,6 +193,10 @@ THEN CAST(1 AS BIT)
 ELSE CAST(0 AS BIT) END
 
 
+CREATE FUNCTION relationIdOf(integer, integer, integer) RETURNS integer AS $$
+  SELECT id FROM Relations WHERE relationType = $1 AND object = $2 AND subject = $3;
+$$ LANGUAGE SQL;
+
 Create the world!
 
 CREATE TABLE Entities(id INT PRIMARY KEY);
@@ -223,11 +227,12 @@ INSERT INTO Entities VALUES(5);
 INSERT INTO Commodities VALUES(5, 'Food');
 
 CREATE TABLE RelationTypes(id INT PRIMARY KEY, name TEXT);
-CREATE TABLE Relations(id INT PRIMARY KEY, relationType INT REFERENCES RelationTypes(id), object INT REFERENCES Entities(id), subject INT REFERENCES Entities(id), intensity INT, UNIQUE(relationType, object, subject));
+CREATE TABLE Relations(id INT PRIMARY KEY, relationType INT REFERENCES RelationTypes(id), object INT REFERENCES Entities(id), subject INT REFERENCES Entities(id), UNIQUE(relationType, object, subject));
 
 
 INSERT INTO RelationTypes VALUES(1, 'Has');
 INSERT INTO RelationTypes VALUES(2, 'At');
+INSERT INTO RelationTypes VALUES(3, 'Same Location');
 
 
 ...
@@ -240,6 +245,7 @@ INSERT INTO Entities VALUES(6); INSERT INTO Positions VALUES(6,5,5);
 INSERT INTO Entities VALUES(7); INSERT INTO Positions VALUES(7,7,7);
 
 CREATE TABLE CurrentWorldState(id INT PRIMARY KEY, timestep INT, relation INT, UNIQUE(timestep, relation));
+CREATE TABLE FutureWorldState(id INT PRIMARY KEY, timestep INT, relation INT, UNIQUE(timestep, relation));
 
 
 
@@ -253,34 +259,54 @@ CREATE TABLE Actions(id INT PRIMARY KEY, name TEXT);
 INSERT INTO Actions VALUES(0, "Drink Coffee");
 
 CREATE TABLE ActionResultsType(id INT PRIMARY KEY, name TEXT);
-CREATE TABLE ActionResults(id INT PRIMARY KEY,  type INT REFERENCES ActionResultsType(id))
+CREATE TABLE ActionResults(id INT PRIMARY KEY, action INT REFERENCES Actions(id), type INT REFERENCES ActionResultsType(id), value INT);
 
-# timestep, x, y, Direction
-CREATE FUNCTION walk (integer, integer, integer, integer) RETURNS void AS $$
-    UPSERT INTO FutureWorldState VALUES($1 + 1, relationAfterWalking($2, $3, $4))
-$$ LANGUAGE SQL;
+INSERT INTO ActionResultsType VALUES(0, 'movement');
+INSERT INTO ActionResultsType VALUES(1, 'relations');
+
+INSERT INTO Actions VALUES(0, 'walk');
+INSERT INTO Actions VALUES(1, 'take coffee');
+
+INSERT INTO ActionResults VALUES(0, 0, 0, 1);
+INSERT INTO ActionResults VALUES(1, 0, 0, 2);
+INSERT INTO ActionResults VALUES(2, 0, 0, 3);
+INSERT INTO ActionResults VALUES(3, 0, 0, 4);
+
+
+  
 
 # x, y
 CREATE FUNCTION insertNewPosition(integer, integer) RETURNS integer AS $$
-  INSERT INTO Relation (id, relationType, object, subject, intensity) 
-      VALUES(SELECT MAX(id) + 1 FROM RELATION, $1, $2) 
-      ON CONFLICT IGNORE 
+  INSERT INTO Relations (id, relationType, object, subject) 
+      VALUES( (SELECT MAX(id) + 1 FROM Relations), (SELECT id FROM RelationTypes WHERE name = 'At'), $1, $2) 
+      ON CONFLICT DO NOTHING 
+
       RETURNING id;
 $$ LANGUAGE SQL;
 
 # x, y, Direction
 CREATE FUNCTION relationAfterWalking(integer, integer, integer) RETURNS integer AS $$
-  CASE WHEN $3=1 THEN 
-        SELECT insertNewPosition($1 - 1, $2)
+  SELECT 
+    CASE WHEN $3=1 THEN 
+        (SELECT insertNewPosition($1 - 1, $2))
        WHEN $3=2 THEN 
-        SELECT insertNewPosition($1, $2 - 1)
+        (SELECT insertNewPosition($1, $2 - 1))
        WHEN $3=3 THEN
-        SELECT insertNewPosition($1+1, $2)
+        (SELECT insertNewPosition($1+1, $2))
        WHEN $3=4 THEN
-        SELECT insertNewPosition($1, $2+1)
-       ELSE 0
+        (SELECT insertNewPosition($1, $2+1))
+       ELSE 
+        (SELECT 0)
   END
 $$ LANGUAGE SQL;
+
+
+# timestep, x, y, Direction
+CREATE FUNCTION walk (integer, integer, integer, integer) RETURNS void AS $$
+    INSERT INTO FutureWorldState VALUES($1 + 1, relationAfterWalking($2, $3, $4)) 
+    ON CONFLICT DO NOTHING;
+$$ LANGUAGE SQL;
+
 
 <!-- # timestep, relation, delta
 CREATE FUNCTION changeRelationIntensity(integer, integer, integer) RETURNS void AS $$
@@ -297,14 +323,61 @@ CREATE FUNCTION positionOfActorAtTimestep(integer, integer) RETURNS integer AS $
       JOIN RelationTypes ON RelationTypes.id = Relations.relationType AND RelationTypes.name = 'At'
 $$ LANGUAGE SQL;
 
+
+CREATE FUNCTION makeFutureRelation(integer, integer) RETURNS void AS $$
+  INSERT INTO FutureWorldState VALUES($1 + 1, $2) ON CONFLICT DO NOTHING;
+$$ LANGUAGE SQL;
+
 # actionResultType, actionResultValue, actor, timestep
 # $1=0 is walk, $1=1 is update relation
 CREATE FUNCTION dispatchActionResults(integer, integer, integer, integer) RETURNS void AS $$
-  CASE WHEN $1=0 THEN
-        SELECT walk($3, SELECT x FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4)),
-                        SELECT y FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4)),
-                        $2)
-       ELSE 
-        UPSERT INTO FutureWorldState($1 + 1, $2);
+  SELECT 
+    CASE WHEN $1=0 THEN
+        (SELECT walk($3, (SELECT x FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4))),
+                        (SELECT y FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4))),
+                        $2))
+       WHEN $1=1 THEN
+         (SELECT makeFutureRelation($1, $2))
   END
 $$ LANGUAGE SQL;
+
+
+#### goals
+
+
+CREATE TABLE Goals(id INTEGER PRIMARY KEY, person INTEGER REFERENCES Persons(id), relation INTEGER REFERENCES Relations(id));
+
+INSERT INTO Relations VALUES(3, 1, 0, 3);
+INSERT INTO Goals VALUES(1, 0, 3);
+
+INSERT INTO Relations VALUES(4, 1, 1, 3);
+INSERT INTO Goals VALUES(2, 0, 4);
+
+INSERT INTO Entities VALUES(8);
+INSERT INTO Positions VALUES(8, 3, 9);
+
+# coffee at (2, 8)
+INSERT INTO Relations VALUES(5, 2, 2, 8); 
+
+# action 1 ('take coffee') produces a new relation 
+INSERT INTO ActionResults VALUES(4, 1, 1, 4);
+
+CREATE TABLE ActionRequirementsTypes(id INT PRIMARY KEY, name TEXT);
+CREATE TABLE ActionRequirements(id INT PRIMARY KEY, action INT REFERENCES Actions(id), requirementType INT REFERENCES ActionRequirementsTypes(id), relation INT REFERENCES Relations(id), UNIQUE(action, relation));
+
+INSERT INTO ActionRequirementsTypes VALUES(0, 'same location');
+INSERT INTO ActionRequirementsTypes VALUES(1, 'relations');
+INSERT INTO ActionRequirements VALUES(0, 1, 0, 6);
+
+
+# actor1, actor2, timestep
+CREATE FUNCTION sameLocation(integer, integer, integer) RETURNS BOOLEAN AS $$
+   SELECT (SELECT positionOfActorAtTimestep($1, $3)) = (SELECT positionOfActorAtTimestep($2, $3));
+###########TODO here
+$$ LANGUAGE SQL;
+### 
+
+# 
+INSERT INTO Relations VALUES(6, 2, 0, 3);
+
+CREATE FUNCTION 
