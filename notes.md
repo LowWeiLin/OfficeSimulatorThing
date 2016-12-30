@@ -85,20 +85,21 @@ def canPerformAction(actionId):
 
 def takeAction(actionId):
     # assuming satisfiable requirement
+
+# actionResultType, actionResultValue, actor, timestep
+CREATE FUNCTION takeAction(integer, integer) RETURNS void as $$
     BEGIN TRANSACTION;
-    INSERT INTO FutureWorldState (SELECT * FROM CurrentWorldState)
-    DELETE FROM WorldState WHERE id IN (
-        SELECT relation FROM ActionRequirements WHERE action = actionId
-    );
-    UPSERT INTO WorldState(
-        SELECT relation FROM ActionResults WHERE action = actionId
-    );
+
+    SELECT dispatchActionResults($1, integer, integer, integer);
     COMMIT;
+$$ LANGUAGE SQL;
 
 def takeActionSingle:
     #consume relations from current world state
+
+
     SELECT DISTINCT results.relation
-    FROM Action a
+    FROM Actions a, ActionResults results
     JOIN ActionRequirements ar ON ar.action = a.id
     AND  
       (
@@ -113,7 +114,7 @@ def takeActionSingle:
           JOIN ActionRequirements requirement ON requirement.action = a.id 
           WHERE requirement.relation = CurrentWorldState.relation
       )
-    JOIN ActionResults results ON results.action = a.id
+    WHERE results.action = a.id AND a.id=$1
 
 
 
@@ -244,7 +245,7 @@ INSERT INTO RelationTypes
 INSERT INTO Entities VALUES(6); INSERT INTO Positions VALUES(6,5,5);
 INSERT INTO Entities VALUES(7); INSERT INTO Positions VALUES(7,7,7);
 
-CREATE TABLE CurrentWorldState(id INT PRIMARY KEY, timestep INT, relation INT, UNIQUE(timestep, relation));
+CREATE TABLE CurrentWorldState(id INT PRIMARY KEY, relation INT, UNIQUE(relation));
 CREATE TABLE FutureWorldState(id INT PRIMARY KEY, timestep INT, relation INT, UNIQUE(timestep, relation));
 
 
@@ -373,11 +374,117 @@ INSERT INTO ActionRequirements VALUES(0, 1, 0, 6);
 # actor1, actor2, timestep
 CREATE FUNCTION sameLocation(integer, integer, integer) RETURNS BOOLEAN AS $$
    SELECT (SELECT positionOfActorAtTimestep($1, $3)) = (SELECT positionOfActorAtTimestep($2, $3));
-###########TODO here
+  
 $$ LANGUAGE SQL;
+
 ### 
 
 # 
 INSERT INTO Relations VALUES(6, 2, 0, 3);
 
-CREATE FUNCTION 
+# $1 = actionRequirementsType, action, object, subject, timestep
+CREATE OR REPLACE FUNCTION dispatchActionRequirements(integer, integer, integer, integer, integer) RETURNS BOOLEAN AS $$
+  SELECT
+    CASE WHEN $1 = 0 THEN
+      (SELECT sameLocation($3, $4, $5))
+    ELSE 
+      (SELECT (SELECT COUNT(req.relation) FROM ActionRequirements req WHERE req.action=$2)
+              = 
+              (SELECT COUNT(req.relation) FROM ActionRequirements req 
+                      JOIN FutureWorldState world ON world.relation=req.relation AND world.timestep = $5
+                      WHERE req.action=$2)
+      )
+    END;
+
+$$ LANGUAGE SQL;
+
+# action, actor, subject, timestep
+CREATE FUNCTION dispatchActionRequirements(integer, integer, integer, integer) RETURNS BOOLEAN AS $$
+  SELECT dispatchActionRequirements(
+    (SELECT requirementType FROM ActionRequirements WHERE action = $1),
+    $1,
+    $2,
+    $3,
+    $4
+  )
+$$ LANGUAGE SQL;
+
+# timestep, relation
+<!-- CREATE OR REPLACE FUNCTION canReach(integer, integer) RETURNS BOOLEAN AS $$
+  WITH RECURSIVE ForwardChain AS (
+      SELECT 0, relation 
+      FROM CurrentWorldState
+    UNION 
+      SELECT  fc.timestep + 1, 
+              dispatchActionResults(
+                  PossibleResults.type, PossibleResults.value,
+                  PossibleResults.person, fc.timestep
+              )
+      FROM ForwardChain fc
+      INNER JOIN (
+          SELECT results.relation, results.type, p.id AS person
+          FROM Actions a
+          CROSS JOIN Persons p
+          
+          JOIN Relations rr ON ar.relation = rr.id
+          JOIN ActionRequirements ar ON 
+             ar.action = a.id
+              AND  
+              (SELECT dispatchActionRequirements(a.id, p.id, rr.subject, tempFc.time) = TRUE)
+          JOIN ActionResults results ON results.action = a.id
+      ) PossibleResults
+      ON fc.relation = PossibleResults.relation 
+  )
+  SELECT CASE WHEN EXISTS (
+    SELECT * FROM ForwardChain fc
+    WHERE fc.timestep = $1 AND fc.relation = $1
+  )
+  THEN CAST(1 AS BIT)
+  ELSE CAST(0 AS BIT) END
+$$ LANGUAGE SQL;
+
+ -->
+# timestep
+CREATE OR REPLACE FUNCTION createTheFuture(integer) RETURNS void AS $$
+  INSERT INTO FutureWorldState (SELECT 0, relation FROM CurrentWorldState);
+
+    SELECT 
+    (
+      SELECT 
+        dispatchActionResults(
+          PossibleResults.type, PossibleResults.value,
+          PossibleResults.person, i
+        )
+        FROM (
+          SELECT results.value, results.type, p.id AS person
+            FROM Actions a
+            CROSS JOIN Persons p
+            CROSS JOIN Relations rr 
+            JOIN ActionRequirements ar ON 
+               ar.action = a.id
+               AND ar.relation = rr.id
+               AND (SELECT dispatchActionRequirements(a.id, p.id, rr.subject, i) = TRUE)
+            JOIN ActionResults results ON results.action = a.id
+        ) PossibleResults
+    )
+    FROM generate_series(1, $1) AS i
+
+$$ LANGUAGE SQL;
+
+
+#timestep, relation
+
+CREATE OR REPLACE FUNCTION canReach(integer, integer) RETURNS BOOLEAN AS $$
+  SELECT createTheFuture($1);
+  
+  SELECT CASE WHEN EXISTS (
+    SELECT * FROM FutureWorldState
+    WHERE timestep = $1 AND relation = $2
+  )
+  THEN TRUE
+  ELSE FALSE END
+  
+$$ LANGUAGE SQL;
+
+
+
