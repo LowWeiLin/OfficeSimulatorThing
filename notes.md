@@ -246,7 +246,7 @@ INSERT INTO Entities VALUES(6); INSERT INTO Positions VALUES(6,5,5);
 INSERT INTO Entities VALUES(7); INSERT INTO Positions VALUES(7,7,7);
 
 CREATE TABLE CurrentWorldState(id INT PRIMARY KEY, relation INT, UNIQUE(relation));
-CREATE TABLE FutureWorldState(id INT PRIMARY KEY, timestep INT, relation INT, UNIQUE(timestep, relation));
+CREATE TABLE FutureWorldState(id SERIAL PRIMARY KEY, timestep INT, relation INT, UNIQUE(timestep, relation));
 
 
 
@@ -265,13 +265,18 @@ CREATE TABLE ActionResults(id INT PRIMARY KEY, action INT REFERENCES Actions(id)
 INSERT INTO ActionResultsType VALUES(0, 'movement');
 INSERT INTO ActionResultsType VALUES(1, 'relations');
 
-INSERT INTO Actions VALUES(0, 'walk');
-INSERT INTO Actions VALUES(1, 'take coffee');
 
-INSERT INTO ActionResults VALUES(0, 0, 0, 1);
-INSERT INTO ActionResults VALUES(1, 0, 0, 2);
-INSERT INTO ActionResults VALUES(2, 0, 0, 3);
-INSERT INTO ActionResults VALUES(3, 0, 0, 4);
+INSERT INTO Actions VALUES(1, 'take coffee');
+INSERT INTO Actions VALUES(2, 'walk left');
+INSERT INTO Actions VALUES(3, 'walk up');
+INSERT INTO Actions VALUES(4, 'walk right');
+INSERT INTO Actions VALUES(5, 'walk down');
+
+INSERT INTO ActionResults VALUES(0, 1, 1, 3);
+INSERT INTO ActionResults VALUES(1, 2, 0, 1);
+INSERT INTO ActionResults VALUES(2, 3, 0, 2);
+INSERT INTO ActionResults VALUES(3, 4, 0, 3);
+INSERT INTO ActionResults VALUES(4, 5, 0, 4);
 
 
   
@@ -318,9 +323,10 @@ $$ LANGUAGE SQL;
 
 # entityId, timestep
 # returns id of Positions
-CREATE FUNCTION positionOfActorAtTimestep(integer, integer) RETURNS integer AS $$
-  SELECT Positions.id FROM Positions JOIN FutureWorldState ON FutureWorldState.timestep = $1 
-      JOIN Relations ON Relations.id = FutureWorldState.relation AND Relations.object = $2 
+CREATE OR REPLACE FUNCTION positionOfActorAtTimestep(integer, integer) RETURNS integer AS $$
+  SELECT Positions.id FROM Positions JOIN FutureWorldState ON FutureWorldState.timestep = $2
+      JOIN Relations ON Relations.id = FutureWorldState.relation AND Relations.object = $1 
+                        AND Relations.subject=Positions.id
       JOIN RelationTypes ON RelationTypes.id = Relations.relationType AND RelationTypes.name = 'At'
 $$ LANGUAGE SQL;
 
@@ -352,7 +358,7 @@ INSERT INTO Relations VALUES(3, 1, 0, 3);
 INSERT INTO Goals VALUES(1, 0, 3);
 
 INSERT INTO Relations VALUES(4, 1, 1, 3);
-INSERT INTO Goals VALUES(2, 0, 4);
+INSERT INTO Goals VALUES(2, 1, 4);
 
 INSERT INTO Entities VALUES(8);
 INSERT INTO Positions VALUES(8, 3, 9);
@@ -446,28 +452,28 @@ $$ LANGUAGE SQL;
  -->
 # timestep
 CREATE OR REPLACE FUNCTION createTheFuture(integer) RETURNS void AS $$
-  INSERT INTO FutureWorldState (SELECT 0, relation FROM CurrentWorldState);
+  INSERT INTO FutureWorldState (timestep, relation) (SELECT 0, relation FROM CurrentWorldState)
+    ON CONFLICT DO NOTHING;
 
+  SELECT (
     SELECT 
-    (
-      SELECT 
-        dispatchActionResults(
-          PossibleResults.type, PossibleResults.value,
-          PossibleResults.person, i
-        )
-        FROM (
-          SELECT results.value, results.type, p.id AS person
-            FROM Actions a
-            CROSS JOIN Persons p
-            CROSS JOIN Relations rr 
-            JOIN ActionRequirements ar ON 
-               ar.action = a.id
-               AND ar.relation = rr.id
-               AND (SELECT dispatchActionRequirements(a.id, p.id, rr.subject, i) = TRUE)
-            JOIN ActionResults results ON results.action = a.id
-        ) PossibleResults
-    )
-    FROM generate_series(1, $1) AS i
+      dispatchActionResults(
+        PossibleResults.type, PossibleResults.value,
+        PossibleResults.person, i
+      )
+      FROM (
+        SELECT results.value, results.type, p.id AS person
+          FROM Actions a
+          CROSS JOIN Persons p
+          CROSS JOIN Relations rr 
+          JOIN ActionRequirements ar ON 
+             ar.action = a.id
+             AND ar.relation = rr.id
+             AND (SELECT dispatchActionRequirements(a.id, p.id, rr.subject, i) = TRUE)
+          JOIN ActionResults results ON results.action = a.id
+      ) PossibleResults
+  )
+  FROM generate_series(1, $1) AS i
 
 $$ LANGUAGE SQL;
 
@@ -485,6 +491,24 @@ CREATE OR REPLACE FUNCTION canReach(integer, integer) RETURNS BOOLEAN AS $$
   ELSE FALSE END
   
 $$ LANGUAGE SQL;
+
+
+
+INSERT INTO CurrentWorldState VALUES(2, 5);
+
+
+SELECT results.value, results.type, p.id AS person, a.id, rr.subject
+          FROM Actions a
+          CROSS JOIN Persons p
+          CROSS JOIN Relations rr 
+          JOIN ActionRequirements ar ON 
+             ar.action = a.id
+             AND ar.relation = rr.id
+          JOIN ActionResults results ON results.action = ar.action
+
+
+INSERT INTO Relations VALUES(7, 2, 3, 8);
+INSERT INTO CUrrentWorldState VALUES(3, 7);
 
 
 
