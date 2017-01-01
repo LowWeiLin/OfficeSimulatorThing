@@ -216,7 +216,7 @@ INSERT INTO Items VALUES(2, 'Coffee Machine');
 INSERT INTO Entities VALUES(3);
 INSERT INTO Items VALUES(3, 'Coffee');
 
-CREATE TABLE Positions(id INT PRIMARY KEY REFERENCES Entities(id), x INT, Y INT, UNIQUE(X, Y));
+CREATE TABLE Positions(id SERIAL PRIMARY KEY REFERENCES Entities(id), x INT NOT NULL, Y INT NOT NULL, UNIQUE(X, Y));
 INSERT INTO Positions(x,y) VALUES(5,5);
 
 CREATE TABLE LocationTraits(id INT PRIMARY KEY REFERENCES Entities(id), name TEXT);
@@ -281,35 +281,52 @@ INSERT INTO ActionResults VALUES(4, 5, 0, 4);
 
   
 
+# id, x, y
+CREATE OR REPLACE FUNCTION insertNewPosition(integer, integer, integer) RETURNS integer AS $$
+  INSERT INTO Positions VALUES($1, $2, $3)
+  ON CONFLICT(x,y) DO UPDATE SET x=$2
+  RETURNING id;
+$$ LANGUAGE SQL;
+
 # x, y
-CREATE FUNCTION insertNewPosition(integer, integer) RETURNS integer AS $$
+CREATE OR REPLACE FUNCTION insertNewPosition(integer, integer) RETURNS integer AS $$
+  INSERT INTO Entities (SELECT MAX(id) + 1 FROM Entities);
+  SELECT insertNewPosition(
+    (SELECT MAX(id) FROM Entities),
+    $1, 
+    $2
+  );
+$$ LANGUAGE SQL;
+
+# actor, x, y, Direction
+CREATE OR REPLACE FUNCTION relationAfterWalking(integer, integer, integer, integer) RETURNS integer AS $$
   INSERT INTO Relations (id, relationType, object, subject) 
-      VALUES( (SELECT MAX(id) + 1 FROM Relations), (SELECT id FROM RelationTypes WHERE name = 'At'), $1, $2) 
-      ON CONFLICT DO NOTHING 
-
-      RETURNING id;
+    VALUES( 
+      ( SELECT MAX(id) + 1 FROM Relations), 
+      ( SELECT id FROM RelationTypes WHERE name = 'At'), 
+      $1, 
+      (SELECT 
+        CASE WHEN $4=1 THEN 
+              (SELECT insertNewPosition($2 - 1, $3))
+             WHEN $4=2 THEN 
+              (SELECT insertNewPosition($2, $3 - 1))
+             WHEN $4=3 THEN
+              (SELECT insertNewPosition($2+1, $3))
+             WHEN $4=4 THEN
+              (SELECT insertNewPosition($2, $3+1))
+             ELSE 
+              (SELECT -99)
+       END
+      )
+    ) 
+    ON CONFLICT(relationType, object, subject) DO UPDATE SET object = $1
+    RETURNING id  
 $$ LANGUAGE SQL;
 
-# x, y, Direction
-CREATE FUNCTION relationAfterWalking(integer, integer, integer) RETURNS integer AS $$
-  SELECT 
-    CASE WHEN $3=1 THEN 
-        (SELECT insertNewPosition($1 - 1, $2))
-       WHEN $3=2 THEN 
-        (SELECT insertNewPosition($1, $2 - 1))
-       WHEN $3=3 THEN
-        (SELECT insertNewPosition($1+1, $2))
-       WHEN $3=4 THEN
-        (SELECT insertNewPosition($1, $2+1))
-       ELSE 
-        (SELECT 0)
-  END
-$$ LANGUAGE SQL;
 
-
-# timestep, x, y, Direction
-CREATE FUNCTION walk (integer, integer, integer, integer) RETURNS void AS $$
-    INSERT INTO FutureWorldState VALUES($1 + 1, relationAfterWalking($2, $3, $4)) 
+# actor,timestep, x, y, Direction
+CREATE OR REPLACE FUNCTION walk (integer, integer, integer, integer, integer) RETURNS void AS $$
+    INSERT INTO FutureWorldState(timestep, relation) VALUES($2 + 1, relationAfterWalking($1, $3, $4, $5)) 
     ON CONFLICT DO NOTHING;
 $$ LANGUAGE SQL;
 
@@ -331,20 +348,25 @@ CREATE OR REPLACE FUNCTION positionOfActorAtTimestep(integer, integer) RETURNS i
 $$ LANGUAGE SQL;
 
 
-CREATE FUNCTION makeFutureRelation(integer, integer) RETURNS void AS $$
-  INSERT INTO FutureWorldState VALUES($1 + 1, $2) ON CONFLICT DO NOTHING;
+CREATE OR REPLACE FUNCTION makeFutureRelation(integer, integer) RETURNS void AS $$
+  INSERT INTO FutureWorldState(timestep, relation) VALUES($1 + 1, $2) ON CONFLICT DO NOTHING;
 $$ LANGUAGE SQL;
 
 # actionResultType, actionResultValue, actor, timestep
 # $1=0 is walk, $1=1 is update relation
-CREATE FUNCTION dispatchActionResults(integer, integer, integer, integer) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION dispatchActionResults(integer, integer, integer, integer) RETURNS void AS $$
   SELECT 
-    CASE WHEN $1=0 THEN
-        (SELECT walk($3, (SELECT x FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4))),
-                        (SELECT y FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4))),
-                        $2))
-       WHEN $1=1 THEN
-         (SELECT makeFutureRelation($1, $2))
+    CASE 
+      WHEN $1=0 THEN
+        (SELECT walk(
+          $3, 
+          $4, 
+          (SELECT x FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4))),
+          (SELECT y FROM Positions WHERE id = (SELECT positionOfActorAtTimestep($3, $4))),
+          $2)
+        )
+      WHEN $1=1 THEN
+        (SELECT makeFutureRelation($4, $2))
   END
 $$ LANGUAGE SQL;
 
@@ -451,30 +473,32 @@ $$ LANGUAGE SQL;
 
  -->
 # timestep
-CREATE OR REPLACE FUNCTION createTheFuture(integer) RETURNS void AS $$
+CREATE OR REPLACE FUNCTION createTheFuture(integer) RETURNS integer AS $$
+  
   INSERT INTO FutureWorldState (timestep, relation) (SELECT 0, relation FROM CurrentWorldState)
     ON CONFLICT DO NOTHING;
 
-  SELECT (
-    SELECT 
-      dispatchActionResults(
+  SELECT 
+    (SELECT 
+      COUNT(dispatchActionResults(
         PossibleResults.type, PossibleResults.value,
         PossibleResults.person, i
-      )
+      ))
       FROM (
         SELECT results.value, results.type, p.id AS person
           FROM Actions a
           CROSS JOIN Persons p
           CROSS JOIN Relations rr 
-          JOIN ActionRequirements ar ON 
+          LEFT JOIN ActionRequirements ar ON 
              ar.action = a.id
              AND ar.relation = rr.id
-             AND (SELECT dispatchActionRequirements(a.id, p.id, rr.subject, i) = TRUE)
           JOIN ActionResults results ON results.action = a.id
+          WHERE (SELECT dispatchActionRequirements(a.id, p.id, rr.subject, i) = TRUE)
       ) PossibleResults
-  )
-  FROM generate_series(1, $1) AS i
-
+    )
+  FROM generate_series(0, $1) AS i;
+  
+  SELECT 1;
 $$ LANGUAGE SQL;
 
 
@@ -512,3 +536,32 @@ INSERT INTO CUrrentWorldState VALUES(3, 7);
 
 
 
+ SELECT 
+      dispatchActionResults(
+        PossibleResults.type, PossibleResults.value,
+        PossibleResults.person, 0
+      )
+      FROM (
+        SELECT results.value, results.type, p.id AS person
+          FROM Actions a
+          CROSS JOIN Persons p
+          CROSS JOIN Relations rr 
+          LEFT JOIN ActionRequirements ar ON 
+             ar.action = a.id
+             AND ar.relation = rr.id
+          JOIN ActionResults results ON results.action = a.id
+          WHERE (SELECT dispatchActionRequirements(a.id, p.id, rr.subject, 0) = TRUE)
+      ) PossibleResults
+
+SELECT 
+  (
+    SELECT returningVoid(i)
+  
+  )
+
+FROM generate_series(1, 3) AS i;
+
+
+SELECT (
+  SELECT id FROM Relations
+)
