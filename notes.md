@@ -1,155 +1,5 @@
 
 
-Rules()
-
---a goal is just a record containing (string, int)
-Goal {
-    FULLNESS : int,
-    SANITY: int,
-    SAFETY: int,
-    REST: int,
-    MONEY: int,
-    GLOBAL_HUMAN_RELATIONSHIPS: int
-}
-
-we can represent goals as :
-Relations("GOAL", personA, HUNGER, 50) where this means personA has goal of >50 hunger etc...
-
-Represent each goal-type as a single value:
-   * this is so even for cases where there are multiple possible relations,
-     we need to compute a single numerical value for it
-
-
-Goals
-
-relations
-
-
-
-
-<hr>
-
-Action = (ActionName, Requirements, Result)
-ActionName = ["Take", "Walk"]
-Action(id INT PRIMARY KEY)
-
-ActionRequirements(actionId, requirementId)
-ActionResults(actionId, relations)
-
-
-Relations = (RelationType, Object, Subject)
-
-Object = Person | Item | Position | LocationTrait
-Subject = Person | Item | Position | LocationTrait
-
-RelationType = Has(Thing, LocationTrait) | Has(Thing, Item) | At(Person, Position)
-              | Has(Person, Commodity)
-
-Thing = Person | Position
-
-Requirement = Item | LocationTrait | HumanRelationship
-Requirement(id INT PRIMARY KEY)
-
-LocationTrait = ['Cubicle', 'Pantry']
-Item = ['Coffee Machine', 'Coffee']
-HumanRelationship(id INT PRIMARY KEY, object INT REFERENCES Person, subject INT REFERENCES Person, type REFERENCES HumanRelationshipType, intensity INT)
-HumanRelationshipType = ['friend', 'supervisor', 'overlord']
-
-
-Position = (id, x INT, y INT)
-
-CurrentWorldState = ()
-
-
-FutureWorldState = (stepNumber INT, relation) --use for computation
-ActionsLeadingToFutureWorldState = (stepNumber INT, actionId)
-
-def canPerformAction(actionId):
-    """
-    If the currentWorldState contains the relations required 
-    """
-    SELECT * FROM Actions action
-        
-        WHERE 
-        (SELECT COUNT(DISTINCT requirement.relation) FROM 
-            ActionRequirements requirement
-            WHERE requirement.action = action.id 
-            ) 
-        =
-        (SELECT COUNT(DISTINCT Relations.id) FROM 
-            Relations 
-            JOIN CurrentWorldState ON CurrentWorldState.relation = Relations.id
-            JOIN ActionRequirements requirement ON requirement.action = action.id 
-            WHERE ActionRequirements.relation = Relations.id)
-
-
-def takeAction(actionId):
-    --assuming satisfiable requirement
-
---actionResultType, actionResultValue, actor, timestep
-
-def takeActionSingle:
-    --consume relations from current world state
-
-
-    SELECT DISTINCT results.relation
-    FROM Actions a, ActionResults results
-    JOIN ActionRequirements ar ON ar.action = a.id
-    AND  
-      (
-        SELECT COUNT(DISTINCT requirement.relation) FROM 
-          ActionRequirements requirement
-          WHERE requirement.action = a.id 
-      ) 
-      =
-      (
-        SELECT COUNT(DISTINCT CurrentWorldState.relation) FROM 
-          CurrentWorldState 
-          JOIN ActionRequirements requirement ON requirement.action = a.id 
-          WHERE requirement.relation = CurrentWorldState.relation
-      )
-    WHERE results.action = a.id AND a.id=$1
-
-
-
-
-
-def isRequirementsSatifiable(actionId, maxStep):
-    canPerform(actionId, WorldState at maxStep)
-
-def hasDesiredRelation(relationId, timestep):
-    SELECT CASE WHEN EXISTS (
-      SELECT * FROM ForwardChain
-      WHERE timestep = ${timestep} AND relation = ${relationId}
-    )
-    THEN CAST(1 AS BIT)
-    ELSE CAST(0 AS BIT) END
-
-    
-def rankActions:
-
-
-
-def executableActions:
-
-
-def move = 
-SELECT * FROM Relations r JOIN RelationsType rt ON rt.name='At' AND rt.id = r.relationType
-WHERE timestep = ${timestep}
-
-
-
-
-
-update_state =
-at time 0, current state
-at time t, 
-
-
-JOIN FutureWorldState t ON 
-
-use recursive CTE
-
 """
 ForwardChain gives possible states
 """
@@ -191,8 +41,6 @@ ELSE CAST(0 AS BIT) END
 CREATE FUNCTION relationIdOf(integer, integer, integer) RETURNS integer AS $$
   SELECT id FROM Relations WHERE relationType = $1 AND object = $2 AND subject = $3;
 $$ LANGUAGE SQL;
-
-Create the world!
 
 CREATE TABLE Entities(id INT PRIMARY KEY);
 
@@ -577,7 +425,7 @@ CREATE OR REPLACE FUNCTION createTheFuture(integer) RETURNS bigint AS $$
         PossiblePathResults.pathId, PossiblePathResults.newPathId
       FROM (
         SELECT 
-            lastPathId() as pathId, 
+            lastPathId(PossibleResults.person) as pathId, 
             (uuid_generate_v4()) as newPathId,
             PossibleResults.type, PossibleResults.value,
             PossibleResults.person, $1
@@ -592,6 +440,7 @@ CREATE OR REPLACE FUNCTION createTheFuture(integer) RETURNS bigint AS $$
               JOIN ActionResults results ON results.action = a.id
               JOIN FutureWorldState world ON world.relation = rr.id 
                                           AND world.timestep = $1 
+                                          AND rr.object = p.id
               WHERE (
                 -- action, actor, subject, timestep, pathId
                 SELECT dispatchActionRequirements(a.id, p.id, rr.subject, $1, lastPathId()) = TRUE
