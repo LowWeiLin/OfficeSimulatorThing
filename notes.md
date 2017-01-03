@@ -420,12 +420,10 @@ CREATE OR REPLACE FUNCTION createTheFuture(integer) RETURNS bigint AS $$
           $1,
           PossiblePathResults.pathId
         )), 
-
-
         PossiblePathResults.pathId, PossiblePathResults.newPathId
       FROM (
         SELECT 
-            lastPathId(PossibleResults.person) as pathId, 
+            PossibleResults.pathId, 
             (uuid_generate_v4()) as newPathId,
             PossibleResults.type, PossibleResults.value,
             PossibleResults.person, $1
@@ -527,24 +525,24 @@ CREATE OR REPLACE FUNCTION lastPathId() RETURNS uuid AS $$
     
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION closeTimestep() RETURNS void AS $$
+-- CREATE OR REPLACE FUNCTION closeTimestep() RETURNS void AS $$
   
 
-    INSERT INTO Paths (
-      SELECT pathId, pathId2 FROM 
-        (Select row_number() OVER (ORDER BY c.id DESC), c.id  AS pathId FROM (SELECT id FROM Paths
-        EXCEPT
-        SELECT prev FROM Paths) c) c 
-      JOIN 
-        (SELECT row_number() OVER (ORDER BY c2.id DESC ), c2.id AS pathId2 FROM (SELECT id FROM Paths
-        EXCEPT
-        SELECT prev FROM Paths) c2 OFFSET 1) c2 
-      ON c.row_number = c2.row_number - 1
+--     INSERT INTO Paths (
+--       SELECT pathId, pathId2 FROM 
+--         (Select row_number() OVER (ORDER BY c.id DESC), c.id  AS pathId FROM (SELECT id FROM Paths
+--         EXCEPT
+--         SELECT prev FROM Paths) c) c 
+--       JOIN 
+--         (SELECT row_number() OVER (ORDER BY c2.id DESC ), c2.id AS pathId2 FROM (SELECT id FROM Paths
+--         EXCEPT
+--         SELECT prev FROM Paths) c2 OFFSET 1) c2 
+--       ON c.row_number = c2.row_number - 1
       
         
-    ) ON CONFLICT(id) DO UPDATE SET prev = excluded.prev;
+--     ) ON CONFLICT(id) DO UPDATE SET prev = excluded.prev;
 
-$$ LANGUAGE SQL;
+-- $$ LANGUAGE SQL;
 
 -- init Future at step 0
 SELECT initFutureWithCurrent(uuid_generate_v4(), world.relation) 
