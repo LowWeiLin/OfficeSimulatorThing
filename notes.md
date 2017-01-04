@@ -213,13 +213,23 @@ CREATE OR REPLACE FUNCTION positionOfActorAtTimestep(integer, integer, uuid) RET
       JOIN TraceBackwards tb 
         ON tb.prev = p.id
   )
-  SELECT r.subject FROM TraceBackwards tb 
-    JOIN FutureWorldState world ON tb.prev = world.pathId 
-    JOIN Relations r ON world.relation = r.id 
-    JOIN RelationTypes rt ON rt.id = r.relationType AND rt.name = 'At' 
-    WHERE tb.start = $3 AND world.timestep <= $2 AND r.object = $1
-    ORDER BY tb.length
-    LIMIT 1;
+  SELECT position FROM (
+    SELECT r.subject AS position, tb.length FROM TraceBackwards tb 
+      JOIN FutureWorldState world ON tb.prev = world.pathId 
+      JOIN Relations r ON world.relation = r.id 
+      JOIN RelationTypes rt ON rt.id = r.relationType AND rt.name = 'At' 
+      WHERE tb.start = $3 AND world.timestep <= $2 AND r.object = $1
+
+    UNION
+    SELECT r.object AS position, tb.length FROM TraceBackwards tb 
+      JOIN FutureWorldState world ON tb.prev = world.pathId 
+      JOIN Relations r ON world.relation = r.id 
+      JOIN RelationTypes rt ON rt.id = r.relationType AND rt.name = 'Has' 
+      WHERE tb.start = $3 AND world.timestep <= $2 AND r.subject = $1
+    
+  ) PositionsAtAndHas
+  ORDER BY length
+  LIMIT 1;
   
 $$ LANGUAGE SQL;
 
@@ -286,8 +296,12 @@ INSERT INTO ActionRequirements VALUES(0, 1, 0, 6);
 
 
 -- actor1, actor2, timestep, pathId
-CREATE FUNCTION sameLocation(integer, integer, integer, uuid) RETURNS BOOLEAN AS $$
-   SELECT (SELECT positionOfActorAtTimestep($1, $3, $4)) = (SELECT positionOfActorAtTimestep($2, $3, $4));
+CREATE OR REPLACE FUNCTION sameLocation(integer, integer, integer, uuid) RETURNS BOOLEAN AS $$
+   SELECT CASE 
+    WHEN ((SELECT positionOfActorAtTimestep($1, $3, $4)) = (SELECT positionOfActorAtTimestep($2, $3, $4)) IS TRUE)
+      THEN TRUE
+    ELSE FALSE
+    END;
   
 $$ LANGUAGE SQL;
 
@@ -316,19 +330,28 @@ CREATE OR REPLACE FUNCTION dispatchActionRequirements(integer, integer, integer,
     WHEN $1 = 2 THEN 
       -- count relation types
       (SELECT 
-        (SELECT (r.relationtype, COUNT(req.relation)) FROM ActionRequirements req 
-          JOIN Relations r ON req.relation = r.id 
-          WHERE req.action=$2
-          GROUP BY r.relationtype
-        )
-        <= 
-        (SELECT (r2.relationtype, COUNT(world.relation)) FROM
-             FutureWorldState world JOIN Relations r2 
+        (
+        SELECT 
+          COUNT(
+            (SELECT COUNT(req.relation) FROM ActionRequirements req 
+               JOIN Relations r ON req.relation = r.id 
+               WHERE req.action=$2) 
+            <= 
+            (SELECT COUNT(world.relation) FROM
+              FutureWorldState world JOIN Relations r2 
               ON world.relation = r2.id
-              WHERE world.timestep = $5
-            
-          GROUP BY r2.relationtype
-        )
+              WHERE world.timestep = $5)
+          ) 
+          =
+          (SELECT COUNT(req.relation) FROM ActionRequirements req 
+               JOIN Relations r ON req.relation = r.id 
+               WHERE req.action=$2))
+        FROM 
+          (SELECT r.relationtype FROM ActionRequirements req 
+            JOIN Relations r ON req.relation = r.id 
+            WHERE req.action=$2) RequiredTypes
+        
+        
       )
       
     END;
@@ -440,7 +463,6 @@ CREATE OR REPLACE FUNCTION seeTheFuture(integer) RETURNS bigint AS $$
               JOIN FutureWorldState previousWorldState 
                 ON previousWorldState.relation = rr.id 
                 AND previousWorldState.timestep <= $1 
-                AND rr.object = p.id
               JOIN FutureWorldState currentStep 
                 ON currentStep.timestep = $1 
                 AND -- currentStep can be reached from previousWorldState
@@ -471,6 +493,9 @@ CREATE OR REPLACE FUNCTION seeTheFuture(integer) RETURNS bigint AS $$
                     ) = TRUE
 
                 )
+              JOIN Relations currentRelation 
+                ON currentRelation.id = currentStep.relation
+                AND currentRelation.object = p.id
               WHERE (
                   -- action, actor, subject, timestep, pathId
                   SELECT dispatchActionRequirements(a.id, p.id, rr.subject, $1, currentStep.pathId) = TRUE
@@ -550,29 +575,96 @@ DELETE FROM Relations WHERE subject NOT IN (SELECT id FROM Positions UNION SELEC
 -- view positions
 SELECT * FROM CurrentWOrldState JOIN Relations r ON CurrentWorldState.relation = r.id 
                                 LEFT JOIN Positions ON r.subject = Positions.id;
+SELECT * FROM FutureWOrldState JOIN Relations r ON FutureWOrldState.relation = r.id 
+                                LEFT JOIN Positions ON r.subject = Positions.id
+                                WHERE timestep = 2;
 
-
-
--- CREATE OR REPLACE FUNCTION closeTimestep() RETURNS void AS $$
-  
-
---     INSERT INTO Paths (
---       SELECT pathId, pathId2 FROM 
---         (Select row_number() OVER (ORDER BY c.id DESC), c.id  AS pathId FROM (SELECT id FROM Paths
---         EXCEPT
---         SELECT prev FROM Paths) c) c 
---       JOIN 
---         (SELECT row_number() OVER (ORDER BY c2.id DESC ), c2.id AS pathId2 FROM (SELECT id FROM Paths
---         EXCEPT
---         SELECT prev FROM Paths) c2 OFFSET 1) c2 
---       ON c.row_number = c2.row_number - 1
-      
-        
---     ) ON CONFLICT(id) DO UPDATE SET prev = excluded.prev;
-
--- $$ LANGUAGE SQL;
 
 -- init Future at step 0
 SELECT initFutureWithCurrent(uuid_generate_v4(), world.relation) 
   FROM CurrentWorldState world
 
+
+
+ SELECT COUNT(dispatchPathUpdate(AppliedResults.newPathId, AppliedResults.pathId)) FROM (
+      SELECT 
+        COUNT(dispatchActionResults(
+          PossiblePathResults.newPathId, 
+          PossiblePathResults.type, 
+          PossiblePathResults.value, 
+          PossiblePathResults.person, 
+          0,
+          PossiblePathResults.pathId
+        )), 
+        PossiblePathResults.pathId, PossiblePathResults.newPathId
+      FROM (
+        SELECT 
+            PossibleResults.pathId, 
+            (uuid_generate_v4()) as newPathId,
+            PossibleResults.type, PossibleResults.value,
+            PossibleResults.person, 0
+          FROM (
+            SELECT results.value, results.type, p.id AS person, currentStep.pathId,rr.subject
+              FROM Actions a
+              CROSS JOIN Persons p
+              CROSS JOIN Relations rr 
+              JOIN ActionRequirements ar ON ar.action = a.id
+              JOIN ActionResults results ON results.action = a.id 
+              JOIN FutureWorldState previousWorldState 
+                ON previousWorldState.relation = rr.id 
+                AND previousWorldState.timestep <= 0 
+              JOIN FutureWorldState currentStep 
+                ON currentStep.timestep = 0 
+                AND -- currentStep can be reached from previousWorldState
+                    -- without an intermediate step overiding the previousWorldState's relation
+                    --  i.e. Relation (relationType, rr.object, _) does not occur along the path
+                (
+                    WITH RECURSIVE TraceBackwards AS (
+                      SELECT Paths.id AS start, Paths.prev AS prev, 1 AS length
+                        FROM Paths
+                        WHERE id = currentStep.pathId
+                      UNION
+                      SELECT Paths.id AS start, Paths.id AS prev, 0 AS length
+                        FROM Paths
+                        WHERE id = currentStep.pathId
+                      UNION
+                      SELECT tb.start AS start, p.prev AS prev, tb.length + 1 AS length
+                        FROM Paths p
+                        JOIN TraceBackwards tb 
+                          ON tb.prev = p.id
+                    )
+                    SELECT previousWorldState.pathId IN (
+                      SELECT world.pathId FROM TraceBackwards tb 
+                        JOIN FutureWorldState world ON tb.prev = world.pathId 
+                        JOIN Relations r ON world.relation = r.id 
+                        WHERE tb.start = currentStep.pathId AND r.object = rr.object AND r.relationType = rr.relationType
+                        ORDER BY tb.length
+                        LIMIT 1
+                    ) = TRUE
+
+                )
+              JOIN Relations currentRelation 
+                ON currentRelation.id = currentStep.relation
+                AND currentRelation.object = p.id
+              WHERE a.id != 1 AND (
+                  -- action, actor, subject, timestep, pathId
+                  SELECT dispatchActionRequirements(a.id, p.id, rr.subject, 0, currentStep.pathId) = TRUE
+              )
+          ) PossibleResults
+      ) PossiblePathResults GROUP BY pathId, newPathId
+    ) AppliedResults;
+(SELECT 
+        (SELECT (r.relationtype, COUNT(req.relation)) FROM ActionRequirements req 
+          JOIN Relations r ON req.relation = r.id 
+          WHERE req.action=2
+          GROUP BY r.relationtype
+        )
+        <= 
+        (SELECT (r2.relationtype, COUNT(world.relation)) FROM
+             FutureWorldState world JOIN Relations r2 
+              ON world.relation = r2.id
+              WHERE world.timestep = 0
+            
+          GROUP BY r2.relationtype
+        )
+      )
