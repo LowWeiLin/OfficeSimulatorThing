@@ -561,12 +561,6 @@ INSERT INTO ActionRequirements VALUES (3, 4, 2, 1);
 INSERT INTO ActionRequirements VALUES (4, 5, 2, 1);
 
 
-SELECT (
-  SELECT id FROM Relations
-)
-
-
-
 
 -- clears orphaned relations.... -> schema needs improvement
 DELETE FROM Relations WHERE subject NOT IN (SELECT id FROM Positions UNION SELECT id FROM Items UNION SELECT id FROM Persons UNION SELECT id FROM Commodities);
