@@ -1,81 +1,80 @@
 package com.officelife.actions;
 
-import com.officelife.actors.Actor;
-import com.officelife.common.Pair;
-import com.officelife.World;
+import java.util.Optional;
+
+import com.officelife.Coords;
+import com.officelife.goals.State;
 
 /**
  * Movement action. Mutates the location of an actor in 4 possible directions.
  */
-public class Move implements Action {
-    public enum Direction {
-        UP, DOWN, LEFT, RIGHT;
+public class Move extends Action {
 
-        public static final Direction directionToMove(Pair<Integer, Integer> from, Pair<Integer, Integer> to) {
-            if (to.first > from.first) {
-                return Move.Direction.RIGHT;
-            } else if (to.first < from.first) {
-                return Move.Direction.LEFT;
-            } else if (to.second < from.second) {
-                return Move.Direction.DOWN;
-            } else if (to.second > from.second) {
-                return Move.Direction.UP;
-            } else {
-                throw new RuntimeException("Invalid direction logic from " + from + " to " + to);
-            }
-        }
+  public enum Direction {
+    DOWN, UP, LEFT, RIGHT;
 
-    }
-    private Actor actor;
-
-    private Direction direction;
-
-    public Move() {
-
+    public static Direction directionToMove(Coords from, Coords to) {
+      if (to.x > from.x) {
+        return Move.Direction.RIGHT;
+      } else if (to.x < from.x) {
+        return Move.Direction.LEFT;
+      } else if (to.y < from.y) {
+        return Move.Direction.UP;
+      } else if (to.y > from.y) {
+        return Move.Direction.DOWN;
+      } else {
+        throw new RuntimeException("Invalid direction logic from " + from + " to " + to);
+      }
     }
 
-    public Move(Actor actor, Direction direction) {
-        this.actor = actor;
-        this.direction = direction;
+  }
+
+    private final Direction direction;
+
+
+  public Move(State state, Direction direction) {
+    super(state);
+    this.direction = direction;
+  }
+
+  @Override
+  public boolean accept() {
+    Optional<Coords> old = state.world.actorLocation(state.person.id());
+    if (!old.isPresent()) {
+      System.err.println(String.format("could not update actor %s location", state.person.id()));
+    }
+    Coords updated = updatedLocation(old.get());
+
+    if (state.world.actorLocations.containsKey(updated)) {
+      // if banging against something
+      // do not change location
+      return false;
     }
 
-    @Override
-    public void accept(World world) {
-        try {
-            Pair<Integer, Integer> old = world.actorLocation(actor.id());
-            Pair<Integer, Integer> updated = updatedLocation(old);
+    // directly update the location
+    state.world.actorLocations.remove(old.get());
+    state.world.actorLocations.put(updated, state.person.id());
 
-            if (world.locationActor.containsKey(updated)) {
-                // if banging against something
-                // do not change location
-                return;
-            }
-            world.locationActor.remove(old);
-            world.locationActor.put(updated, actor.id());
+    return true;
+  }
 
-            System.err.println("Moved");
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to update", e);
-        }
-
+  private Coords updatedLocation(Coords location) {
+    switch (direction) {
+      case DOWN:
+        return new Coords(location.x, location.y + 1);
+      case UP:
+        return new Coords(location.x, location.y - 1);
+      case LEFT:
+        return new Coords(location.x - 1, location.y);
+      case RIGHT:
+        return new Coords(location.x + 1, location.y);
+      default:
+        throw new RuntimeException("bad direction " + location);
     }
+  }
 
-    private Pair<Integer, Integer> updatedLocation(Pair<Integer, Integer> location) throws Exception {
-        switch (direction) {
-            case UP:
-                return new Pair<>(location.first, location.second + 1);
-
-            case DOWN:
-                return new Pair<>(location.first, location.second - 1);
-
-            case LEFT:
-                return new Pair<>(location.first - 1, location.second);
-
-            case RIGHT:
-                return new Pair<>(location.first + 1, location.second);
-
-            default:
-                throw new Exception("bad direction");
-        }
-    }
+  @Override
+  public String toString() {
+    return String.format("Move %s", direction);
+  }
 }

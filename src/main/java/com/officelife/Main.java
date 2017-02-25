@@ -1,14 +1,17 @@
 package com.officelife;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.officelife.actions.Action;
 import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
-import com.officelife.common.Pair;
-import com.officelife.items.CoffeeMachine;
+import com.officelife.items.Coffee;
 import com.officelife.items.Item;
-import com.officelife.locations.Cubicle;
 import com.officelife.ui.Renderer;
 
 public class Main {
@@ -17,9 +20,25 @@ public class Main {
 
     private void update(World state, Renderer renderer) {
         renderWorld(state, renderer);
-        for (Actor actor : state.actors.values()) {
-            Action action = actor.act(state);
-            action.accept(state);
+
+        Map<String, Boolean> actionResults = new HashMap<>();
+
+        List<Actor> actors = new ArrayList<>(state.actors.values());
+
+        // Ensure that actions do not rely on the ordering of actors
+        Collections.shuffle(actors);
+
+        for (Actor actor : actors) {
+            Action action;
+            if (actionResults.containsKey(actor.id())) {
+                action = actor.act(state, actionResults.get(actor.id()));
+            } else {
+                action = actor.act(state);
+            }
+
+            System.out.printf("%s: %s\n", actor.id(), action);
+
+            actionResults.put(actor.id(), action.accept());
         }
     }
 
@@ -33,18 +52,18 @@ public class Main {
 
     private static World initWorld() {
         World state = new World();
-        Actor coffeeDrinker = new Person("Food guy");
+        String id = "Food guy";
+        Actor coffeeDrinker = new Person(id);
 
-        Pair<Integer, Integer> origin = new Pair<>(0, 0);
-        state.locationActor.put(origin, coffeeDrinker.id());
+        Coords origin = new Coords(0, 0);
+      state.actorLocations.put(origin, id);
         state.actors.put(coffeeDrinker.id(), coffeeDrinker);
 
-        Item coffeeMachine = new CoffeeMachine();
-        Pair<Integer, Integer> coffeeLocation = new Pair<>(origin.first + 1, origin.second - 1);
+        Item coffee = new Coffee();
+        Coords coffeeLocation = new Coords(origin.x + 1, origin.y - 1);
 
-        state.locationItems.put(coffeeLocation, coffeeMachine.id());
-        state.items.put(coffeeMachine.id(), coffeeMachine);
-        state.addToLocation(new Pair<>(origin.first - 1, origin.second + 1), new Cubicle());
+        state.itemLocations.put(coffeeLocation, coffee.id());
+        state.items.put(coffee.id(), coffee);
         return state;
     }
 
@@ -53,7 +72,7 @@ public class Main {
 
         // state is closed over
         World state = initWorld();
-        new Timer(renderer.getGUI(), () -> update(state, renderer), 5);
+        new Timer(renderer.getGUI(), () -> update(state, renderer), 6);
 
         renderer.getGUI().start();
     }
