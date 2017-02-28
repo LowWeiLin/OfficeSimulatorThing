@@ -30,10 +30,17 @@ public class TakeItem<T> extends Action {
       throw new RuntimeException("person " + state.person.id() + " is nowhere");
     }
 
-    // TODO check that the item is of the right type
     Item item = state.world.items.get(state.world.itemLocations.get(currentCoords.get()));
-    state.world.itemLocations.remove(currentCoords.get());
-    // TODO fail if the item is no longer found
+    if (!itemClass.isInstance(item)) {
+      throw new RuntimeException("item is not of class " + itemClass);
+    }
+
+    Coords coords = currentCoords.get();
+
+    if (!state.world.itemLocations.containsKey(coords) || !state.world.itemLocations.get(coords).equals(item.id())) {
+      throw new RuntimeException("item is no longer found at coords " + coords);
+    }
+    state.world.itemLocations.remove(coords);
     state.person.addItem(item);
 
     return true;
