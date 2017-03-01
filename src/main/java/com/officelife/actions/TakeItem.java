@@ -10,8 +10,7 @@ import com.officelife.items.Item;
  * Action for picking up an item
  */
 public class TakeItem<T> extends Action {
-
-  // TODO use this to check that the item is of the right type
+  
   private final Class<T> itemClass;
 
   public TakeItem(State state, Class<T> itemClass) {
