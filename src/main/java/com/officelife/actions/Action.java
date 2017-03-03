@@ -1,12 +1,18 @@
 package com.officelife.actions;
 
-import com.officelife.World;
+import com.officelife.goals.State;
 
-import java.util.function.Consumer;
+public abstract class Action {
 
-/**
- * In the current architecture, {@code #accept} should mutate the World directly.
- */
-public interface Action {
-    public void accept(World world);
+    public final State state;
+
+    public Action(State state) {
+        this.state = state;
+    }
+
+    /**
+     * In the current architecture, this should mutate the world directly.
+     * Returns true for success, false for failure.
+     */
+    public abstract boolean accept();
 }
