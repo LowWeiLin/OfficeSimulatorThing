@@ -26,6 +26,8 @@ public class Person implements Actor {
 
   public final List<Item> inventory = new ArrayList<>();
 
+  // TODO relationships
+
   @Override
   public String id() {
     return id;

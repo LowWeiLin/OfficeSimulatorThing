@@ -27,6 +27,7 @@ public class Goals {
   private void beginFromRootGoal(State state) {
 //    System.out.println("RESET");
     goals.clear();
+    // TODO root goal is survive?
     if (state.person.physiology > state.person.belonging) {
       goals.push(new FillVoidInSoul());
     } else {
@@ -72,7 +73,7 @@ public class Goals {
         return effect.getTerminalAction().action;
       } else {
         List<Goal> alternatives = effect.getAlternatives().alternatives;
-
+        
         // TODO don't do this when debugging
 //      Collections.shuffle(alternatives);
 

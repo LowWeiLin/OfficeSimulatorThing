@@ -15,6 +15,7 @@ import com.officelife.goals.effects.Effect;
 import com.officelife.goals.effects.TerminalAction;
 import com.officelife.items.Coffee;
 
+// AndGoal
 public class GetCoffee extends Goal {
 
   private enum Status {

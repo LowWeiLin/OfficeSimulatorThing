@@ -9,6 +9,7 @@ import com.officelife.goals.State;
 import com.officelife.goals.effects.Alternatives;
 import com.officelife.goals.effects.Effect;
 
+// OrGoal
 public class FillVoidInSoul extends Goal {
 
   private Effect e = null;

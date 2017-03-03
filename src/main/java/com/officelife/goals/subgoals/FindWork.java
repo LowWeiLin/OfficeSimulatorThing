@@ -7,6 +7,7 @@ import com.officelife.goals.State;
 import com.officelife.goals.effects.Alternatives;
 import com.officelife.goals.effects.Effect;
 
+// OrGoal
 public class FindWork extends Goal {
 
   // Alternatives are stateful, so we need to return the same object every time,

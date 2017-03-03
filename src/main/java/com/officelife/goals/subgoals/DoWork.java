@@ -6,6 +6,7 @@ import com.officelife.goals.State;
 import com.officelife.goals.effects.Effect;
 import com.officelife.goals.effects.TerminalAction;
 
+// AndGoal
 public class DoWork extends Goal {
 
   @Override
