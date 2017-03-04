@@ -1,8 +1,8 @@
 package com.officelife.goals.subgoals;
 
-import static com.officelife.Utility.list;
+import static com.officelife.Utility.deque;
 
-import java.util.List;
+import java.util.Deque;
 
 import com.officelife.goals.Goal;
 import com.officelife.goals.State;
@@ -21,7 +21,7 @@ public class FillVoidInSoul extends Goal {
 
     // TODO find some way to avoid this
     if (e == null) {
-      List<Goal> result = list();
+      Deque<Goal> result = deque();
       if (state.person.energy > 10) {
         result.add(new FindWork());
       }

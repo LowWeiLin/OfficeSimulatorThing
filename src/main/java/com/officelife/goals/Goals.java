@@ -2,7 +2,6 @@ package com.officelife.goals;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 
 import com.officelife.actions.Action;
 import com.officelife.actions.Languish;
@@ -72,16 +71,12 @@ public class Goals {
       if (effect.isTerminal()) {
         return effect.getTerminalAction().action;
       } else {
-        List<Goal> alternatives = effect.getAlternatives().alternatives;
+        Deque<Goal> alternatives = effect.getAlternatives().alternatives;
         
         // TODO don't do this when debugging
 //      Collections.shuffle(alternatives);
 
-        // TODO use better data structure
-//        Goal next = alternatives.get(alternatives.size() - 1);
-//        alternatives.remove(alternatives.size() - 1);
-        Goal next = alternatives.get(0);
-        alternatives.remove(0);
+        Goal next = alternatives.pop();
 
         goals.push(next);
       }

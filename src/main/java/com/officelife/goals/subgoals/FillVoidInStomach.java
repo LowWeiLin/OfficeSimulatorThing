@@ -1,6 +1,6 @@
 package com.officelife.goals.subgoals;
 
-import java.util.ArrayList;
+import static com.officelife.Utility.deque;
 
 import com.officelife.goals.Goal;
 import com.officelife.goals.State;
@@ -12,7 +12,7 @@ public class FillVoidInStomach extends Goal {
   @Override
   public Effect effect(State state) {
     // This will always fail
-    return new Alternatives(new ArrayList<>());
+    return new Alternatives(deque());
   }
 }
 
