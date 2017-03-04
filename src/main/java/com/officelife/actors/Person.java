@@ -1,7 +1,9 @@
 package com.officelife.actors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.officelife.World;
 import com.officelife.actions.Action;
@@ -26,7 +28,7 @@ public class Person implements Actor {
 
   public final List<Item> inventory = new ArrayList<>();
 
-  // TODO relationships
+  public final Map<String, Integer> relationships = new HashMap<>();
 
   @Override
   public String id() {
