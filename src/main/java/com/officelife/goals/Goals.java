@@ -46,14 +46,13 @@ public class Goals {
       Goal current = goals.peek();
 //      System.out.println("> " + current);
 
-      if (current.failed()) {
-//        System.out.println(current + " FAILED");
-        goals.pop();
-        continue;
-      } else if (current.succeeded()) {
-//        System.out.println("SUCCEEDED");
-        beginFromRootGoal(state);
-        continue;
+      switch (current.outcome()) {
+        case FAILURE:
+          goals.pop();
+          continue;
+        case SUCCESS:
+          beginFromRootGoal(state);
+          continue;
       }
 
       // being here means we continue with the current goal

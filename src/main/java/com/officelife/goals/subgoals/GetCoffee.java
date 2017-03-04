@@ -9,6 +9,7 @@ import com.officelife.actions.ConsumeItem;
 import com.officelife.actions.Move;
 import com.officelife.actions.TakeItem;
 import com.officelife.goals.Goal;
+import com.officelife.goals.Outcome;
 import com.officelife.goals.State;
 import com.officelife.actions.Languish;
 import com.officelife.goals.effects.Effect;
@@ -27,13 +28,16 @@ public class GetCoffee extends Goal {
   private boolean failed = false;
 
   @Override
-  public boolean hasFailed() {
-    return failed;
-  }
+  public Outcome outcome() {
+    if (failed) {
+      return Outcome.FAILURE;
+    }
 
-  @Override
-  public boolean hasSucceeded() {
-    return status == Status.CONSUMED;
+    if (status == Status.CONSUMED) {
+      return Outcome.SUCCESS;
+    }
+
+    return Outcome.CONTINUE;
   }
 
   @Override
