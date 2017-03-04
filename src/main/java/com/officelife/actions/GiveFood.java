@@ -2,21 +2,21 @@ package com.officelife.actions;
 
 import com.officelife.Coords;
 import com.officelife.actors.Actor;
-import com.officelife.actors.Person;
 import com.officelife.goals.State;
 import com.officelife.items.Coffee;
 import com.officelife.items.Item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-public class Talk<T> extends Action {
+/**
+ *
+ * TODO make generic GiveItem
+ */
+public class GiveFood<T> extends Action {
 
   private final Actor target;
 
-  public Talk(State state, Actor target) {
+  public GiveFood(State state, Actor target) {
     super(state);
     this.target = target;
   }
@@ -31,22 +31,19 @@ public class Talk<T> extends Action {
       return false;
     }
 
-    // take effect
+    if (state.person.inventory.stream().noneMatch(item -> item instanceof Coffee)) {
+      return false;
+    }
 
-    Person person = state.person;
-    incrementRelationshipValue(person, (Person) target);
-    incrementRelationshipValue((Person) target, person);
+    // effects come here
+    Optional<Item> itemToRemove = state.person.inventory.stream().filter(item -> item instanceof Coffee).findFirst();
+
+    Item item = itemToRemove.orElseThrow(() -> new RuntimeException("Unable to get item from inventory"));
+    state.person.inventory.remove(item);
+
+    target.addItem(item);
 
     return true;
-  }
-
-  private void incrementRelationshipValue(Person person, Person target) {
-    String targetId = target.id();
-    if (!person.relationships.containsKey(targetId)) {
-      person.relationships.put(targetId, 0);
-    }
-    int currentRelationshipValue = person.relationships.get(targetId);
-    person.relationships.put(targetId, currentRelationshipValue + 5);
   }
 
   private boolean isBeside(Coords first, Coords second) {
