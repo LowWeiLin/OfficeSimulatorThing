@@ -26,10 +26,9 @@ public class Move extends Action {
         throw new RuntimeException("Invalid direction logic from " + from + " to " + to);
       }
     }
-
   }
 
-    private final Direction direction;
+  private final Direction direction;
 
 
   public Move(State state, Direction direction) {

@@ -1,6 +1,7 @@
 package com.officelife.actions;
 
 import com.officelife.Coords;
+import com.officelife.actions.prerequisite.LocationBeside;
 import com.officelife.actors.Actor;
 import com.officelife.goals.State;
 import com.officelife.items.Coffee;
@@ -23,11 +24,8 @@ public class GiveFood<T> extends Action {
 
   @Override
   public boolean accept() {
-    Coords targetLocation = state.world.actorLocation(target.id())
-            .orElseThrow(() -> new RuntimeException("Target location is not found"));
-    Coords actorLocation = state.world.actorLocation(state.person.id())
-            .orElseThrow(() -> new RuntimeException("Actor location is not found"));
-    if (!isBeside(targetLocation, actorLocation))  {
+    LocationBeside prereq = new LocationBeside(target, (Actor) state.person, state.world);
+    if (!prereq.satisfied())  {
       return false;
     }
 
@@ -36,7 +34,9 @@ public class GiveFood<T> extends Action {
     }
 
     // effects come here
-    Optional<Item> itemToRemove = state.person.inventory.stream().filter(item -> item instanceof Coffee).findFirst();
+    Optional<Item> itemToRemove = state.person.inventory.stream()
+            .filter(item -> item instanceof Coffee)
+            .findFirst();
 
     Item item = itemToRemove.orElseThrow(() -> new RuntimeException("Unable to get item from inventory"));
     state.person.inventory.remove(item);
