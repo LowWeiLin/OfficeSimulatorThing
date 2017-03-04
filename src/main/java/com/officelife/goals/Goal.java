@@ -4,8 +4,10 @@ import com.officelife.goals.effects.Effect;
 
 /**
  * Goals form an n-ary tree where the nodes are disjunctions (i.e. Prolog choice points).
- * Goals are traversed depth-first, left-to-right. Side effects are fine within goals, but.
- * avoid effects on the outside world, as you can never tell how a goal may backtrack.
+ * They are traversed depth-first, left-to-right.
+ *
+ * When implementing goals, side effects within goals are fine, but avoid effects on the
+ * outside world, as you can never tell how a goal may backtrack.
  */
 public abstract class Goal {
 
