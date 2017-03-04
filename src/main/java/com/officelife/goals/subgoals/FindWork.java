@@ -1,6 +1,6 @@
 package com.officelife.goals.subgoals;
 
-import static com.officelife.Utility.list;
+import static com.officelife.Utility.deque;
 
 import com.officelife.goals.Goal;
 import com.officelife.goals.State;
@@ -14,7 +14,7 @@ public class FindWork extends Goal {
   // which is why we store and initialise it here. We only need this for TerminalActions
   // if they are stateful as well, but they usually don't have to be because goals can be
   // stateful. TODO is there a better alternative?
-  private final Effect e = new Alternatives(list(new DoWork(), new GetCoffee()));
+  private final Effect e = new Alternatives(deque(new DoWork(), new GetCoffee()));
 
   @Override
   public Effect effect(State state) {

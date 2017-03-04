@@ -2,6 +2,7 @@ package com.officelife.goals.subgoals;
 
 import com.officelife.actions.Action;
 import com.officelife.goals.Goal;
+import com.officelife.goals.Outcome;
 import com.officelife.goals.State;
 import com.officelife.goals.effects.Effect;
 import com.officelife.goals.effects.TerminalAction;
@@ -10,8 +11,8 @@ import com.officelife.goals.effects.TerminalAction;
 public class DoWork extends Goal {
 
   @Override
-  public boolean hasFailed() {
-    return true;
+  public Outcome outcome() {
+    return Outcome.FAILURE;
   }
 
   @Override

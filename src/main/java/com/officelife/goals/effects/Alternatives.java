@@ -1,20 +1,20 @@
 package com.officelife.goals.effects;
 
-import static com.officelife.Utility.list;
+import static com.officelife.Utility.deque;
 
-import java.util.List;
+import java.util.Deque;
 
 import com.officelife.goals.Goal;
 
 public class Alternatives implements Effect {
 
-  public final List<Goal> alternatives;
+  public final Deque<Goal> alternatives;
 
   public Alternatives(Goal... alternatives) {
-    this(list(alternatives));
+    this(deque(alternatives));
   }
 
-  public Alternatives(List<Goal> alternatives) {
+  public Alternatives(Deque<Goal> alternatives) {
     this.alternatives = alternatives;
   }
 
