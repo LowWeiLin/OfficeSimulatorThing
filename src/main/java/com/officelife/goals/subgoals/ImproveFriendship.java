@@ -76,14 +76,11 @@ public class ImproveFriendship extends Goal {
         }
         Person targetPerson = nearbyPersons.get(ThreadLocalRandom.current().nextInt(0, nearbyPersons.size()));
 
-        Optional<Coords> currentCoords = state.world.actorLocation(state.person.id());
-
-        if (!currentCoords.isPresent()) {
-          throw new RuntimeException("person " + state.person.id() + " is nowhere");
-        }
+        Coords currentCoords = state.world.actorLocation(state.person.id())
+                .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));
 
         Optional<List<Coords>> path = state.world.actorLocation(targetPerson.id())
-                .map(coords -> state.world.findPath(currentCoords.get(), new World.EndCoords(coords)));
+                .map(coords -> state.world.findPath(currentCoords, new World.EndCoords(coords)));
 
         if (!path.isPresent()) {
           failed = true;
@@ -94,7 +91,7 @@ public class ImproveFriendship extends Goal {
         targetId = targetPerson.id();
 
         return new TerminalAction(
-          new Move(state, Move.Direction.directionToMove(currentCoords.get(), path.get().get(0)))
+          new Move(state, Move.Direction.directionToMove(currentCoords, path.get().get(0)))
         );
 
       case FINDING:
