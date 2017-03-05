@@ -45,6 +45,6 @@ public class Attack extends Action {
 
   @Override
   public String toString() {
-    return String.format("Talk to Person %s", target.id());
+    return String.format("Attack Target %s", target.id());
   }
 }
