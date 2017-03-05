@@ -47,7 +47,7 @@ public class World {
 
   public void removeActor(Actor actor) {
     this.actors.remove(actor.id());
-    this.actorLocations.values().remove(actor);
+    this.actorLocations.values().remove(actor.id());
   }
 
   public static class EndCoords implements Predicate<Coords> {
