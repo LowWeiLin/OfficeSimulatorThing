@@ -95,9 +95,11 @@ public class PunchPeopleForFood extends Goal {
                 Actor target = state.world.actors.get(this.targetId);
 
                 Optional<List<Coords>> pathToTarget = state.world.actorLocation(target.id())
-                        .map(coords ->
-                                state.world.findPath(state.world.actorLocation(state.person.id()).get(), new World.EndCoords(coords))
-                        );
+                    .map(coords ->
+                        state.world.findPath(
+                            state.world.actorLocation(state.person.id()).get(),
+                            new World.EndCoords(coords))
+                    );
 
                 if (!pathToTarget.isPresent()) {
                     failed = true;
@@ -111,14 +113,13 @@ public class PunchPeopleForFood extends Goal {
                 }
 
                 return new TerminalAction(
-                        new Move(
-                                state,
-                                Move.Direction.directionToMove(
-                                        state.world.actorLocation(state.person.id()).get(), pathToTarget.get().get(0)
-                                )
+                    new Move(
+                        state,
+                        Move.Direction.directionToMove(
+                            state.world.actorLocation(state.person.id()).get(), pathToTarget.get().get(0)
                         )
+                    )
                 );
-
 
             default:
                 return new TerminalAction(new Languish(state));
@@ -139,9 +140,10 @@ public class PunchPeopleForFood extends Goal {
         if (nearby.isEmpty()) {
             return Optional.empty();
         }
+        // select person with the lowest relationship score
         return nearby.stream()
                 .filter(actor -> !actor.id().equals(state.person.id()))
-                .max((actor1, actor2) -> {
+                .min((actor1, actor2) -> {
                     int relationship1 = state.person.relationships.containsKey(actor1.id())
                             ? state.person.relationships.get(actor1.id())
                             : 0;

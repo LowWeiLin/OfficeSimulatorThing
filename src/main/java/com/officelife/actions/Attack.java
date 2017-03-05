@@ -27,6 +27,8 @@ public class Attack extends Action {
     decreaseRelationshipValue(state.person, (Person) target);
 
     System.out.println("Attack completed");
+    System.out.printf("%s has %s energy remaining", target.id(), ((Person) target).energy);
+    System.out.println();
     return true;
   }
 
@@ -41,7 +43,7 @@ public class Attack extends Action {
     }
     int currentRelationshipValue = person.relationships.get(targetId);
     person.relationships.put(targetId, currentRelationshipValue - 15);
-    System.out.println("decrease relation!");
+
   }
 
   @Override

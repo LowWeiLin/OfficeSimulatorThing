@@ -45,6 +45,11 @@ public class World {
       .findFirst();
   }
 
+  public void removeActor(Actor actor) {
+    this.actors.remove(actor.id());
+    this.actorLocations.values().remove(actor);
+  }
+
   public static class EndCoords implements Predicate<Coords> {
 
     private final Coords destination;

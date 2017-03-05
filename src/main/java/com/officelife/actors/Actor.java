@@ -16,4 +16,6 @@ public interface Actor extends Renderable {
     Action act(World state, boolean succeeded);
 
     void addItem(Item item);
+
+    boolean isDead();
 }

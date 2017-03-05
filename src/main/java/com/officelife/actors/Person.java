@@ -53,6 +53,9 @@ public class Person implements Actor {
   }
 
   @Override
+  public boolean isDead() {return this.energy <= 0;}
+
+  @Override
   public char[][] textRepresentation() {
     return new char[][]{{'P'}};
   }

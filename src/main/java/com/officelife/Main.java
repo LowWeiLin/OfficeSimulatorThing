@@ -1,11 +1,7 @@
 package com.officelife;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.officelife.actions.Action;
 import com.officelife.actors.Actor;
@@ -40,6 +36,16 @@ public class Main {
 
             actionResults.put(actor.id(), action.accept());
         }
+
+        for (Actor actor : actors) {
+            if (actor.isDead()) {
+
+                Coords location = state.actorLocation(actor.id()).get();
+                state.removeActor(actor);
+
+                // TODO handle item drops
+            }
+        }
     }
 
     private static void renderWorld(World state, Renderer renderer) {
@@ -54,9 +60,9 @@ public class Main {
         World state = new World();
         String foodGuyId = "Food guy";
         Coords origin = new Coords(0, 0);
-        putActor(state, foodGuyId, origin);
+        putActor(state, foodGuyId, origin, 15, 15, 5);
 
-        putActor(state, "Talking guy", new Coords(0, 1), 15, 15, 15);
+        putActor(state, "Talking guy", new Coords(0, 1), 15, 15, 5);
 //        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Coffee());
 
         Item coffee = new Coffee();
@@ -97,7 +103,7 @@ public class Main {
 
         // state is closed over
         World state = initWorld();
-        new Timer(renderer.getGUI(), () -> update(state, renderer), 6);
+        new Timer(renderer.getGUI(), () -> update(state, renderer), 7);
 
         renderer.getGUI().start();
     }
