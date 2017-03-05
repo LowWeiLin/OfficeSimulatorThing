@@ -23,11 +23,12 @@ public class Talk extends Action {
       return false;
     }
 
-    // take effect
     Person person = state.person;
     increaseRelationshipValue(person, (Person) target);
     increaseRelationshipValue((Person) target, person);
+    increaseBelonging(person, (Person) target);
 
+    System.out.println("Talk completed");
     return true;
   }
 
@@ -38,7 +39,11 @@ public class Talk extends Action {
     }
     int currentRelationshipValue = person.relationships.get(targetId);
     person.relationships.put(targetId, currentRelationshipValue + 5);
-    System.out.println("Increment relation!");
+  }
+
+  private void increaseBelonging(Person person, Person target) {
+    person.belonging += 5;
+    person.belonging += 10;
   }
 
   @Override
