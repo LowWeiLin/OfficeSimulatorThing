@@ -22,6 +22,10 @@ public class FillVoidInSoul extends Goal {
     // TODO find some way to avoid this
     if (e == null) {
       Deque<Goal> result = deque();
+      if (state.person.belonging < 5) {
+        result.add(new ImproveFriendship());
+      }
+
       if (state.person.energy > 10) {
         result.add(new FindWork());
       }

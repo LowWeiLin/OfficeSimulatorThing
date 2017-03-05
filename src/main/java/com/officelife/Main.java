@@ -52,12 +52,12 @@ public class Main {
 
     private static World initWorld() {
         World state = new World();
-        String id = "Food guy";
-        Actor coffeeDrinker = new Person(id);
-
+        String foodGuyId = "Food guy";
         Coords origin = new Coords(0, 0);
-      state.actorLocations.put(origin, id);
-        state.actors.put(coffeeDrinker.id(), coffeeDrinker);
+        putActor(state, foodGuyId, origin);
+
+        putActor(state, "Talking guy", new Coords(0, 1), 10, 1, 10);
+//        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Coffee());
 
         Item coffee = new Coffee();
         Coords coffeeLocation = new Coords(origin.x + 1, origin.y - 1);
@@ -65,6 +65,31 @@ public class Main {
         state.itemLocations.put(coffeeLocation, coffee.id());
         state.items.put(coffee.id(), coffee);
         return state;
+    }
+
+    private static void putActor(World state, String personId, Coords coords ) {
+        Actor person = new Person(personId);
+        state.actorLocations.put(coords, personId);
+        state.actors.put(person.id(), person);
+    }
+
+    private static void putActor(
+            World state, String personId, Coords coords, int physiology, int belonging, int energy) {
+        Actor person = new Person(personId, physiology, belonging, energy);
+        state.actorLocations.put(coords, personId);
+        state.actors.put(person.id(), person);
+    }
+
+    private static void putActorWithItems(
+            World state, String personId, Coords coords, int physiology, int belonging, int energy,
+            Item... items) {
+        Actor person = new Person(personId, physiology, belonging, energy);
+        state.actorLocations.put(coords, personId);
+        state.actors.put(person.id(), person);
+
+        for (Item item : items) {
+            person.addItem(item);
+        }
     }
 
     private void init() throws IOException {

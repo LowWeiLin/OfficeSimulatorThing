@@ -1,7 +1,9 @@
 package com.officelife.actors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.officelife.World;
 import com.officelife.actions.Action;
@@ -12,7 +14,7 @@ import com.officelife.items.Item;
 public class Person implements Actor {
 
   public int physiology = 10;
-  public int belonging = 1;
+  public int belonging = 10;
 
   public int energy = 100;
 
@@ -20,13 +22,20 @@ public class Person implements Actor {
 
   private final String id;
 
-  public Person(String id) {
+  public Person(String id, int physiology, int belonging, int energy) {
     this.id = id;
+    this.physiology = physiology;
+    this.belonging = belonging;
+    this.energy = energy;
+  }
+
+  public Person(String id) {
+    this(id, 10, 10, 100);
   }
 
   public final List<Item> inventory = new ArrayList<>();
 
-  // TODO relationships
+  public final Map<String, Integer> relationships = new HashMap<>();
 
   @Override
   public String id() {

@@ -27,11 +27,11 @@ public class Goals {
 //    System.out.println("RESET");
     goals.clear();
     // TODO root goal is survive?
-    if (state.person.physiology > state.person.belonging) {
-      goals.push(new FillVoidInSoul());
-    } else {
-      goals.push(new FillVoidInStomach());
-    }
+//    if (state.person.physiology > state.person.belonging) {
+    goals.push(new FillVoidInSoul());
+//    } else {
+//      goals.push(new FillVoidInStomach());
+//    }
   }
 
   /**
