@@ -78,8 +78,8 @@ public class World {
       }
       Set<Coords> neighbours = current.neighbours();
       for (Coords n : neighbours) {
-        parents.put(n, current);
         if (!visited.contains(n)) {
+          parents.put(n, current);
           q.push(n);
           visited.add(n);
         }
