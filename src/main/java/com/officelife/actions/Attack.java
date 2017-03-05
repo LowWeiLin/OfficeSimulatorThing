@@ -17,15 +17,16 @@ public class Attack extends Action {
 
   @Override
   public boolean accept() {
-    LocationBeside prereq = new LocationBeside(target, (Actor) state.person, state.world);
+    LocationBeside prereq = new LocationBeside(target, state.person, state.world);
     if (!prereq.satisfied())  {
-      System.out.println("Do Damage failing due to incorrect location");
+      System.out.println("Attack failing due to incorrect location");
       return false;
     }
 
-    // take effect
     decreaseTargetHealth((Person) target);
     decreaseRelationshipValue(state.person, (Person) target);
+
+    System.out.println("Attack completed");
     return true;
   }
 

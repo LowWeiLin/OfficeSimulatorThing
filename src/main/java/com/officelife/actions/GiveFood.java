@@ -24,7 +24,7 @@ public class GiveFood extends Action {
 
   @Override
   public boolean accept() {
-    LocationBeside prereq = new LocationBeside(target, (Actor) state.person, state.world);
+    LocationBeside prereq = new LocationBeside(target, state.person, state.world);
     if (!prereq.satisfied())  {
       return false;
     }

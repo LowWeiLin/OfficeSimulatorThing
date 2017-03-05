@@ -30,7 +30,7 @@ public class Person implements Actor {
   }
 
   public Person(String id) {
-    this(id, 10, 10, 100);
+    this(id, 10, 10, 10);
   }
 
   public final List<Item> inventory = new ArrayList<>();

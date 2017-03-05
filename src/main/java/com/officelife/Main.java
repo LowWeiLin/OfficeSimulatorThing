@@ -56,7 +56,7 @@ public class Main {
         Coords origin = new Coords(0, 0);
         putActor(state, foodGuyId, origin);
 
-        putActor(state, "Talking guy", new Coords(0, 1), 10, 1, 10);
+        putActor(state, "Talking guy", new Coords(0, 1), 15, 15, 15);
 //        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Coffee());
 
         Item coffee = new Coffee();
