@@ -28,8 +28,7 @@ public class TakeItem<T> extends Action {
       throw new RuntimeException("person " + state.person.id() + " is nowhere");
     }
 
-    String itemId = state.world.itemLocations
-            .get(currentCoords.get())
+    String itemId = state.world.itemsAtLocation(currentCoords.get())
             .stream()
             .filter(id -> {
               Item itemAtLocation = state.world.items.get(id);
@@ -43,10 +42,10 @@ public class TakeItem<T> extends Action {
 
     Coords coords = currentCoords.get();
 
-    if (!state.world.itemLocations.containsKey(coords) || !state.world.itemLocations.get(coords).contains(item.id())) {
+    if (!state.world.itemsAtLocation(coords).contains(item.id())) {
       throw new RuntimeException("item is no longer found at coords " + coords);
     }
-    state.world.itemLocations.get(coords).remove(item.id());
+    state.world.itemsAtLocation(coords).remove(item.id());
     state.person.addItem(item);
 
     return true;

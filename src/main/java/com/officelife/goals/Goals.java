@@ -44,7 +44,7 @@ public class Goals {
       }
 
       Goal current = goals.peek();
-//      System.out.println("> " + current);
+      System.out.println("> " + current);
 
       switch (current.outcome()) {
         case FAILURE:

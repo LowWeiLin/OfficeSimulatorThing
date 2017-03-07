@@ -22,7 +22,7 @@ public class World {
   public Map<String, Actor> actors = new HashMap<>();
   public Map<String, Item> items = new HashMap<>();
   public Map<Coords, String> actorLocations = new HashMap<>();
-  public Map<Coords, List<String>> itemLocations = new HashMap<>();
+  private Map<Coords, List<String>> itemLocations = new HashMap<>();
 
   public Optional<Coords> actorLocation(String actorId) {
     return actorLocations.entrySet().stream()
@@ -36,6 +36,13 @@ public class World {
       .filter(entry -> entry.getValue().contains(itemId))
       .map(Map.Entry::getKey)
       .findFirst();
+  }
+
+  public List<String> itemsAtLocation(Coords coords) {
+    if (!itemLocations.containsKey(coords)) {
+      itemLocations.put(coords, new ArrayList<>());
+    }
+    return itemLocations.get(coords);
   }
 
   public Optional<Coords> itemLocation(Predicate<Item> predicate) {

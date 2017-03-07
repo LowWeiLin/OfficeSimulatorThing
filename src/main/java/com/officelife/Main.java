@@ -69,7 +69,7 @@ public class Main {
 
         List<String> items = new ArrayList<>();
         items.add(coffee.id());
-        state.itemLocations.put(coffeeLocation, items);
+        state.itemsAtLocation(coffeeLocation).addAll(items);
         state.items.put(coffee.id(), coffee);
         return state;
     }
