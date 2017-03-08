@@ -23,7 +23,7 @@ class Timer {
 
     @SuppressWarnings("unused")
     Timer(Runnable action) {
-        this(action, Integer.MAX_VALUE);
+        this(action, 0);
     }
 
     Timer(Runnable action, int timesToRun) {
@@ -39,7 +39,7 @@ class Timer {
 
     private void fire() {
         timesRun++;
-        if (timesRun > maxTimes) {
+        if (maxTimes > 0 && timesRun > maxTimes) {
             executor.shutdown();
             return;
         }
