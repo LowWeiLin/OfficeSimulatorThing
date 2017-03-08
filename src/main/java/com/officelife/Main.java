@@ -87,15 +87,19 @@ public class Main {
         }
     }
 
+    private void gameLoop(Renderer renderer, World state) {
+        update(state);
+        renderer.render(state);
+    }
+
     private void init() throws IOException {
-        Renderer renderer = new Renderer();
+        final Renderer renderer = new Renderer();
 
         final World state = initWorld();
 
-        new Timer(renderer.getGUI(), () -> {
-            update(state);
-            renderer.render(state);
-        }, 7);
+        new Timer(() ->
+          renderer.getGUI().runAndWait(() ->
+            gameLoop(renderer, state)), 7);
 
         renderer.getGUI().start();
     }

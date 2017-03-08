@@ -13,7 +13,6 @@ public class GUI {
 
     private MultiWindowTextGUI gui;
     private BasicWindow window;
-    private Panel gamePanel;
 
     GUI(ComponentRenderer<Panel> gameRenderer) throws IOException {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
@@ -23,7 +22,7 @@ public class GUI {
         Panel panel = new Panel();
         panel.setLayoutManager(new GridLayout(2));
 
-        gamePanel = new Panel();
+        Panel gamePanel = new Panel();
 
         panel.addComponent(gamePanel);
 

@@ -7,18 +7,14 @@ import java.util.concurrent.TimeUnit;
 import com.officelife.ui.GUI;
 
 /**
- * Used to throttle rendering and computation, so the simulation doesn't run too quickly.
+ * Used to throttle computation, so the simulation doesn't run too quickly.
  * Controls the thread that computation runs on.
- *
- * May also be used to batch rendering in future when computation begins to take a long time.
  */
 class Timer {
 
     private static final int PERIOD = 1;
     private static final TimeUnit PERIOD_UNIT = TimeUnit.SECONDS;
-    private static final boolean RUN_ON_UI_THREAD = true;
 
-    private final GUI gui;
     private final Runnable action;
     private final ScheduledExecutorService executor;
 
@@ -26,12 +22,11 @@ class Timer {
     private int timesRun = 0;
 
     @SuppressWarnings("unused")
-    Timer(GUI gui, Runnable action) {
-        this(gui, action, Integer.MAX_VALUE);
+    Timer(Runnable action) {
+        this(action, Integer.MAX_VALUE);
     }
 
-    Timer(GUI gui, Runnable action, int timesToRun) {
-        this.gui = gui;
+    Timer(Runnable action, int timesToRun) {
         this.action = action;
         this.maxTimes = timesToRun;
         executor = Executors.newScheduledThreadPool(1, r -> {
@@ -48,10 +43,6 @@ class Timer {
             executor.shutdown();
             return;
         }
-        if (RUN_ON_UI_THREAD) {
-            gui.runAndWait(action);
-        } else {
-            action.run();
-        }
+        action.run();
     }
 }
