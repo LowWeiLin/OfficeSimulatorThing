@@ -1,9 +1,11 @@
 package com.officelife.ui;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.BasicWindow;
@@ -14,6 +16,8 @@ import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.TextBox;
+import com.googlecode.lanterna.gui2.Window;
+import com.googlecode.lanterna.gui2.WindowListener;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.TerminalScreen;
@@ -26,6 +30,10 @@ public class GUI {
     private BasicWindow window;
     private Function<String, String> replHandler = s -> "";
     private Supplier<Boolean> pauseHandler = () -> false;
+    private boolean replShowing = false;
+    private TextBox resultField;
+    private TextBox replField;
+    private Panel replPanel;
 
     GUI(ComponentRenderer<Panel> gameRenderer) throws IOException {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
@@ -40,10 +48,13 @@ public class GUI {
         panel.addComponent(gamePanel);
 
         int replSize = 74;
-        TextBox resultField = new TextBox(new TerminalSize(replSize, 1));
+        resultField = new TextBox(new TerminalSize(replSize, 1));
         resultField.setReadOnly(true);
 
-        panel.addComponent(new TextBox(new TerminalSize(replSize, 1)) {
+        panel.addComponent(replPanel = new Panel());
+        panel.addComponent(resultField);
+
+        replField = new TextBox(new TerminalSize(replSize, 1)) {
             @Override
             public synchronized Result handleKeyStroke(KeyStroke keyStroke) {
                 switch (keyStroke.getKeyType()) {
@@ -55,26 +66,66 @@ public class GUI {
                         }
                         return Result.HANDLED;
                     case Escape:
-                        if (pauseHandler.get()) {
-                            resultField.setText("Paused");
-                        } else {
-                            resultField.setText("Unpaused");
-                        }
+                        toggleRepl();
                         return Result.HANDLED;
                 }
                 return super.handleKeyStroke(keyStroke);
             }
-        });
-        panel.addComponent(resultField);
+        };
 
         window = new BasicWindow();
         window.setComponent(panel);
+        window.addWindowListener(new WindowListener() {
+            @Override
+            public void onUnhandledInput(Window basePane, KeyStroke keyStroke, AtomicBoolean hasBeenHandled) {
+                switch (keyStroke.getKeyType()) {
+                    case Character:
+                        if (keyStroke.getCharacter() == ' ') {
+                          pause();
+                        }
+                        break;
+                    case Escape:
+                        toggleRepl();
+                        break;
+                }
+            }
+
+            @Override
+            public void onResized(Window window, TerminalSize oldSize, TerminalSize newSize) {
+            }
+
+            @Override
+            public void onMoved(Window window, TerminalPosition oldPosition, TerminalPosition newPosition) {
+            }
+
+            @Override
+            public void onInput(Window basePane, KeyStroke keyStroke, AtomicBoolean deliverEvent) {
+            }
+        });
 
         gui = new MultiWindowTextGUI(screen,
             new DefaultWindowManager(),
             new EmptySpace(TextColor.ANSI.BLACK));
 
         gamePanel.setRenderer(gameRenderer);
+    }
+
+    private void toggleRepl() {
+        if (replShowing) {
+            replPanel.removeComponent(replField);
+        } else {
+            replPanel.addComponent(replField);
+            replField.takeFocus();
+        }
+        replShowing = !replShowing;
+    }
+
+    private void pause() {
+        if (pauseHandler.get()) {
+            resultField.setText("Paused");
+        } else {
+            resultField.setText("Unpaused");
+        }
     }
 
     public GUI onRepl(Function<String, String> action) {
