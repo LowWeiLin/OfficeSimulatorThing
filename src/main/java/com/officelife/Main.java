@@ -12,11 +12,7 @@ import com.officelife.ui.Renderer;
 
 public class Main {
 
-    private static final boolean RENDER_TEXT = false;
-
-    private void update(World state, Renderer renderer) {
-        renderWorld(state, renderer);
-
+    private void update(World state) {
         Map<String, Boolean> actionResults = new HashMap<>();
 
         List<Actor> actors = new ArrayList<>(state.actors.values());
@@ -44,14 +40,6 @@ public class Main {
                 state.removeActor(actor);
                 // TODO handle item drops
             }
-        }
-    }
-
-    private static void renderWorld(World state, Renderer renderer) {
-        if (RENDER_TEXT) {
-            System.out.println(renderer.renderText(state));
-        } else {
-            renderer.render(state);
         }
     }
 
@@ -102,9 +90,12 @@ public class Main {
     private void init() throws IOException {
         Renderer renderer = new Renderer();
 
-        // state is closed over
-        World state = initWorld();
-        new Timer(renderer.getGUI(), () -> update(state, renderer), 7);
+        final World state = initWorld();
+
+        new Timer(renderer.getGUI(), () -> {
+            update(state);
+            renderer.render(state);
+        }, 7);
 
         renderer.getGUI().start();
     }

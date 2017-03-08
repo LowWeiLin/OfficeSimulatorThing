@@ -53,7 +53,7 @@ public class Renderer {
         return s;
     }
 
-    public String renderText(World state) {
+    private String renderText(World state) {
         clearBuffer();
 
         for (Item item : state.items.values()) {
