@@ -2,6 +2,7 @@ package com.officelife.ui;
 
 import java.io.IOException;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
@@ -24,6 +25,7 @@ public class GUI {
     private MultiWindowTextGUI gui;
     private BasicWindow window;
     private Function<String, String> replHandler = s -> "";
+    private Supplier<Boolean> pauseHandler = () -> false;
 
     GUI(ComponentRenderer<Panel> gameRenderer) throws IOException {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
@@ -52,6 +54,13 @@ public class GUI {
                             setText("");
                         }
                         return Result.HANDLED;
+                    case Escape:
+                        if (pauseHandler.get()) {
+                            resultField.setText("Paused");
+                        } else {
+                            resultField.setText("Unpaused");
+                        }
+                        return Result.HANDLED;
                 }
                 return super.handleKeyStroke(keyStroke);
             }
@@ -68,8 +77,14 @@ public class GUI {
         gamePanel.setRenderer(gameRenderer);
     }
 
-    public void setReplHandler(Function<String, String> action) {
+    public GUI onRepl(Function<String, String> action) {
         this.replHandler = action;
+        return this;
+    }
+
+    public GUI onPause(Supplier<Boolean> action) {
+        this.pauseHandler = action;
+        return this;
     }
 
     /**

@@ -12,6 +12,8 @@ import com.officelife.ui.Renderer;
 
 public class Main {
 
+    private boolean paused = false;
+
     private void update(World state) {
         Map<String, Boolean> actionResults = new HashMap<>();
 
@@ -88,8 +90,14 @@ public class Main {
     }
 
     private void gameLoop(Renderer renderer, World world) {
-        update(world);
-        renderer.render(world);
+        if (!paused) {
+            update(world);
+            renderer.render(world);
+        }
+    }
+
+    private boolean pause() {
+        return paused = !paused;
     }
 
     private void init() throws IOException {
@@ -97,9 +105,11 @@ public class Main {
 
         final World world = initWorld();
 
-        renderer.getGUI().setReplHandler(new Scripting(world)::run);
+        renderer.getGUI()
+          .onRepl(new Scripting(world)::run)
+          .onPause(this::pause);
 
-        new Timer(() ->
+        new Timer(() -> paused, () ->
           renderer.getGUI().runAndWait(() ->
             gameLoop(renderer, world)), 7);
 

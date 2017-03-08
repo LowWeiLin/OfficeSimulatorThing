@@ -3,8 +3,7 @@ package com.officelife;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import com.officelife.ui.GUI;
+import java.util.function.Supplier;
 
 /**
  * Used to throttle computation, so the simulation doesn't run too quickly.
@@ -15,6 +14,7 @@ class Timer {
     private static final int PERIOD = 1;
     private static final TimeUnit PERIOD_UNIT = TimeUnit.SECONDS;
 
+    private final Supplier<Boolean> isPaused;
     private final Runnable action;
     private final ScheduledExecutorService executor;
 
@@ -22,13 +22,14 @@ class Timer {
     private int timesRun = 0;
 
     @SuppressWarnings("unused")
-    Timer(Runnable action) {
-        this(action, 0);
+    Timer(Supplier<Boolean> isPaused, Runnable action) {
+        this(isPaused, action, 0);
     }
 
-    Timer(Runnable action, int timesToRun) {
+    Timer(Supplier<Boolean> isPaused, Runnable action, int timesToRun) {
         this.action = action;
         this.maxTimes = timesToRun;
+        this.isPaused = isPaused;
         executor = Executors.newScheduledThreadPool(1, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
@@ -38,6 +39,9 @@ class Timer {
     }
 
     private void fire() {
+        if (isPaused.get()) {
+            return;
+        }
         timesRun++;
         if (maxTimes > 0 && timesRun > maxTimes) {
             executor.shutdown();
