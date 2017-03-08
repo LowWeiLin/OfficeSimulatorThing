@@ -39,9 +39,7 @@ public class World {
   }
 
   public List<String> itemsAtLocation(Coords coords) {
-    if (!itemLocations.containsKey(coords)) {
-      itemLocations.put(coords, new ArrayList<>());
-    }
+    itemLocations.putIfAbsent(coords, new ArrayList<>());
     return itemLocations.get(coords);
   }
 

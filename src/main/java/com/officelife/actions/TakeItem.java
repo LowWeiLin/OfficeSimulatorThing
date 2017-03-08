@@ -28,23 +28,24 @@ public class TakeItem<T> extends Action {
       throw new RuntimeException("person " + state.person.id() + " is nowhere");
     }
 
-    String itemId = state.world.itemsAtLocation(currentCoords.get())
+    Optional<String> maybeItemId = state.world.itemsAtLocation(currentCoords.get())
             .stream()
             .filter(id -> {
               Item itemAtLocation = state.world.items.get(id);
 
               return itemClass.isInstance(itemAtLocation);
             })
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Unable to find item of " + itemClass));
+            .findFirst();
+    if (!maybeItemId.isPresent()) {
+      return false;
+    }
+
+    String itemId = maybeItemId.get();
 
     Item item = state.world.items.get(itemId);
 
     Coords coords = currentCoords.get();
 
-    if (!state.world.itemsAtLocation(coords).contains(item.id())) {
-      throw new RuntimeException("item is no longer found at coords " + coords);
-    }
     state.world.itemsAtLocation(coords).remove(item.id());
     state.person.addItem(item);
 
