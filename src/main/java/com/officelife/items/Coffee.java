@@ -16,6 +16,6 @@ public class Coffee implements Item {
 
     @Override
     public char[][] textRepresentation() {
-        return new char[][] {{'C'}};
+        return new char[][] {{'\u2615'}};
     }
 }
