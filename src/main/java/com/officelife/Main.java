@@ -100,6 +100,13 @@ public class Main {
         return paused = !paused;
     }
 
+    /**
+     * The main thread handles the UI and input.
+     * A second thread (controlled by the Timer) periodically joins with the
+     * main one to run game logic.
+     *
+     * State is only updated on the main thread, so there are no locks.
+     */
     private void init() throws IOException {
         final Renderer renderer = new Renderer();
 
