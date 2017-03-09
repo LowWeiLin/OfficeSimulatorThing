@@ -34,6 +34,7 @@ public class GUI {
     private TextBox resultField;
     private TextBox replField;
     private Panel replPanel;
+    private Panel gamePanel;
 
     GUI(ComponentRenderer<Panel> gameRenderer) throws IOException {
         Terminal terminal = new DefaultTerminalFactory().createTerminal();
@@ -43,7 +44,7 @@ public class GUI {
         Panel panel = new Panel();
         panel.setLayoutManager(new GridLayout(1));
 
-        Panel gamePanel = new Panel();
+        gamePanel = new Panel(null);
 
         panel.addComponent(gamePanel);
 
@@ -153,5 +154,9 @@ public class GUI {
             System.err.println("Could not run action");
             e.printStackTrace();
         }
+    }
+
+    public void invalidate() {
+      gamePanel.invalidate();
     }
 }

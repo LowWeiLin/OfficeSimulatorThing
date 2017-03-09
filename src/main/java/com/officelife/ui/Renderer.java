@@ -104,6 +104,7 @@ public class Renderer {
         // Called for side effect
         // TODO separate effects?
         renderText(state);
+        gui.invalidate();
     }
 
     private ComponentRenderer<Panel> createComponentRenderer(TerminalSize screenSize) {
