@@ -42,7 +42,6 @@ public class Main {
 
                 Coords location = state.actorLocation(actor.id()).get();
                 state.removeActor(actor);
-
                 // TODO handle item drops
             }
         }
@@ -68,7 +67,9 @@ public class Main {
         Item coffee = new Coffee();
         Coords coffeeLocation = new Coords(origin.x + 1, origin.y - 1);
 
-        state.itemLocations.put(coffeeLocation, coffee.id());
+        List<String> items = new ArrayList<>();
+        items.add(coffee.id());
+        state.itemsAtLocation(coffeeLocation).addAll(items);
         state.items.put(coffee.id(), coffee);
         return state;
     }

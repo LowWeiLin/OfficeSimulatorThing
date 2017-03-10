@@ -21,7 +21,6 @@ public class TakeItem<T> extends Action {
 
   @Override
   public boolean accept() {
-    // TODO there may be many items on this location?
 
     Optional<Coords> currentCoords = state.world.actorLocation(state.person.id());
 
@@ -29,17 +28,25 @@ public class TakeItem<T> extends Action {
       throw new RuntimeException("person " + state.person.id() + " is nowhere");
     }
 
-    Item item = state.world.items.get(state.world.itemLocations.get(currentCoords.get()));
-    if (!itemClass.isInstance(item)) {
-      throw new RuntimeException("item is not of class " + itemClass);
+    Optional<String> maybeItemId = state.world.itemsAtLocation(currentCoords.get())
+            .stream()
+            .filter(id -> {
+              Item itemAtLocation = state.world.items.get(id);
+
+              return itemClass.isInstance(itemAtLocation);
+            })
+            .findFirst();
+    if (!maybeItemId.isPresent()) {
+      return false;
     }
+
+    String itemId = maybeItemId.get();
+
+    Item item = state.world.items.get(itemId);
 
     Coords coords = currentCoords.get();
 
-    if (!state.world.itemLocations.containsKey(coords) || !state.world.itemLocations.get(coords).equals(item.id())) {
-      throw new RuntimeException("item is no longer found at coords " + coords);
-    }
-    state.world.itemLocations.remove(coords);
+    state.world.itemsAtLocation(coords).remove(item.id());
     state.person.addItem(item);
 
     return true;
