@@ -1,6 +1,9 @@
 package com.officelife.actions;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.officelife.actions.prerequisite.LocationBeside;
 import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
@@ -8,6 +11,7 @@ import com.officelife.goals.State;
 
 public class Attack extends Action {
 
+  private static final Logger logger = LoggerFactory.getLogger(Attack.class);
   private final Actor target;
 
   public Attack(State state, Actor target) {
@@ -19,16 +23,15 @@ public class Attack extends Action {
   public boolean accept() {
     LocationBeside prereq = new LocationBeside(target, state.person, state.world);
     if (!prereq.satisfied())  {
-      System.out.println("Attack failing due to incorrect location");
+      logger.warn("Attack failing due to incorrect location");
       return false;
     }
 
     decreaseTargetHealth((Person) target);
     decreaseRelationshipValue(state.person, (Person) target);
 
-    System.out.println("Attack completed");
-    System.out.printf("%s has %s energy remaining", target.id(), ((Person) target).energy);
-    System.out.println();
+    logger.debug("Attack completed");
+    logger.debug("{} has {} energy remaining", target.id(), ((Person) target).energy);
     return true;
   }
 

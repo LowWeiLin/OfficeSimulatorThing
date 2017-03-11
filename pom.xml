@@ -30,6 +30,12 @@
             <artifactId>lanterna</artifactId>
             <version>3.0.0-rc1</version>
         </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.13</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

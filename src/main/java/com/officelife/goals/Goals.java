@@ -3,6 +3,9 @@ package com.officelife.goals;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.officelife.actions.Action;
 import com.officelife.actions.Languish;
 import com.officelife.goals.effects.Effect;
@@ -11,6 +14,7 @@ import com.officelife.goals.subgoals.FillVoidInStomach;
 
 public class Goals {
 
+  private static final Logger logger = LoggerFactory.getLogger(Goals.class);
   private final Deque<Goal> goals = new ArrayDeque<>();
 
   public Action plan(State state, boolean previousSucceeded) {
@@ -24,7 +28,8 @@ public class Goals {
 
   // TODO generalise this. it should depend on actor
   private void beginFromRootGoal(State state) {
-//    System.out.println("RESET");
+//    logger.debug("RESET");
+
     goals.clear();
     // TODO root goal is survive?
 //    if (state.person.physiology > state.person.belonging) {
@@ -44,7 +49,7 @@ public class Goals {
       }
 
       Goal current = goals.peek();
-//      System.out.println("> " + current);
+//      logger.debug("> {}", current);
 
       switch (current.outcome()) {
         case FAILURE:
@@ -62,7 +67,7 @@ public class Goals {
       Effect effect = goals.peek().effect(state);
 
       if (!effect.hasWorkLeft()) {
-//        System.out.println(current + " FAILED");
+//        logger.debug("{} failed", current);
         goals.pop();
         continue;
       }

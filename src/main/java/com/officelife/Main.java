@@ -3,6 +3,9 @@ package com.officelife;
 import java.io.IOException;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.officelife.actions.Action;
 import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
@@ -11,6 +14,8 @@ import com.officelife.items.Item;
 import com.officelife.ui.Renderer;
 
 public class Main {
+
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     private boolean paused = false;
 
@@ -30,7 +35,7 @@ public class Main {
                 action = actor.act(state);
             }
 
-            System.out.printf("%s: %s\n", actor.id(), action);
+            logger.debug("{}: {}", actor.id(), action);
 
             actionResults.put(actor.id(), action.accept());
         }

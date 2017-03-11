@@ -5,6 +5,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
@@ -26,6 +29,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 public class GUI {
 
+    private static final Logger logger = LoggerFactory.getLogger(GUI.class);
     private MultiWindowTextGUI gui;
     private BasicWindow window;
     private Function<String, String> replHandler = s -> "";
@@ -150,9 +154,7 @@ public class GUI {
         try {
             gui.getGUIThread().invokeAndWait(action);
         } catch (InterruptedException e) {
-            // TODO better logging
-            System.err.println("Could not run action");
-            e.printStackTrace();
+            logger.error("Could not run action", e);
         }
     }
 
