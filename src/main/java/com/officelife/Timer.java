@@ -3,22 +3,18 @@ package com.officelife;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import com.officelife.ui.GUI;
+import java.util.function.Supplier;
 
 /**
- * Used to throttle rendering and computation, so the simulation doesn't run too quickly.
+ * Used to throttle computation, so the simulation doesn't run too quickly.
  * Controls the thread that computation runs on.
- *
- * May also be used to batch rendering in future when computation begins to take a long time.
  */
 class Timer {
 
     private static final int PERIOD = 1;
     private static final TimeUnit PERIOD_UNIT = TimeUnit.SECONDS;
-    private static final boolean RUN_ON_UI_THREAD = true;
 
-    private final GUI gui;
+    private final Supplier<Boolean> isPaused;
     private final Runnable action;
     private final ScheduledExecutorService executor;
 
@@ -26,14 +22,14 @@ class Timer {
     private int timesRun = 0;
 
     @SuppressWarnings("unused")
-    Timer(GUI gui, Runnable action) {
-        this(gui, action, Integer.MAX_VALUE);
+    Timer(Supplier<Boolean> isPaused, Runnable action) {
+        this(isPaused, action, 0);
     }
 
-    Timer(GUI gui, Runnable action, int timesToRun) {
-        this.gui = gui;
+    Timer(Supplier<Boolean> isPaused, Runnable action, int timesToRun) {
         this.action = action;
         this.maxTimes = timesToRun;
+        this.isPaused = isPaused;
         executor = Executors.newScheduledThreadPool(1, r -> {
             Thread t = Executors.defaultThreadFactory().newThread(r);
             t.setDaemon(true);
@@ -43,15 +39,14 @@ class Timer {
     }
 
     private void fire() {
+        if (isPaused.get()) {
+            return;
+        }
         timesRun++;
-        if (timesRun > maxTimes) {
+        if (maxTimes > 0 && timesRun > maxTimes) {
             executor.shutdown();
             return;
         }
-        if (RUN_ON_UI_THREAD) {
-            gui.runAndWait(action);
-        } else {
-            action.run();
-        }
+        action.run();
     }
 }

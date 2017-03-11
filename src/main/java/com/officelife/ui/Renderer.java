@@ -3,6 +3,9 @@ package com.officelife.ui;
 import java.io.IOException;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.ComponentRenderer;
 import com.googlecode.lanterna.gui2.Panel;
@@ -14,6 +17,7 @@ import com.officelife.items.Item;
 
 public class Renderer {
 
+    private static final Logger logger = LoggerFactory.getLogger(Renderer.class);
     private static final TerminalSize windowSize = new TerminalSize(75, 20);
     private Coords viewOffset =
         new Coords(-windowSize.getColumns() / 2, -windowSize.getRows() / 2);
@@ -53,7 +57,7 @@ public class Renderer {
         return s;
     }
 
-    public String renderText(World state) {
+    private String renderText(World state) {
         clearBuffer();
 
         for (Item item : state.items.values()) {
@@ -70,7 +74,7 @@ public class Renderer {
         for (Actor actor : state.actors.values()) {
             Optional<Coords> location = state.actorLocation(actor.id());
             if (!location.isPresent()) {
-                System.err.println("could not render actor " + actor.id());
+                logger.warn("could not render actor {}", actor.id());
                 continue;
             }
             renderRep(location.get(), actor.textRepresentation());
@@ -104,6 +108,7 @@ public class Renderer {
         // Called for side effect
         // TODO separate effects?
         renderText(state);
+        gui.invalidate();
     }
 
     private ComponentRenderer<Panel> createComponentRenderer(TerminalSize screenSize) {

@@ -3,6 +3,9 @@ package com.officelife;
 import java.io.IOException;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.officelife.actions.Action;
 import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
@@ -12,11 +15,11 @@ import com.officelife.ui.Renderer;
 
 public class Main {
 
-    private static final boolean RENDER_TEXT = false;
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private void update(World state, Renderer renderer) {
-        renderWorld(state, renderer);
+    private boolean paused = false;
 
+    private void update(World state) {
         Map<String, Boolean> actionResults = new HashMap<>();
 
         List<Actor> actors = new ArrayList<>(state.actors.values());
@@ -32,7 +35,7 @@ public class Main {
                 action = actor.act(state);
             }
 
-            System.out.printf("%s: %s\n", actor.id(), action);
+            logger.debug("{}: {}", actor.id(), action);
 
             actionResults.put(actor.id(), action.accept());
         }
@@ -44,14 +47,6 @@ public class Main {
                 state.removeActor(actor);
                 // TODO handle item drops
             }
-        }
-    }
-
-    private static void renderWorld(World state, Renderer renderer) {
-        if (RENDER_TEXT) {
-            System.out.println(renderer.renderText(state));
-        } else {
-            renderer.render(state);
         }
     }
 
@@ -99,12 +94,36 @@ public class Main {
         }
     }
 
-    private void init() throws IOException {
-        Renderer renderer = new Renderer();
+    private void gameLoop(Renderer renderer, World world) {
+        if (!paused) {
+            update(world);
+            renderer.render(world);
+        }
+    }
 
-        // state is closed over
-        World state = initWorld();
-        new Timer(renderer.getGUI(), () -> update(state, renderer), 7);
+    private boolean pause() {
+        return paused = !paused;
+    }
+
+    /**
+     * The main thread handles the UI and input.
+     * A second thread (controlled by the Timer) periodically joins with the
+     * main one to run game logic.
+     *
+     * State is only updated on the main thread, so there are no locks.
+     */
+    private void init() throws IOException {
+        final Renderer renderer = new Renderer();
+
+        final World world = initWorld();
+
+        renderer.getGUI()
+          .onRepl(new Scripting(world)::run)
+          .onPause(this::pause);
+
+        new Timer(() -> paused, () ->
+          renderer.getGUI().runAndWait(() ->
+            gameLoop(renderer, world)), 7);
 
         renderer.getGUI().start();
     }

@@ -1,8 +1,15 @@
+
 # Office Simulator Thing
 
-## Build and Run
+## Build JAR
 
 ```sh
 mvn clean package
-java -jar target/officelife-1.0-SNAPSHOT.jar
+```
+
+## Run
+
+```sh
+mvn clean install
+mvn exec:java
 ```

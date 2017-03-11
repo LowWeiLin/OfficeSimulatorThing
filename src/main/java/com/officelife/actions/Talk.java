@@ -1,6 +1,8 @@
 package com.officelife.actions;
 
-import com.officelife.Coords;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.officelife.actions.prerequisite.LocationBeside;
 import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
@@ -8,6 +10,7 @@ import com.officelife.goals.State;
 
 public class Talk extends Action {
 
+  private static final Logger logger = LoggerFactory.getLogger(Talk.class);
   private final Actor target;
 
   public Talk(State state, Actor target) {
@@ -19,7 +22,7 @@ public class Talk extends Action {
   public boolean accept() {
     LocationBeside prereq = new LocationBeside(target, state.person, state.world);
     if (!prereq.satisfied())  {
-      System.out.println("Talk failing due to incorrect location");
+      logger.warn("Talk failing due to incorrect location");
       return false;
     }
 
@@ -28,7 +31,7 @@ public class Talk extends Action {
     increaseRelationshipValue((Person) target, person);
     increaseBelonging(person, (Person) target);
 
-    System.out.println("Talk completed");
+    logger.debug("Talk completed");
     return true;
   }
 

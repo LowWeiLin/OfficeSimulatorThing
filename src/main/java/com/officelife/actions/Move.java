@@ -2,6 +2,9 @@ package com.officelife.actions;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.officelife.Coords;
 import com.officelife.goals.State;
 
@@ -9,6 +12,8 @@ import com.officelife.goals.State;
  * Movement action. Mutates the location of an actor in 4 possible directions.
  */
 public class Move extends Action {
+
+  private static final Logger logger = LoggerFactory.getLogger(Move.class);
 
   public enum Direction {
     DOWN, UP, LEFT, RIGHT;
@@ -40,7 +45,7 @@ public class Move extends Action {
   public boolean accept() {
     Optional<Coords> old = state.world.actorLocation(state.person.id());
     if (!old.isPresent()) {
-      System.err.println(String.format("could not update actor %s location", state.person.id()));
+      logger.warn("could not update actor {} location", state.person.id());
     }
     Coords updated = updatedLocation(old.get());
 
