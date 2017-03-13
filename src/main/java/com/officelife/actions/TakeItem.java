@@ -22,27 +22,24 @@ public class TakeItem<T> extends Action {
   @Override
   public boolean accept() {
 
-    Optional<Coords> currentCoords = state.world.actorLocation(state.person.id());
+    Optional<Coords> currentCoords = state.world.actorLocation(state.person);
 
     if (!currentCoords.isPresent()) {
       throw new RuntimeException("person " + state.person.id() + " is nowhere");
     }
 
-    Optional<String> maybeItemId = state.world.itemsAtLocation(currentCoords.get())
+    Optional<Item> maybeItem = state.world.itemsAtLocation(currentCoords.get())
             .stream()
-            .filter(id -> {
-              Item itemAtLocation = state.world.items.get(id);
-
+            .filter(itemAtLocation -> {
               return itemClass.isInstance(itemAtLocation);
             })
             .findFirst();
-    if (!maybeItemId.isPresent()) {
+    if (!maybeItem.isPresent()) {
       return false;
     }
 
-    String itemId = maybeItemId.get();
+    Item item = maybeItem.get();
 
-    Item item = state.world.items.get(itemId);
 
     Coords coords = currentCoords.get();
 

@@ -43,7 +43,7 @@ public class Move extends Action {
 
   @Override
   public boolean accept() {
-    Optional<Coords> old = state.world.actorLocation(state.person.id());
+    Optional<Coords> old = state.world.actorLocation(state.person);
     if (!old.isPresent()) {
       logger.warn("could not update actor {} location", state.person.id());
     }
@@ -57,7 +57,7 @@ public class Move extends Action {
 
     // directly update the location
     state.world.actorLocations.remove(old.get());
-    state.world.actorLocations.put(updated, state.person.id());
+    state.world.actorLocations.put(updated, state.person);
 
     return true;
   }

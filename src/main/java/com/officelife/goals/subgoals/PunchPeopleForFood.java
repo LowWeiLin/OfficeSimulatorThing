@@ -31,15 +31,15 @@ public class PunchPeopleForFood extends Goal {
 
     private boolean failed = false;
 
-    private String targetId;
+    private Person target;
 
-    public PunchPeopleForFood(String targetId) {
-        this.targetId = targetId;
+    public PunchPeopleForFood(Person target) {
+        this.target = target;
         this.status = Status.FINDING;
     }
 
     public PunchPeopleForFood() {
-        this.targetId = null; // :(
+        this.target = null; // :(
         this.status = Status.INIT_GOAL;
     }
 
@@ -63,7 +63,7 @@ public class PunchPeopleForFood extends Goal {
                 // search the map. return move action
                 // TODO extract this into a class?
 
-                Coords personCoords = state.world.actorLocation(state.person.id()).get();
+                Coords personCoords = state.world.actorLocation(state.person).get();
                 Optional<Actor> possibleTarget = chooseTarget(state, personCoords);
 
                 if (!possibleTarget.isPresent()) {
@@ -72,10 +72,10 @@ public class PunchPeopleForFood extends Goal {
                 }
                 Person targetPerson = (Person) possibleTarget.get();
 
-                Coords currentCoords = state.world.actorLocation(state.person.id())
+                Coords currentCoords = state.world.actorLocation(state.person)
                         .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));
 
-                Optional<List<Coords>> path = state.world.actorLocation(targetPerson.id())
+                Optional<List<Coords>> path = state.world.actorLocation(targetPerson)
                         .map(coords -> state.world.findPath(currentCoords, new World.EndCoords(coords)));
 
                 if (!path.isPresent()) {
@@ -84,7 +84,7 @@ public class PunchPeopleForFood extends Goal {
                 }
 
                 status = Status.FINDING;
-                targetId = targetPerson.id();
+                target = targetPerson;
 
                 return new TerminalAction(
                         new Move(state, Move.Direction.directionToMove(currentCoords, path.get().get(0)))
@@ -92,12 +92,10 @@ public class PunchPeopleForFood extends Goal {
 
             case FINDING:
 
-                Actor target = state.world.actors.get(this.targetId);
-
-                Optional<List<Coords>> pathToTarget = state.world.actorLocation(target.id())
+                Optional<List<Coords>> pathToTarget = state.world.actorLocation(target)
                     .map(coords ->
                         state.world.findPath(
-                            state.world.actorLocation(state.person.id()).get(),
+                            state.world.actorLocation(state.person).get(),
                             new World.EndCoords(coords))
                     );
 
@@ -116,7 +114,7 @@ public class PunchPeopleForFood extends Goal {
                     new Move(
                         state,
                         Move.Direction.directionToMove(
-                            state.world.actorLocation(state.person.id()).get(), pathToTarget.get().get(0)
+                            state.world.actorLocation(state.person).get(), pathToTarget.get().get(0)
                         )
                     )
                 );
@@ -132,8 +130,7 @@ public class PunchPeopleForFood extends Goal {
             for (int j = personCoords.y - 5; j < personCoords.y + 5; j++) {
                 Coords coords = new Coords(i, j);
                 if (state.world.actorLocations.containsKey(new Coords(i, j))) {
-                    String id = state.world.actorLocations.get(coords);
-                    nearby.add(state.world.actors.get(id));
+                    nearby.add(state.world.actorLocations.get(coords));
                 }
             }
         }

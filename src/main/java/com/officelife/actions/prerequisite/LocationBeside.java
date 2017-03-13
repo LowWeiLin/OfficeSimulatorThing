@@ -19,9 +19,9 @@ public class LocationBeside {
 
     public LocationBeside(Actor first, Actor second, World world) {
         this(
-                world.actorLocation(first.id())
+                world.actorLocation(first)
                         .orElseThrow(() -> new RuntimeException("first actor's location cannot be found in the world " + first.id())),
-                world.actorLocation(second.id())
+                world.actorLocation(second)
                         .orElseThrow(() -> new RuntimeException("second actor's location cannot be found in the world " + second.id()))
         );
     }
