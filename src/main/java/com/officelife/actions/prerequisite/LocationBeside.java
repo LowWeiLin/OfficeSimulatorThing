@@ -2,7 +2,7 @@ package com.officelife.actions.prerequisite;
 
 import com.officelife.Coords;
 import com.officelife.World;
-import com.officelife.actions.Action;
+
 import com.officelife.actors.Actor;
 
 /**

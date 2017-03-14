@@ -46,7 +46,7 @@ public class GetCoffee extends Goal {
       case NOT_FOUND:
         // search the map. return move action
         Coords currentCoords = state.world.actorLocation(state.person)
-                .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));;
+                .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));
 
 
         Optional<List<Coords>> path =

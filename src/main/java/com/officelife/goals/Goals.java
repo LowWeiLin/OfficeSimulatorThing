@@ -10,7 +10,6 @@ import com.officelife.actions.Action;
 import com.officelife.actions.Languish;
 import com.officelife.goals.effects.Effect;
 import com.officelife.goals.subgoals.FillVoidInSoul;
-import com.officelife.goals.subgoals.FillVoidInStomach;
 
 public class Goals {
 

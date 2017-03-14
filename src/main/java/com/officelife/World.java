@@ -52,7 +52,7 @@ public class World {
   public Collection<Item> items() {
     return this.itemLocations.values()
             .stream()
-            .flatMap(values -> values.stream())
+            .flatMap(Collection::stream)
             .collect(Collectors.toSet());
   }
 

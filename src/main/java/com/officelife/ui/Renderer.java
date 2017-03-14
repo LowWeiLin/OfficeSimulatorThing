@@ -97,11 +97,8 @@ public class Renderer {
     }
 
     boolean inView(Coords location) {
-        if (location.x >= 0 && location.y >= 0 &&
-            location.x < windowSize.getColumns() && location.y < windowSize.getRows()) {
-            return true;
-        }
-        return false;
+        return location.x >= 0 && location.y >= 0 &&
+            location.x < windowSize.getColumns() && location.y < windowSize.getRows();
     }
 
     public void render(World state) {

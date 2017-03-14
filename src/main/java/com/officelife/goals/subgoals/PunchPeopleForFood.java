@@ -11,13 +11,11 @@ import com.officelife.goals.Outcome;
 import com.officelife.goals.State;
 import com.officelife.goals.effects.Effect;
 import com.officelife.goals.effects.TerminalAction;
-import com.officelife.items.Coffee;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 /**
  * Ouch.
@@ -63,7 +61,8 @@ public class PunchPeopleForFood extends Goal {
                 // search the map. return move action
                 // TODO extract this into a class?
 
-                Coords personCoords = state.world.actorLocation(state.person).get();
+                Coords personCoords = state.world.actorLocation(state.person)
+                        .orElseThrow(() -> new RuntimeException("Actor not found"));
                 Optional<Actor> possibleTarget = chooseTarget(state, personCoords);
 
                 if (!possibleTarget.isPresent()) {

@@ -61,7 +61,8 @@ public class ImproveFriendship extends Goal {
       case INIT_GOAL:
         // search the map. return move action
 
-        Coords personCoords = state.world.actorLocation(state.person).get();
+        Coords personCoords = state.world.actorLocation(state.person)
+                .orElseThrow(() -> new RuntimeException("Actor not found"));
         List<Actor> nearbyActors = nearbyActors(state, personCoords);
 
         List<Person> nearbyPersons = nearbyActors.stream()
