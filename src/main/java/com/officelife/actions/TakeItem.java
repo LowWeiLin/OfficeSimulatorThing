@@ -30,9 +30,7 @@ public class TakeItem<T> extends Action {
 
     Optional<Item> maybeItem = state.world.itemsAtLocation(currentCoords.get())
             .stream()
-            .filter(itemAtLocation -> {
-              return itemClass.isInstance(itemAtLocation);
-            })
+            .filter(itemClass::isInstance)
             .findFirst();
     if (!maybeItem.isPresent()) {
       return false;
@@ -43,7 +41,7 @@ public class TakeItem<T> extends Action {
 
     Coords coords = currentCoords.get();
 
-    state.world.itemsAtLocation(coords).remove(item.id());
+    state.world.itemsAtLocation(coords).remove(item);
     state.person.addItem(item);
 
     return true;
