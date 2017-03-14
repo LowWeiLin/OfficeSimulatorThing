@@ -60,8 +60,8 @@ public class Renderer {
     private String renderText(World state) {
         clearBuffer();
 
-        for (Item item : state.items.values()) {
-            Optional<Coords> location = state.itemLocation(item.id());;
+        for (Item item : state.items()) {
+            Optional<Coords> location = state.itemLocation(item);
 
             if (!location.isPresent()) {
                 // it's possible the item may be in someone's inventory
@@ -71,8 +71,8 @@ public class Renderer {
         }
 
         // actors take precedence when rendering
-        for (Actor actor : state.actors.values()) {
-            Optional<Coords> location = state.actorLocation(actor.id());
+        for (Actor actor : state.actors()) {
+            Optional<Coords> location = state.actorLocation(actor);
             if (!location.isPresent()) {
                 logger.warn("could not render actor {}", actor.id());
                 continue;
@@ -97,11 +97,8 @@ public class Renderer {
     }
 
     boolean inView(Coords location) {
-        if (location.x >= 0 && location.y >= 0 &&
-            location.x < windowSize.getColumns() && location.y < windowSize.getRows()) {
-            return true;
-        }
-        return false;
+        return location.x >= 0 && location.y >= 0 &&
+            location.x < windowSize.getColumns() && location.y < windowSize.getRows();
     }
 
     public void render(World state) {

@@ -30,15 +30,15 @@ public class ImproveFriendship extends Goal {
 
   private boolean failed = false;
 
-  private String targetId;
+  private Person target;
 
-  public ImproveFriendship(String targetId) {
-    this.targetId = targetId;
+  public ImproveFriendship(Person target) {
+    this.target = target;
     this.status = Status.FINDING;
   }
 
   public ImproveFriendship() {
-    this.targetId = null; // :(
+    this.target = null; // :(
     this.status = Status.INIT_GOAL;
   }
 
@@ -61,7 +61,8 @@ public class ImproveFriendship extends Goal {
       case INIT_GOAL:
         // search the map. return move action
 
-        Coords personCoords = state.world.actorLocation(state.person.id()).get();
+        Coords personCoords = state.world.actorLocation(state.person)
+                .orElseThrow(() -> new RuntimeException("Actor not found"));
         List<Actor> nearbyActors = nearbyActors(state, personCoords);
 
         List<Person> nearbyPersons = nearbyActors.stream()
@@ -76,10 +77,10 @@ public class ImproveFriendship extends Goal {
         }
         Person targetPerson = nearbyPersons.get(ThreadLocalRandom.current().nextInt(0, nearbyPersons.size()));
 
-        Coords currentCoords = state.world.actorLocation(state.person.id())
+        Coords currentCoords = state.world.actorLocation(state.person)
                 .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));
 
-        Optional<List<Coords>> path = state.world.actorLocation(targetPerson.id())
+        Optional<List<Coords>> path = state.world.actorLocation(targetPerson)
                 .map(coords -> state.world.findPath(currentCoords, new World.EndCoords(coords)));
 
         if (!path.isPresent()) {
@@ -88,7 +89,7 @@ public class ImproveFriendship extends Goal {
         }
 
         status = Status.FINDING;
-        targetId = targetPerson.id();
+        target = targetPerson;
 
         return new TerminalAction(
           new Move(state, Move.Direction.directionToMove(currentCoords, path.get().get(0)))
@@ -96,11 +97,10 @@ public class ImproveFriendship extends Goal {
 
       case FINDING:
 
-        Actor target = state.world.actors.get(this.targetId);
 
-        Optional<List<Coords>> pathToTarget = state.world.actorLocation(target.id())
+        Optional<List<Coords>> pathToTarget = state.world.actorLocation(target)
                 .map(coords ->
-                        state.world.findPath(state.world.actorLocation(state.person.id()).get(), new World.EndCoords(coords))
+                        state.world.findPath(state.world.actorLocation(state.person).get(), new World.EndCoords(coords))
                 );
 
         if (!pathToTarget.isPresent()) {
@@ -112,7 +112,7 @@ public class ImproveFriendship extends Goal {
           status = Status.COMPLETED;
 
           // TODO perform decision making in another class
-          if (((Person) target).energy < 101 &&
+          if (target.energy < 101 &&
                   state.person.inventory.stream().anyMatch(item -> item instanceof Coffee)) {
             return new TerminalAction(new GiveFood(state, target));
           }
@@ -123,7 +123,7 @@ public class ImproveFriendship extends Goal {
             new Move(
               state,
               Move.Direction.directionToMove(
-                state.world.actorLocation(state.person.id()).get(), pathToTarget.get().get(0)
+                state.world.actorLocation(state.person).get(), pathToTarget.get().get(0)
               )
             )
         );
@@ -140,8 +140,7 @@ public class ImproveFriendship extends Goal {
       for (int j = personCoords.y - 2; j < personCoords.y + 2; j++) {
         Coords coords = new Coords(i, j);
         if (state.world.actorLocations.containsKey(new Coords(i, j))) {
-          String id = state.world.actorLocations.get(coords);
-          nearby.add(state.world.actors.get(id));
+          nearby.add(state.world.actorLocations.get(coords));
         }
       }
     }

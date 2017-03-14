@@ -1,6 +1,5 @@
 package com.officelife.actions;
 
-import com.officelife.Coords;
 import com.officelife.actions.prerequisite.LocationBeside;
 import com.officelife.actors.Actor;
 import com.officelife.goals.State;

@@ -1,15 +1,8 @@
 package com.officelife;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.officelife.actors.Actor;
 import com.officelife.items.Item;
@@ -19,26 +12,25 @@ import com.officelife.items.Item;
  */
 public class World {
 
-  public Map<String, Actor> actors = new HashMap<>();
-  public Map<String, Item> items = new HashMap<>();
-  public Map<Coords, String> actorLocations = new HashMap<>();
-  private Map<Coords, List<String>> itemLocations = new HashMap<>();
 
-  public Optional<Coords> actorLocation(String actorId) {
+  public Map<Coords, Actor> actorLocations = new HashMap<>();
+  private Map<Coords, List<Item>> itemLocations = new HashMap<>();
+
+  public Optional<Coords> actorLocation(Actor actor) {
     return actorLocations.entrySet().stream()
-      .filter(entry -> entry.getValue().equals(actorId))
+      .filter(entry -> entry.getValue().equals(actor))
       .map(Map.Entry::getKey)
       .findFirst();
   }
 
-  public Optional<Coords> itemLocation(String itemId) {
+  public Optional<Coords> itemLocation(Item item) {
     return itemLocations.entrySet().stream()
-      .filter(entry -> entry.getValue().contains(itemId))
+      .filter(entry -> entry.getValue().contains(item))
       .map(Map.Entry::getKey)
       .findFirst();
   }
 
-  public List<String> itemsAtLocation(Coords coords) {
+  public List<Item> itemsAtLocation(Coords coords) {
     itemLocations.putIfAbsent(coords, new ArrayList<>());
     return itemLocations.get(coords);
   }
@@ -47,15 +39,25 @@ public class World {
     return itemLocations.entrySet().stream()
       .filter(entry -> entry.getValue()
         .stream()
-        .anyMatch(itemId -> predicate.test(items.get(itemId)))
+        .anyMatch(predicate::test)
       )
       .map(Map.Entry::getKey)
       .findFirst();
   }
 
+  public Collection<Actor> actors() {
+    return this.actorLocations.values();
+  }
+
+  public Collection<Item> items() {
+    return this.itemLocations.values()
+            .stream()
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet());
+  }
+
   public void removeActor(Actor actor) {
-    this.actors.remove(actor.id());
-    this.actorLocations.values().remove(actor.id());
+    this.actorLocations.values().remove(actor);
   }
 
   public static class EndCoords implements Predicate<Coords> {
