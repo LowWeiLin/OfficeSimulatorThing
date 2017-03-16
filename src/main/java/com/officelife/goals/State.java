@@ -1,14 +1,14 @@
 package com.officelife.goals;
 
 import com.officelife.World;
-import com.officelife.actors.Person;
+import com.officelife.actors.Actor;
 
 public class State {
   public final World world;
-  public final Person person;
+  public final Actor actor;
 
-  public State(World world, Person person) {
+  public State(World world, Actor actor) {
     this.world = world;
-    this.person = person;
+    this.actor = actor;
   }
 }

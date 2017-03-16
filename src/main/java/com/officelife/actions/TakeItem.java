@@ -22,10 +22,10 @@ public class TakeItem<T> extends Action {
   @Override
   public boolean accept() {
 
-    Optional<Coords> currentCoords = state.world.actorLocation(state.person);
+    Optional<Coords> currentCoords = state.world.actorLocation(state.actor);
 
     if (!currentCoords.isPresent()) {
-      throw new RuntimeException("person " + state.person.id() + " is nowhere");
+      throw new RuntimeException("actor " + state.actor.id() + " is nowhere");
     }
 
     Optional<Item> maybeItem = state.world.itemsAtLocation(currentCoords.get())
@@ -42,7 +42,7 @@ public class TakeItem<T> extends Action {
     Coords coords = currentCoords.get();
 
     state.world.itemsAtLocation(coords).remove(item);
-    state.person.addItem(item);
+    state.actor.addItem(item);
 
     return true;
   }

@@ -20,13 +20,13 @@ public class Talk extends Action {
 
   @Override
   public boolean accept() {
-    LocationBeside prereq = new LocationBeside(target, state.person, state.world);
+    LocationBeside prereq = new LocationBeside(target, state.actor, state.world);
     if (!prereq.satisfied())  {
       logger.warn("Talk failing due to incorrect location");
       return false;
     }
 
-    Person person = state.person;
+    Person person = (Person)state.actor;
     increaseRelationshipValue(person, (Person) target);
     increaseRelationshipValue((Person) target, person);
     increaseBelonging(person, (Person) target);

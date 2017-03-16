@@ -48,6 +48,11 @@ public class Person implements Actor {
   }
 
   @Override
+  public List<Item> inventory() {
+    return this.inventory;
+  }
+
+  @Override
   public void addItem(Item item) {
     inventory.add(item);
   }

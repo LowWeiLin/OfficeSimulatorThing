@@ -23,21 +23,21 @@ public class GiveFood extends Action {
 
   @Override
   public boolean accept() {
-    LocationBeside prereq = new LocationBeside(target, state.person, state.world);
+    LocationBeside prereq = new LocationBeside(target, state.actor, state.world);
     if (!prereq.satisfied())  {
       return false;
     }
 
-    if (state.person.inventory.stream().noneMatch(item -> item instanceof Coffee)) {
+    if (state.actor.inventory().stream().noneMatch(item -> item instanceof Coffee)) {
       return false;
     }
 
-    Optional<Item> itemToRemove = state.person.inventory.stream()
+    Optional<Item> itemToRemove = state.actor.inventory().stream()
             .filter(item -> item instanceof Coffee)
             .findFirst();
 
     Item item = itemToRemove.orElseThrow(() -> new RuntimeException("Unable to get item from inventory"));
-    state.person.inventory.remove(item);
+    state.actor.inventory().remove(item);
 
     target.addItem(item);
     return true;
