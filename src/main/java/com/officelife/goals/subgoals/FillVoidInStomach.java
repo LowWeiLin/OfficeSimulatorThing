@@ -6,7 +6,7 @@ import com.officelife.goals.Goal;
 import com.officelife.goals.State;
 import com.officelife.goals.effects.Alternatives;
 import com.officelife.goals.effects.Effect;
-import com.officelife.items.Coffee;
+import com.officelife.items.Food;
 
 // OrGoal
 public class FillVoidInStomach extends Goal {
@@ -17,7 +17,7 @@ public class FillVoidInStomach extends Goal {
 
     // TODO proper decision making
     if (state.person.belonging > 5
-            && state.world.itemLocation(i -> i instanceof Coffee).isPresent()) {
+            && state.world.itemLocation(i -> i instanceof Food).isPresent()) {
       return new Alternatives(deque(new GetCoffee()));
     } else {
       return new Alternatives(deque(new PunchPeopleForFood()));

@@ -14,7 +14,7 @@ import com.officelife.goals.State;
 import com.officelife.actions.Languish;
 import com.officelife.goals.effects.Effect;
 import com.officelife.goals.effects.TerminalAction;
-import com.officelife.items.Coffee;
+import com.officelife.items.Food;
 
 // AndGoal
 public class GetCoffee extends Goal {
@@ -50,7 +50,7 @@ public class GetCoffee extends Goal {
 
 
         Optional<List<Coords>> path =
-          state.world.itemLocation(i -> i instanceof Coffee).map(coffee ->
+          state.world.itemLocation(i -> i instanceof Food).map(coffee ->
             state.world.findPath(currentCoords, new World.EndCoords(coffee)));
 
         if (!path.isPresent()) {
@@ -60,13 +60,13 @@ public class GetCoffee extends Goal {
 
         if (path.get().isEmpty()) {
           status = Status.FOUND;
-          return new TerminalAction(new TakeItem<>(state, Coffee.class));
+          return new TerminalAction(new TakeItem<>(state, Food.class));
         }
         return new TerminalAction(new Move(state, Move.Direction.directionToMove(currentCoords, path.get().get(0))));
       case FOUND:
-        if (state.person.inventory.stream().anyMatch(i -> i instanceof Coffee)) {
+        if (state.person.inventory.stream().anyMatch(i -> i instanceof Food)) {
           status = Status.CONSUMED;
-          return new TerminalAction(new ConsumeItem<>(state, Coffee.class));
+          return new TerminalAction(new ConsumeItem<>(state, Food.class));
         } else {
           failed = true;
           return new TerminalAction(new Languish(state));

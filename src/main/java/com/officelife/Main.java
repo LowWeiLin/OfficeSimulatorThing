@@ -3,13 +3,13 @@ package com.officelife;
 import java.io.IOException;
 import java.util.*;
 
+import com.officelife.items.Food;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.officelife.actions.Action;
 import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
-import com.officelife.items.Coffee;
 import com.officelife.items.Item;
 import com.officelife.ui.Renderer;
 
@@ -57,9 +57,9 @@ public class Main {
         putActor(state, foodGuyId, origin, 15, 15, 5);
 
         putActor(state, "Talking guy", new Coords(0, 1), 15, 15, 5);
-//        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Coffee());
+//        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Food());
 
-        Item coffee = new Coffee();
+        Item coffee = new Food();
         Coords coffeeLocation = new Coords(origin.x + 1, origin.y - 1);
 
         List<Item> items = new ArrayList<>();
