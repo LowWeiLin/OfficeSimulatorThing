@@ -2,11 +2,11 @@ package com.officelife.items;
 
 import java.util.UUID;
 
-public class Coffee implements Item {
+public class Food implements Item {
     private final String id;
 
-    public Coffee() {
-        id = "Coffee_" + UUID.randomUUID().toString();
+    public Food() {
+        id = "Food_" + UUID.randomUUID().toString();
     }
 
     @Override

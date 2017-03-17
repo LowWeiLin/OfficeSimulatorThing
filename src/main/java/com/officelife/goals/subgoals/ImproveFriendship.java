@@ -11,7 +11,7 @@ import com.officelife.goals.Outcome;
 import com.officelife.goals.State;
 import com.officelife.goals.effects.Effect;
 import com.officelife.goals.effects.TerminalAction;
-import com.officelife.items.Coffee;
+import com.officelife.items.Food;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +113,7 @@ public class ImproveFriendship extends Goal {
 
           // TODO perform decision making in another class
           if (target.energy < 101 &&
-                  state.actor.inventory().stream().anyMatch(item -> item instanceof Coffee)) {
+                  state.actor.inventory().stream().anyMatch(item -> item instanceof Food)) {
             return new TerminalAction(new GiveFood(state, target));
           }
           return new TerminalAction(new Talk(state, target));

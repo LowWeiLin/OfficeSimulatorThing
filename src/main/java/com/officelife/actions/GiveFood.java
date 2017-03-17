@@ -3,7 +3,7 @@ package com.officelife.actions;
 import com.officelife.actions.prerequisite.LocationBeside;
 import com.officelife.actors.Actor;
 import com.officelife.goals.State;
-import com.officelife.items.Coffee;
+import com.officelife.items.Food;
 import com.officelife.items.Item;
 
 import java.util.Optional;
@@ -28,12 +28,12 @@ public class GiveFood extends Action {
       return false;
     }
 
-    if (state.actor.inventory().stream().noneMatch(item -> item instanceof Coffee)) {
+    if (state.actor.inventory().stream().noneMatch(item -> item instanceof Food)) {
       return false;
     }
 
     Optional<Item> itemToRemove = state.actor.inventory().stream()
-            .filter(item -> item instanceof Coffee)
+            .filter(item -> item instanceof Food)
             .findFirst();
 
     Item item = itemToRemove.orElseThrow(() -> new RuntimeException("Unable to get item from inventory"));
