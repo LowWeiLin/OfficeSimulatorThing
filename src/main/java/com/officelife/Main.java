@@ -3,6 +3,7 @@ package com.officelife;
 import java.io.IOException;
 import java.util.*;
 
+import com.officelife.items.Pants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,12 @@ public class Main {
             if (actor.isDead()) {
 
                 Coords location = state.actorLocation(actor).get();
+                List<Item> items = new ArrayList<>(actor.inventory());
+                actor.inventory().clear();
                 state.removeActor(actor);
-                // TODO handle item drops
+
+                state.itemsAtLocation(location)
+                        .addAll(items);
             }
         }
     }
@@ -54,19 +59,23 @@ public class Main {
         World state = new World();
         String foodGuyId = "Food guy";
         Coords origin = new Coords(0, 0);
-        putActor(state, foodGuyId, origin, 15, 15, 5);
+        putActorWithItems(state, foodGuyId, origin, 15, 15, 5, new Pants());
 
-        putActor(state, "Talking guy", new Coords(0, 1), 15, 15, 5);
+        putActorWithItems(state, "Talking guy", new Coords(0, 1), 15, 15, 5, new Pants());
 //        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Coffee());
 
         Item coffee = new Coffee();
         Coords coffeeLocation = new Coords(origin.x + 1, origin.y - 1);
 
-        List<Item> items = new ArrayList<>();
-        items.add(coffee);
-        state.itemsAtLocation(coffeeLocation).addAll(items);
+        putItems(state, coffee, coffeeLocation);
 
         return state;
+    }
+
+    private static void putItems(World state, Item itemsToAdd, Coords location) {
+        List<Item> items = new ArrayList<>();
+        items.add(itemsToAdd);
+        state.itemsAtLocation(location).addAll(items);
     }
 
     private static void putActor(World state, String personId, Coords coords ) {
