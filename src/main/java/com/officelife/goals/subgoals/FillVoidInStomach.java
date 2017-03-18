@@ -25,7 +25,7 @@ public class FillVoidInStomach extends Goal {
             && state.world.closestLocation(i -> i instanceof Food,
             state.world.actorLocation(person).orElseThrow(() -> new RuntimeException("actor not found"))
     ).isPresent()) {
-      return new Alternatives(deque(new GetCoffee()));
+      return new Alternatives(deque(new GetFood()));
     } else {
       return new Alternatives(deque(new PunchPeopleForFood()));
     }

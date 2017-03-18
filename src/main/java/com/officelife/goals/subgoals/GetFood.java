@@ -17,7 +17,7 @@ import com.officelife.goals.effects.TerminalAction;
 import com.officelife.items.Food;
 
 // AndGoal
-public class GetCoffee extends Goal {
+public class GetFood extends Goal {
 
   private enum Status {
     NOT_FOUND, FOUND, CONSUMED
