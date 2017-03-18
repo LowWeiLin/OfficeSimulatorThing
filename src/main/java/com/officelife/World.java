@@ -23,7 +23,7 @@ public class World {
       .findFirst();
   }
 
-  public Optional<Coords> closestLocation(Item item) {
+  public Optional<Coords> itemLocation(Item item) {
     return itemLocations.entrySet().stream()
       .filter(entry -> entry.getValue().contains(item))
       .map(Map.Entry::getKey)
