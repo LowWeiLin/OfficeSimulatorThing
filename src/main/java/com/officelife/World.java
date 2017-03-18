@@ -116,7 +116,7 @@ public class World {
 
       Set<Coords> neighbours = current.neighbours();
       for (Coords n : neighbours) {
-        if (!visited.contains(n) && !isObstructed(n)) {
+        if (!visited.contains(n) && !isObstructed(n, target)) {
           parents.put(n, current);
           q.push(n);
           visited.add(n);
@@ -142,8 +142,8 @@ public class World {
     return Optional.of(new ArrayList<>(path));
   }
 
-  private boolean isObstructed(Coords n) {
-    // actors block the way
-    return Optional.ofNullable(this.actorLocations.get(n)).isPresent();
+  private boolean isObstructed(Coords n, Predicate<Coords> target) {
+    // actors block the way, unless the actor is at the target location
+    return !target.test(n) && Optional.ofNullable(this.actorLocations.get(n)).isPresent();
   }
 }
