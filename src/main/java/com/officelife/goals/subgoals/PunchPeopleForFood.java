@@ -61,7 +61,7 @@ public class PunchPeopleForFood extends Goal {
                 // search the map. return move action
                 // TODO extract this into a class?
 
-                Coords personCoords = state.world.actorLocation(state.person)
+                Coords personCoords = state.world.actorLocation(state.actor)
                         .orElseThrow(() -> new RuntimeException("Actor not found"));
                 Optional<Actor> possibleTarget = chooseTarget(state, personCoords);
 
@@ -71,8 +71,8 @@ public class PunchPeopleForFood extends Goal {
                 }
                 Person targetPerson = (Person) possibleTarget.get();
 
-                Coords currentCoords = state.world.actorLocation(state.person)
-                        .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));
+                Coords currentCoords = state.world.actorLocation(state.actor)
+                        .orElseThrow(() -> new RuntimeException("actor " + state.actor.id() + " is nowhere"));
 
                 Optional<List<Coords>> path = state.world.actorLocation(targetPerson)
                         .flatMap(coords -> state.world.findPath(currentCoords, new World.EndCoords(coords)));
@@ -94,7 +94,7 @@ public class PunchPeopleForFood extends Goal {
                 Optional<List<Coords>> pathToTarget = state.world.actorLocation(target)
                     .flatMap(coords ->
                         state.world.findPath(
-                            state.world.actorLocation(state.person).get(),
+                            state.world.actorLocation(state.actor).get(),
                             new World.EndCoords(coords))
                     );
 
@@ -102,7 +102,7 @@ public class PunchPeopleForFood extends Goal {
                     failed = true;
                     return new TerminalAction(new Languish(state));
                 }
-                if (new LocationBeside(state.person, target, state.world)
+                if (new LocationBeside(state.actor, target, state.world)
                         .satisfied()) {
                     status = Status.COMPLETED;
 
@@ -113,7 +113,7 @@ public class PunchPeopleForFood extends Goal {
                     new Move(
                         state,
                         Move.Direction.directionToMove(
-                            state.world.actorLocation(state.person).get(), pathToTarget.get().get(0)
+                            state.world.actorLocation(state.actor).get(), pathToTarget.get().get(0)
                         )
                     )
                 );
@@ -136,15 +136,19 @@ public class PunchPeopleForFood extends Goal {
         if (nearby.isEmpty()) {
             return Optional.empty();
         }
-        // select person with the lowest relationship score
+
+        Person actingPerson = (Person) state.actor;
+
+        // select actor with the lowest relationship score
         return nearby.stream()
-                .filter(actor -> !actor.id().equals(state.person.id()))
+                .filter(actor -> !actor.id().equals(state.actor.id()))
+                .filter(actor -> actor instanceof Person)
                 .min((actor1, actor2) -> {
-                    int relationship1 = state.person.relationships.containsKey(actor1.id())
-                            ? state.person.relationships.get(actor1.id())
+                    int relationship1 = actingPerson.relationships.containsKey(actor1.id())
+                            ? actingPerson.relationships.get(actor1.id())
                             : 0;
-                    int relationship2 = state.person.relationships.containsKey(actor2.id())
-                            ? state.person.relationships.get(actor2.id())
+                    int relationship2 = actingPerson.relationships.containsKey(actor2.id())
+                            ? actingPerson.relationships.get(actor2.id())
                             : 0;
                     return Integer.compare(relationship1, relationship2);
                 });

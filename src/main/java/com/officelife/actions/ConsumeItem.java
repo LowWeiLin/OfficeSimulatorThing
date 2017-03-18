@@ -19,7 +19,7 @@ public class ConsumeItem<T> extends Action {
 
   @Override
   public boolean accept() {
-    Map<Boolean, List<Item>> partitioned = state.person.inventory.stream().collect(
+    Map<Boolean, List<Item>> partitioned = state.actor.inventory().stream().collect(
       Collectors.groupingBy(itemClass::isInstance, Collectors.toList()));
 
     if (!partitioned.containsKey(true) || partitioned.get(true).isEmpty()) {
@@ -33,11 +33,11 @@ public class ConsumeItem<T> extends Action {
     // TODO better data structure
     notRemoved.remove(0);
 
-    state.person.inventory.clear();
+    state.actor.inventory().clear();
     if (partitioned.containsKey(false)) {
-      state.person.inventory.addAll(partitioned.get(false));
+      state.actor.inventory().addAll(partitioned.get(false));
     }
-    state.person.inventory.addAll(notRemoved);
+    state.actor.inventory().addAll(notRemoved);
 
     return true;
   }

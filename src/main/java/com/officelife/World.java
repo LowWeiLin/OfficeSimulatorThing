@@ -35,14 +35,26 @@ public class World {
     return itemLocations.get(coords);
   }
 
-  public Optional<Coords> itemLocation(Predicate<Item> predicate) {
+
+  public Optional<Coords> closestLocation(Predicate<Item> predicate, Coords current) {
     return itemLocations.entrySet().stream()
       .filter(entry -> entry.getValue()
         .stream()
         .anyMatch(predicate::test)
       )
       .map(Map.Entry::getKey)
+            .sorted((coords1, coords2) -> distance(coords1, current) < distance(coords2, current) ? -1 : 1)
       .findFirst();
+  }
+
+  //
+  public static long distance(Coords one, Coords two) {
+    return Math.round(
+            Math.sqrt(
+                    Math.pow(one.x - two.x, 2)
+                    + Math.pow(one.y - two.y, 2)
+            )
+    );
   }
 
   public Collection<Actor> actors() {
@@ -90,7 +102,6 @@ public class World {
     numSteps.put(start, 0);
 
     Coords end = null;
-
     while (!q.isEmpty()) {
       Coords current = q.removeLast();
       int stepsTaken = numSteps.get(current);
@@ -105,7 +116,7 @@ public class World {
 
       Set<Coords> neighbours = current.neighbours();
       for (Coords n : neighbours) {
-        if (!visited.contains(n)) {
+        if (!visited.contains(n) && !isObstructed(n, target)) {
           parents.put(n, current);
           q.push(n);
           visited.add(n);
@@ -129,5 +140,10 @@ public class World {
     // path.push(start);
 
     return Optional.of(new ArrayList<>(path));
+  }
+
+  private boolean isObstructed(Coords n, Predicate<Coords> target) {
+    // actors block the way, unless the actor is at the target location
+    return !target.test(n) && Optional.ofNullable(this.actorLocations.get(n)).isPresent();
   }
 }

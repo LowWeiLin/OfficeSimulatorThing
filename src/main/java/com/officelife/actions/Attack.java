@@ -21,14 +21,20 @@ public class Attack extends Action {
 
   @Override
   public boolean accept() {
-    LocationBeside prereq = new LocationBeside(target, state.person, state.world);
+    LocationBeside prereq = new LocationBeside(target, state.actor, state.world);
     if (!prereq.satisfied())  {
       logger.warn("Attack failing due to incorrect location");
       return false;
     }
 
+    if (!(state.actor instanceof Person)) {
+      throw new RuntimeException("Attack requires person as actor");
+    }
+
+    Person person = (Person)state.actor;
+
     decreaseTargetHealth((Person) target);
-    decreaseRelationshipValue(state.person, (Person) target);
+    decreaseRelationshipValue(person, (Person) target);
 
     logger.debug("Attack completed");
     logger.debug("{} has {} energy remaining", target.id(), ((Person) target).energy);

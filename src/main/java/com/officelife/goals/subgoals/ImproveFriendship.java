@@ -61,13 +61,13 @@ public class ImproveFriendship extends Goal {
       case INIT_GOAL:
         // search the map. return move action
 
-        Coords personCoords = state.world.actorLocation(state.person)
+        Coords personCoords = state.world.actorLocation(state.actor)
                 .orElseThrow(() -> new RuntimeException("Actor not found"));
         List<Actor> nearbyActors = nearbyActors(state, personCoords);
 
         List<Person> nearbyPersons = nearbyActors.stream()
                 .filter(actor -> actor instanceof Person)
-                .filter(actor -> !actor.id().equals(state.person.id()))
+                .filter(actor -> !actor.id().equals(state.actor.id()))
                 .map(actor -> (Person) actor)
                 .collect(Collectors.toList());
 
@@ -77,8 +77,8 @@ public class ImproveFriendship extends Goal {
         }
         Person targetPerson = nearbyPersons.get(ThreadLocalRandom.current().nextInt(0, nearbyPersons.size()));
 
-        Coords currentCoords = state.world.actorLocation(state.person)
-                .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));
+        Coords currentCoords = state.world.actorLocation(state.actor)
+                .orElseThrow(() -> new RuntimeException("actor " + state.actor.id() + " is nowhere"));
 
         Optional<List<Coords>> path = state.world.actorLocation(targetPerson)
                 .flatMap(coords -> state.world.findPath(currentCoords, new World.EndCoords(coords)));
@@ -100,20 +100,20 @@ public class ImproveFriendship extends Goal {
 
         Optional<List<Coords>> pathToTarget = state.world.actorLocation(target)
                 .flatMap(coords ->
-                        state.world.findPath(state.world.actorLocation(state.person).get(), new World.EndCoords(coords))
+                        state.world.findPath(state.world.actorLocation(state.actor).get(), new World.EndCoords(coords))
                 );
 
         if (!pathToTarget.isPresent()) {
           failed = true;
           return new TerminalAction(new Languish(state));
         }
-        if (new LocationBeside(state.person, target, state.world)
+        if (new LocationBeside(state.actor, target, state.world)
                 .satisfied()) {
           status = Status.COMPLETED;
 
           // TODO perform decision making in another class
           if (target.energy < 101 &&
-                  state.person.inventory.stream().anyMatch(item -> item instanceof Food)) {
+                  state.actor.inventory().stream().anyMatch(item -> item instanceof Food)) {
             return new TerminalAction(new GiveFood(state, target));
           }
           return new TerminalAction(new Talk(state, target));
@@ -123,7 +123,7 @@ public class ImproveFriendship extends Goal {
             new Move(
               state,
               Move.Direction.directionToMove(
-                state.world.actorLocation(state.person).get(), pathToTarget.get().get(0)
+                state.world.actorLocation(state.actor).get(), pathToTarget.get().get(0)
               )
             )
         );

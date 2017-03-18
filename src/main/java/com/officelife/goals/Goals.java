@@ -31,7 +31,7 @@ public class Goals {
 
     goals.clear();
     // TODO root goal is survive?
-//    if (state.person.physiology > state.person.belonging) {
+//    if (state.actor.physiology > state.actor.belonging) {
     goals.push(new FillVoidInSoul());
 //    } else {
 //      goals.push(new FillVoidInStomach());

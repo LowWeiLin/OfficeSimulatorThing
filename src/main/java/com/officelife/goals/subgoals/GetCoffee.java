@@ -45,12 +45,12 @@ public class GetCoffee extends Goal {
     switch (status) {
       case NOT_FOUND:
         // search the map. return move action
-        Coords currentCoords = state.world.actorLocation(state.person)
-                .orElseThrow(() -> new RuntimeException("person " + state.person.id() + " is nowhere"));
+        Coords currentCoords = state.world.actorLocation(state.actor)
+                .orElseThrow(() -> new RuntimeException("actor " + state.actor.id() + " is nowhere"));
 
 
         Optional<List<Coords>> path =
-          state.world.itemLocation(i -> i instanceof Food)
+          state.world.closestLocation(i -> i instanceof Food, currentCoords)
                   .flatMap(
                           food -> state.world.findPath(currentCoords, new World.EndCoords(food))
                   );
@@ -66,7 +66,7 @@ public class GetCoffee extends Goal {
         }
         return new TerminalAction(new Move(state, Move.Direction.directionToMove(currentCoords, path.get().get(0))));
       case FOUND:
-        if (state.person.inventory.stream().anyMatch(i -> i instanceof Food)) {
+        if (state.actor.inventory().stream().anyMatch(i -> i instanceof Food)) {
           status = Status.CONSUMED;
           return new TerminalAction(new ConsumeItem<>(state, Food.class));
         } else {

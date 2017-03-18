@@ -5,6 +5,8 @@ import com.officelife.actions.Action;
 import com.officelife.items.Item;
 import com.officelife.ui.Renderable;
 
+import java.util.List;
+
 public interface Actor extends Renderable {
 
     String id();
@@ -14,6 +16,8 @@ public interface Actor extends Renderable {
     }
 
     Action act(World state, boolean succeeded);
+
+    List<Item> inventory();
 
     void addItem(Item item);
 
