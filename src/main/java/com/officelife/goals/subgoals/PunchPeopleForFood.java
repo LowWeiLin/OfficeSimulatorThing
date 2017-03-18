@@ -75,7 +75,7 @@ public class PunchPeopleForFood extends Goal {
                         .orElseThrow(() -> new RuntimeException("actor " + state.actor.id() + " is nowhere"));
 
                 Optional<List<Coords>> path = state.world.actorLocation(targetPerson)
-                        .map(coords -> state.world.findPath(currentCoords, new World.EndCoords(coords)));
+                        .flatMap(coords -> state.world.findPath(currentCoords, new World.EndCoords(coords)));
 
                 if (!path.isPresent()) {
                     failed = true;
@@ -92,7 +92,7 @@ public class PunchPeopleForFood extends Goal {
             case FINDING:
 
                 Optional<List<Coords>> pathToTarget = state.world.actorLocation(target)
-                    .map(coords ->
+                    .flatMap(coords ->
                         state.world.findPath(
                             state.world.actorLocation(state.actor).get(),
                             new World.EndCoords(coords))

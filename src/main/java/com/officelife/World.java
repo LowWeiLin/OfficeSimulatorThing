@@ -86,35 +86,47 @@ public class World {
     }
   }
 
-  public List<Coords> findPath(Coords start, Predicate<Coords> target) {
+  public Optional<List<Coords>> findPath(Coords start, Predicate<Coords> target) {
+    return findPath(start, target, 20);
+  }
+
+  public Optional<List<Coords>> findPath(Coords start, Predicate<Coords> target, int maxSteps) {
     Deque<Coords> q = new ArrayDeque<>();
 
     Set<Coords> visited = new HashSet<>();
     Map<Coords, Coords> parents = new HashMap<>();
+    Map<Coords, Integer> numSteps = new HashMap<>();
 
     q.push(start);
     visited.add(start);
+    numSteps.put(start, 0);
 
     Coords end = null;
     while (!q.isEmpty()) {
       Coords current = q.removeLast();
+      int stepsTaken = numSteps.get(current);
+      if (stepsTaken > maxSteps) {
+        continue;
+      }
+
       if (target.test(current)) {
         end = current;
         break;
       }
+
       Set<Coords> neighbours = current.neighbours();
       for (Coords n : neighbours) {
         if (!visited.contains(n) && !isObstructed(n)) {
           parents.put(n, current);
           q.push(n);
           visited.add(n);
+          numSteps.put(n, stepsTaken + 1);
         }
       }
     }
 
     if (end == null) {
-      // TODO is this even possible? it will loop forever if the target is never found
-      throw new RuntimeException("did not find target");
+      return Optional.empty();
     }
 
     // rebuild the path
@@ -127,7 +139,7 @@ public class World {
     // the path will be without the start coord
     // path.push(start);
 
-    return new ArrayList<>(path);
+    return Optional.of(new ArrayList<>(path));
   }
 
   private boolean isObstructed(Coords n) {
