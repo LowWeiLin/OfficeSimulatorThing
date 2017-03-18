@@ -61,7 +61,7 @@ public class Renderer {
         clearBuffer();
 
         for (Item item : state.items()) {
-            Optional<Coords> location = state.itemLocation(item);
+            Optional<Coords> location = state.closestLocation(item);
 
             if (!location.isPresent()) {
                 // it's possible the item may be in someone's inventory

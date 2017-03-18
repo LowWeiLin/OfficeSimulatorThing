@@ -50,7 +50,7 @@ public class GetCoffee extends Goal {
 
 
         Optional<List<Coords>> path =
-          state.world.itemLocation(i -> i instanceof Food).map(coffee ->
+          state.world.closestLocation(i -> i instanceof Food, currentCoords).map(coffee ->
             state.world.findPath(currentCoords, new World.EndCoords(coffee)));
 
         if (!path.isPresent()) {

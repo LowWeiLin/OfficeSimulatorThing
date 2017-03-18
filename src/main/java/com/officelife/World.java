@@ -23,7 +23,7 @@ public class World {
       .findFirst();
   }
 
-  public Optional<Coords> itemLocation(Item item) {
+  public Optional<Coords> closestLocation(Item item) {
     return itemLocations.entrySet().stream()
       .filter(entry -> entry.getValue().contains(item))
       .map(Map.Entry::getKey)
@@ -35,14 +35,25 @@ public class World {
     return itemLocations.get(coords);
   }
 
-  public Optional<Coords> itemLocation(Predicate<Item> predicate) {
+  public Optional<Coords> closestLocation(Predicate<Item> predicate, Coords current) {
     return itemLocations.entrySet().stream()
       .filter(entry -> entry.getValue()
         .stream()
         .anyMatch(predicate::test)
       )
       .map(Map.Entry::getKey)
+            .sorted((coords1, coords2) -> distance(coords1, current) < distance(coords2, current) ? -1 : 1)
       .findFirst();
+  }
+
+  //
+  public static long distance(Coords one, Coords two) {
+    return Math.round(
+            Math.sqrt(
+                    Math.pow(one.x - two.x, 2)
+                    + Math.pow(one.y - two.y, 2)
+            )
+    );
   }
 
   public Collection<Actor> actors() {

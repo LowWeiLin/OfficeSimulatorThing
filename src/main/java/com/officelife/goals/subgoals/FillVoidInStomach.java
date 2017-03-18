@@ -22,7 +22,9 @@ public class FillVoidInStomach extends Goal {
 
     // TODO proper decision making
     if (person.belonging > 5
-            && state.world.itemLocation(i -> i instanceof Food).isPresent()) {
+            && state.world.closestLocation(i -> i instanceof Food,
+            state.world.actorLocation(person).orElseThrow(() -> new RuntimeException("actor not found"))
+    ).isPresent()) {
       return new Alternatives(deque(new GetCoffee()));
     } else {
       return new Alternatives(deque(new PunchPeopleForFood()));
