@@ -54,15 +54,16 @@ public class Main {
             }
         }
 
-        logger.debug("===One turn has ended===");
-        logger.debug("Actors in the world = ");
+        logger.info("===One turn has ended===");
+        logger.info("Actors in the world = ");
         for (Actor actor : state.actors()) {
-            logger.debug("{} : {}", actor.id(), actor.inventory());
+            logger.info("{} at {} : {}", actor.id(), state.actorLocation(actor).get(), actor.inventory());
         }
-        logger.debug("Unclaimed items in the world = ");
+        logger.info("Unclaimed items in the world = ");
         for (Item item : state.items()) {
-            logger.debug("{} : {}", item.id());
+            logger.info("{} : {}", item.id());
         }
+        logger.info("");
     }
 
     private static World initWorld() {
@@ -150,7 +151,7 @@ public class Main {
 
         new Timer(() -> paused, () ->
           renderer.getGUI().runAndWait(() ->
-            gameLoop(renderer, world)), 7);
+            gameLoop(renderer, world)), 25);
 
         renderer.getGUI().start();
     }

@@ -45,7 +45,7 @@ public class FruitTree implements Actor {
     @Override
     public Action act(World world, boolean succeeded) {
         State state = new State(world, this);
-        if (ThreadLocalRandom.current().nextInt(0,100) > 20) {
+        if (ThreadLocalRandom.current().nextInt(0,100) > 50) {
             if (this.inventory().stream().anyMatch(item -> item instanceof Food)) {
                 return new DropFood(state);
             }

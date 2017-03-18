@@ -24,6 +24,6 @@ public class Pants implements Item {
 
     @Override
     public String toString() {
-        return String.format("Food %s", id);
+        return String.format("Pants %s", id);
     }
 }
