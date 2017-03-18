@@ -35,6 +35,7 @@ public class World {
     return itemLocations.get(coords);
   }
 
+
   public Optional<Coords> closestLocation(Predicate<Item> predicate, Coords current) {
     return itemLocations.entrySet().stream()
       .filter(entry -> entry.getValue()
@@ -95,7 +96,6 @@ public class World {
     visited.add(start);
 
     Coords end = null;
-
     while (!q.isEmpty()) {
       Coords current = q.removeLast();
       if (target.test(current)) {
@@ -104,7 +104,7 @@ public class World {
       }
       Set<Coords> neighbours = current.neighbours();
       for (Coords n : neighbours) {
-        if (!visited.contains(n)) {
+        if (!visited.contains(n) && !isObstructed(n)) {
           parents.put(n, current);
           q.push(n);
           visited.add(n);
@@ -128,5 +128,10 @@ public class World {
     // path.push(start);
 
     return new ArrayList<>(path);
+  }
+
+  private boolean isObstructed(Coords n) {
+    // actors block the way
+    return Optional.ofNullable(this.actorLocations.get(n)).isPresent();
   }
 }
