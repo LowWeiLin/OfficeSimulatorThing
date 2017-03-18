@@ -3,6 +3,7 @@ package com.officelife;
 import java.io.IOException;
 import java.util.*;
 
+import com.officelife.actors.FruitTree;
 import com.officelife.items.Pants;
 import com.officelife.items.Food;
 import org.slf4j.Logger;
@@ -43,7 +44,6 @@ public class Main {
 
         for (Actor actor : actors) {
             if (actor.isDead()) {
-
                 Coords location = state.actorLocation(actor).get();
                 List<Item> items = new ArrayList<>(actor.inventory());
                 actor.inventory().clear();
@@ -53,16 +53,21 @@ public class Main {
                         .addAll(items);
             }
         }
+
+        logger.debug("One turn has ended");
     }
 
     private static World initWorld() {
         World state = new World();
         String foodGuyId = "Food guy";
         Coords origin = new Coords(0, 0);
-        putActorWithItems(state, foodGuyId, origin, 15, 15, 5, new Pants());
+        putPersonWithItems(state, foodGuyId, origin, 15, 15, 5, new Pants());
 
-        putActorWithItems(state, "Talking guy", new Coords(0, 1), 15, 15, 5, new Pants());
+        putPersonWithItems(state, "Talking guy", new Coords(0, 1), 15, 15, 5, new Pants());
 //        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Food());
+
+
+        putActor(state, new Coords(-1, -2), new FruitTree("Tree"));
 
         Item coffee = new Food();
         Coords coffeeLocation = new Coords(origin.x + 1, origin.y - 1);
@@ -78,21 +83,29 @@ public class Main {
         state.itemsAtLocation(location).addAll(items);
     }
 
-    private static void putActor(World state, String personId, Coords coords ) {
+    private static void putPerson(World state, String personId, Coords coords ) {
         Actor person = new Person(personId);
         state.actorLocations.put(coords, person);
     }
 
-    private static void putActor(
+    private static void putPerson(
             World state, String personId, Coords coords, int physiology, int belonging, int energy) {
         Actor person = new Person(personId, physiology, belonging, energy);
         state.actorLocations.put(coords, person);
     }
 
-    private static void putActorWithItems(
+    private static void putPersonWithItems(
             World state, String personId, Coords coords, int physiology, int belonging, int energy,
             Item... items) {
         Actor person = new Person(personId, physiology, belonging, energy);
+        putActorWithItems(state, coords, person, items);
+    }
+
+    private static void putActor(World state, Coords coords, Actor person) {
+        putActorWithItems(state, coords, person);
+    }
+
+    private static void putActorWithItems(World state, Coords coords, Actor person, Item... items) {
         state.actorLocations.put(coords, person);
 
         for (Item item : items) {

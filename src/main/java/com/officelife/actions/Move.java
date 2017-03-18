@@ -55,6 +55,7 @@ public class Move extends Action {
       return false;
     }
 
+
     // directly update the location
     state.world.actorLocations.remove(old.get());
     state.world.actorLocations.put(updated, state.actor);
