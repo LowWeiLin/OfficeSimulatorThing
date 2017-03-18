@@ -33,10 +33,17 @@ public class DropFood extends Action {
         Coords currentLocation = state.world.actorLocation(actor)
                 .orElseThrow(() -> new RuntimeException("Actor no longer has a location in the world but took an action!"));
 
+        Coords locationToDrop = locationOffsetByOne(currentLocation);
+
         actor.inventory().remove(food);
-        state.world.itemsAtLocation(currentLocation).add(food);
+        state.world.itemsAtLocation(locationToDrop).add(food);
 
         return true;
+    }
+
+    private Coords locationOffsetByOne(Coords location) {
+        // TODO random choose one direction
+        return new Coords(location.x, location.y - 1);
     }
 
     @Override
