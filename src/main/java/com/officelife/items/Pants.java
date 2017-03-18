@@ -21,4 +21,9 @@ public class Pants implements Item {
     public String id() {
         return "Pants " + this.id;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Food %s", id);
+    }
 }

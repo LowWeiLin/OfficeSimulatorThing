@@ -18,4 +18,9 @@ public class Food implements Item {
     public char[][] textRepresentation() {
         return new char[][] {{'\u2615'}};
     }
+
+    @Override
+    public String toString() {
+        return String.format("Food %s", id);
+    }
 }

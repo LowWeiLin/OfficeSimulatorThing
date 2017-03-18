@@ -54,7 +54,15 @@ public class Main {
             }
         }
 
-        logger.debug("One turn has ended");
+        logger.debug("===One turn has ended===");
+        logger.debug("Actors in the world = ");
+        for (Actor actor : state.actors()) {
+            logger.debug("{} : {}", actor.id(), actor.inventory());
+        }
+        logger.debug("Unclaimed items in the world = ");
+        for (Item item : state.items()) {
+            logger.debug("{} : {}", item.id());
+        }
     }
 
     private static World initWorld() {
