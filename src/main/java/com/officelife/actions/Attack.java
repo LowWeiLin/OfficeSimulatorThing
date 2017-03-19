@@ -1,6 +1,7 @@
 package com.officelife.actions;
 
 
+import com.officelife.items.Weapon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,22 @@ public class Attack extends Action {
   }
 
   private void decreaseTargetHealth(Person target) {
-    target.energy -= 5;
+    int baseDamage = 5;
+    target.energy -= baseDamage + damageByWeapon();
+  }
+
+  private int damageByWeapon() {
+    if (state.actor.inventory().stream()
+            .noneMatch(item -> item instanceof Weapon)) {
+      return 0;
+    }
+    Weapon mostPainful = state.actor.inventory()
+            .stream()
+            .filter(item -> item instanceof Weapon)
+            .map(item -> (Weapon) item )
+            .max((weapon1, weapon2) -> weapon1.damage() < weapon2.damage() ? -1 : 1)
+            .get();
+    return mostPainful.damage();
   }
 
   private void decreaseRelationshipValue(Person person, Person target) {
