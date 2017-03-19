@@ -27,7 +27,7 @@ public class FillVoidInStomach extends Goal {
     ).isPresent()) {
       return new Alternatives(deque(new GetFood()));
     } else {
-      return new Alternatives(deque(new PunchPeopleForFood()));
+      return new Alternatives(deque(new Attack()));
     }
 
   }

@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * Ouch.
  */
-public class PunchPeopleForFood extends Goal {
+public class Attack extends Goal {
     private enum Status {
         INIT_GOAL, FINDING, COMPLETED
     }
@@ -31,12 +31,12 @@ public class PunchPeopleForFood extends Goal {
 
     private Person target;
 
-    public PunchPeopleForFood(Person target) {
+    public Attack(Person target) {
         this.target = target;
         this.status = Status.FINDING;
     }
 
-    public PunchPeopleForFood() {
+    public Attack() {
         this.target = null; // :(
         this.status = Status.INIT_GOAL;
     }
@@ -106,7 +106,7 @@ public class PunchPeopleForFood extends Goal {
                         .satisfied()) {
                     status = Status.COMPLETED;
 
-                    return new TerminalAction(new Attack(state, target));
+                    return new TerminalAction(new com.officelife.actions.Attack(state, target));
                 }
 
                 return new TerminalAction(
