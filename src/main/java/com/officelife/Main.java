@@ -6,6 +6,7 @@ import java.util.*;
 import com.officelife.actors.FruitTree;
 import com.officelife.items.Pants;
 import com.officelife.items.Food;
+import com.officelife.items.SharpStick;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,9 +71,9 @@ public class Main {
         World state = new World();
         String foodGuyId = "Food guy";
         Coords origin = new Coords(0, 0);
-        putPersonWithItems(state, foodGuyId, origin, 15, 15, 5, new Pants());
+        putPersonWithItems(state, foodGuyId, origin, 15, 15, 25, new Pants(), new SharpStick());
 
-        putPersonWithItems(state, "Talking guy", new Coords(0, 1), 15, 15, 5, new Pants());
+        putPersonWithItems(state, "Talking guy", new Coords(0, 1), 15, 15, 25, new Pants());
 //        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Food());
 
 

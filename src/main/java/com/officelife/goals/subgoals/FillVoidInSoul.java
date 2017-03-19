@@ -28,7 +28,7 @@ public class FillVoidInSoul extends Goal {
     if (e == null) {
       Deque<Goal> result = deque();
 
-      if (person.energy < 15) {
+      if (person.energy < 50) {
         result.add(new FillVoidInStomach());
       } else if (person.belonging < 50) {
         result.add(new ImproveFriendship());

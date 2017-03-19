@@ -1,6 +1,7 @@
 package com.officelife.actions;
 
 
+import com.officelife.items.Weapon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +24,12 @@ public class Attack extends Action {
   public boolean accept() {
     LocationBeside prereq = new LocationBeside(target, state.actor, state.world);
     if (!prereq.satisfied())  {
-      logger.warn("Attack failing due to incorrect location");
+      logger.warn("DoDamage failing due to incorrect location");
       return false;
     }
 
     if (!(state.actor instanceof Person)) {
-      throw new RuntimeException("Attack requires person as actor");
+      throw new RuntimeException("DoDamage requires person as actor");
     }
 
     Person person = (Person)state.actor;
@@ -36,13 +37,28 @@ public class Attack extends Action {
     decreaseTargetHealth((Person) target);
     decreaseRelationshipValue(person, (Person) target);
 
-    logger.debug("Attack completed");
+    logger.debug("DoDamage completed");
     logger.debug("{} has {} energy remaining", target.id(), ((Person) target).energy);
     return true;
   }
 
   private void decreaseTargetHealth(Person target) {
-    target.energy -= 5;
+    int baseDamage = 5;
+    target.energy -= baseDamage + damageByWeapon();
+  }
+
+  private int damageByWeapon() {
+    if (state.actor.inventory().stream()
+            .noneMatch(item -> item instanceof Weapon)) {
+      return 0;
+    }
+    Weapon mostPainful = state.actor.inventory()
+            .stream()
+            .filter(item -> item instanceof Weapon)
+            .map(item -> (Weapon) item )
+            .max((weapon1, weapon2) -> weapon1.damage() < weapon2.damage() ? -1 : 1)
+            .get();
+    return mostPainful.damage();
   }
 
   private void decreaseRelationshipValue(Person person, Person target) {
@@ -57,6 +73,6 @@ public class Attack extends Action {
 
   @Override
   public String toString() {
-    return String.format("Attack Target %s", target.id());
+    return String.format("DoDamage Target %s", target.id());
   }
 }
