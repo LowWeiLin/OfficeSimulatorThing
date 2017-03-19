@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Ouch.
  */
-public class Attack extends Goal {
+public class DoDamage extends Goal {
     private enum Status {
         FINDING, COMPLETED
     }
@@ -29,7 +29,7 @@ public class Attack extends Goal {
 
     private Actor target;
 
-    public Attack(Actor target) {
+    public DoDamage(Actor target) {
         this.target = target;
         this.status = Status.FINDING;
     }
@@ -69,7 +69,7 @@ public class Attack extends Goal {
                         .satisfied()) {
                     status = Status.COMPLETED;
 
-                    return new TerminalAction(new AttackSomeone(state, target));
+                    return new TerminalAction(new com.officelife.actions.Attack(state, target));
                 }
 
                 return new TerminalAction(

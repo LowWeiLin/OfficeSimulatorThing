@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-public class TryToAttackSomeone extends Goal {
+public class TryToAttack extends Goal {
 
 
     private boolean failed = false;
@@ -28,7 +28,7 @@ public class TryToAttackSomeone extends Goal {
     private Effect e = null;
 
 
-    public TryToAttackSomeone() {
+    public TryToAttack() {
     }
 
     @Override
@@ -52,7 +52,7 @@ public class TryToAttackSomeone extends Goal {
             return e;
         }
         this.target = maybe.get();
-        e = new Alternatives(new Attack(this.target));
+        e = new Alternatives(new DoDamage(this.target));
         return e;
     }
 
