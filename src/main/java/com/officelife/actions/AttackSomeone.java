@@ -10,12 +10,12 @@ import com.officelife.actors.Actor;
 import com.officelife.actors.Person;
 import com.officelife.goals.State;
 
-public class Attack extends Action {
+public class AttackSomeone extends Action {
 
-  private static final Logger logger = LoggerFactory.getLogger(Attack.class);
+  private static final Logger logger = LoggerFactory.getLogger(AttackSomeone.class);
   private final Actor target;
 
-  public Attack(State state, Actor target) {
+  public AttackSomeone(State state, Actor target) {
     super(state);
     this.target = target;
   }
@@ -24,12 +24,12 @@ public class Attack extends Action {
   public boolean accept() {
     LocationBeside prereq = new LocationBeside(target, state.actor, state.world);
     if (!prereq.satisfied())  {
-      logger.warn("Attack failing due to incorrect location");
+      logger.warn("AttackSomeone failing due to incorrect location");
       return false;
     }
 
     if (!(state.actor instanceof Person)) {
-      throw new RuntimeException("Attack requires person as actor");
+      throw new RuntimeException("AttackSomeone requires person as actor");
     }
 
     Person person = (Person)state.actor;
@@ -37,7 +37,7 @@ public class Attack extends Action {
     decreaseTargetHealth((Person) target);
     decreaseRelationshipValue(person, (Person) target);
 
-    logger.debug("Attack completed");
+    logger.debug("AttackSomeone completed");
     logger.debug("{} has {} energy remaining", target.id(), ((Person) target).energy);
     return true;
   }
@@ -73,6 +73,6 @@ public class Attack extends Action {
 
   @Override
   public String toString() {
-    return String.format("Attack Target %s", target.id());
+    return String.format("AttackSomeone Target %s", target.id());
   }
 }
