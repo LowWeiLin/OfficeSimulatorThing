@@ -62,6 +62,6 @@ public class Person implements Actor {
 
   @Override
   public char[][] textRepresentation() {
-    return new char[][]{{'\u1330'}};
+    return new char[][]{{'P'}};
   }
 }

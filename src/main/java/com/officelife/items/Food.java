@@ -16,7 +16,7 @@ public class Food implements Item {
 
     @Override
     public char[][] textRepresentation() {
-        return new char[][] {{'\u2615'}};
+        return new char[][] {{'C'}};
     }
 
     @Override
