@@ -75,12 +75,6 @@
                 </executions>
                 <configuration>
                     <mainClass>com.officelife.Main</mainClass>
-                    <systemProperties>
-                        <systemProperty>
-                            <key>java.awt.headless</key>
-                            <value>true</value>
-                        </systemProperty>
-                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>

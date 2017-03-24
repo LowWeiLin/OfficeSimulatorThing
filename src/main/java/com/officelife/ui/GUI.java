@@ -41,7 +41,7 @@ public class GUI {
     private Panel gamePanel;
 
     GUI(ComponentRenderer<Panel> gameRenderer) throws IOException {
-        Terminal terminal = new DefaultTerminalFactory().createTerminal();
+        Terminal terminal = new DefaultTerminalFactory().createTerminalEmulator();
         final Screen screen = new TerminalScreen(terminal);
         screen.startScreen();
 

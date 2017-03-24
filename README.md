@@ -10,6 +10,5 @@ mvn clean package
 ## Run
 
 ```sh
-mvn clean install
-mvn exec:java
+mvn clean install exec:java
 ```
