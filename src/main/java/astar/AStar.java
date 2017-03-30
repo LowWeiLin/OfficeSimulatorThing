@@ -1,8 +1,5 @@
 package astar;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Collections;
+import java.util.*;
 
 import astar.ISearchNode;
 import astar.datastructures.ClosedSet;
@@ -75,7 +72,7 @@ public class AStar {
                 return currentNode;
             }
             //get successor nodes
-            ArrayList<ISearchNode> successorNodes = currentNode.getSuccessors();
+            List<ISearchNode> successorNodes = currentNode.getSuccessors();
             for(ISearchNode successorNode : successorNodes) {
                 boolean inOpenSet;
                 if(closedSet.contains(successorNode))

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.officelife.goals.State;
 import com.officelife.planning.ops.ChopLog;
@@ -57,7 +58,7 @@ public class Planning {
     return isSubset(toBeMet, known);
   }
 
-  class Node extends ASearchNode {
+  public static class Node extends ASearchNode {
 
     final Set<Fact> facts;
 
@@ -65,9 +66,15 @@ public class Planning {
     // TODO is there a less awkward way to store this?
     final int costFromPred;
 
-    Node(int costFromPred, Set<Fact> facts) {
+    final List<Op<Node>> possibleActions;
+
+    final State state;
+
+    Node(int costFromPred, Set<Fact> facts, List<Op<Node>> possibleActions, State state) {
       this.facts = facts;
       this.costFromPred = costFromPred;
+      this.possibleActions = possibleActions;
+      this.state = state;
     }
 
     @Override
@@ -93,17 +100,16 @@ public class Planning {
     }
 
     @Override
-    public ArrayList<ISearchNode> getSuccessors() {
-      List<Op> chosen = possibleActions().stream()
-        .filter(o -> meetsPreconditions(o.preconditions(), facts))
-        .collect(Collectors.toList());
-
-      ArrayList<ISearchNode> succ = new ArrayList<>(chosen.stream()
-        .map(o -> new SimpleEntry<>(o.weight(state(), facts), o.transition(facts)))
-        .map(e -> new Node(e.getKey(), e.getValue()))
-        .map(n -> (ISearchNode) n)
-        .collect(Collectors.toList()));
-      return succ;
+    public List<ISearchNode> getSuccessors() {
+      List<Op<Node>> chosen = this.possibleActions.stream()
+//              .filter(o -> meetsPreconditions(o.preconditions(), facts))
+              .collect(Collectors.toList());
+      return null;
+//
+//      return chosen.stream()
+//              .map(o -> new SimpleEntry<>(o.weight(this), o.transition(facts)))
+//              .map(e -> new Node(e.getKey(), e.getValue(), possibleActions, state))
+//              .collect(Collectors.toList());
     }
 
     @Override
@@ -147,7 +153,7 @@ public class Planning {
     };
 
     ArrayList<ISearchNode> path = new AStar().shortestPath(
-      new Planning().new Node(0, initialState), goalCondition);
+            new Node(0, null, null, null ), goalCondition);
 
     path.forEach(System.out::println);
   }

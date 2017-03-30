@@ -63,8 +63,8 @@ public class SearchNodeCity extends ASearchNode{
             .get(this.castToSearchNodeCity(successor).getName());
     }
     // a node possesses or computes his successors
-    public ArrayList<ISearchNode> getSuccessors() {
-        ArrayList<ISearchNode> successors = new ArrayList<ISearchNode>();
+    public List<ISearchNode> getSuccessors() {
+        List<ISearchNode> successors = new ArrayList<ISearchNode>();
         Set<String> successorNamesSet = this.adjacencyMatrix.get(this.name).keySet();
         for(String successorName : successorNamesSet) {
             successors.add(new SearchNodeCity(successorName));

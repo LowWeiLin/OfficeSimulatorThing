@@ -20,8 +20,8 @@ public class SearchNode2D extends ASearchNode {
     public SearchNode2D getParent(){
         return this.parent;
     }
-    public ArrayList<ISearchNode> getSuccessors() {
-        ArrayList<ISearchNode> successors = new ArrayList<ISearchNode>();
+    public List<ISearchNode> getSuccessors() {
+        List<ISearchNode> successors = new ArrayList<ISearchNode>();
         successors.add(new SearchNode2D(this.x-1, this.y, this, this.goal));
         successors.add(new SearchNode2D(this.x+1, this.y, this, this.goal));
         successors.add(new SearchNode2D(this.x, this.y+1, this, this.goal));
