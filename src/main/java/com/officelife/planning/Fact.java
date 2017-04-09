@@ -7,8 +7,21 @@ public class Fact {
   // TODO improve representation of knowledge
   public final String name;
 
-  public Fact(String name) {
+  public final String subject;
+  public final String object;
+  public final String relation;
+  public final int amount;
+
+  public Fact(String name, String subject, String object, String relation, int amount) {
     this.name = name;
+    this.subject = subject;
+    this.object = object;
+    this.relation = relation;
+    this.amount = amount;
+  }
+
+  public Fact(String name) {
+    this(name, "", "", "", 0);
   }
 
   @Override
