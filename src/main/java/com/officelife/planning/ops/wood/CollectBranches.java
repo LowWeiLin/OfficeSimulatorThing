@@ -1,4 +1,4 @@
-package com.officelife.planning.ops;
+package com.officelife.planning.ops.wood;
 
 import static com.officelife.Utility.set;
 import com.officelife.goals.Goal;
@@ -9,16 +9,16 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Set;
 
-public class ChopLog implements Op<Planning.Node> {
+public class CollectBranches implements Op<Planning.Node> {
 
   @Override
   public Set<Fact> preconditions() {
-    return set(new Fact("i have axe"));
+    return set();
   }
 
   @Override
   public int weight(Planning.Node state) {
-    return 4;
+    return 8;
   }
 
   @Override
@@ -31,5 +31,4 @@ public class ChopLog implements Op<Planning.Node> {
   public Set<Fact> postconditions() {
     return set(new Fact("i have firewood"));
   }
-
 }

@@ -3,23 +3,20 @@ package com.officelife.planning;
 import static com.officelife.Utility.list;
 import static com.officelife.Utility.set;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.officelife.goals.State;
-import com.officelife.planning.ops.ChopLog;
-import com.officelife.planning.ops.CollectBranches;
-import com.officelife.planning.ops.GetAxe;
+import com.officelife.planning.ops.wood.ChopLog;
+import com.officelife.planning.ops.wood.CollectBranches;
+import com.officelife.planning.ops.wood.GetAxe;
 
 import astar.ASearchNode;
 import astar.AStar;
 import astar.IGoalNode;
 import astar.ISearchNode;
 
-public class Planning {
+public abstract class Planning {
 
   private static Set<Fact> initialState = set(
     new Fact("an axe is available"),
@@ -29,7 +26,7 @@ public class Planning {
   private static Set<Fact> goalState = set(
     new Fact("i have firewood"));
 
-  private List<Op> possibleActions() {
+  private static List<Op<Node>> possibleActions() {
     return list(new ChopLog(), new GetAxe(), new CollectBranches());
   }
 
@@ -99,14 +96,14 @@ public class Planning {
     @Override
     public List<ISearchNode> getSuccessors() {
       List<Op<Node>> chosen = this.possibleActions.stream()
-//              .filter(o -> meetsPreconditions(o.preconditions(), facts))
+              .filter(o -> meetsPreconditions(o.preconditions(), facts))
               .collect(Collectors.toList());
-      return null;
+//      return null;
 //
-//      return chosen.stream()
-//              .map(o -> new SimpleEntry<>(o.weight(this), o.transition(facts)))
-//              .map(e -> new Node(e.getKey(), e.getValue(), possibleActions, state))
-//              .collect(Collectors.toList());
+      return chosen.stream()
+              .map(o -> new AbstractMap.SimpleEntry<>(o.weight(this), o.transition(facts)))
+              .map(e -> new Node(e.getKey(), e.getValue(), possibleActions, state))
+              .collect(Collectors.toList());
     }
 
     @Override
@@ -150,7 +147,7 @@ public class Planning {
     };
 
     ArrayList<ISearchNode> path = new AStar().shortestPath(
-            new Node(0, null, null, null ), goalCondition);
+            new Node(0, initialState, possibleActions(), null ), goalCondition);
 
     path.forEach(System.out::println);
   }
