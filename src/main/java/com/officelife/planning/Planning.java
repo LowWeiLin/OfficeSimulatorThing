@@ -3,19 +3,16 @@ package com.officelife.planning;
 import static com.officelife.Utility.list;
 import static com.officelife.Utility.set;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.officelife.goals.State;
 import com.officelife.planning.ops.ChopLog;
 import com.officelife.planning.ops.CollectBranches;
 import com.officelife.planning.ops.GetAxe;
-import com.officelife.planning.ops.Op;
 
 import astar.ASearchNode;
 import astar.AStar;

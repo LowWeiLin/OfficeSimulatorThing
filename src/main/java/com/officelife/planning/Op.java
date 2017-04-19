@@ -1,4 +1,4 @@
-package com.officelife.planning.ops;
+package com.officelife.planning;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,22 +11,21 @@ import com.officelife.planning.Planning;
 public interface Op<A> {
 
   // These must be in the state for a transition to occur
-//  Set<Fact> preconditions();
+  Set<Fact> preconditions();
 
   // This gets the facts before transition
   int weight(A state);
 
-//  Set<Fact> postconditions();
+  Set<Fact> postconditions();
 
-  default A transition(Set<Fact> facts) {
-//    Set<Fact> copy = new HashSet<>(facts);
+  default Set<Fact> transition(Set<Fact> facts) {
+    Set<Fact> copy = new HashSet<>(facts);
 
     // TODO this step isn't necessarily the best interface
-//    copy.removeAll(preconditions());
+    copy.removeAll(preconditions());
 
-//    copy.addAll(postconditions());
-//    return copy;
-    return null;
+    copy.addAll(postconditions());
+    return copy;
   }
 
   // This is intended to map planning to the goal space
