@@ -1,6 +1,8 @@
 
 package com.officelife;
 
+import com.officelife.planning.Fact;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,5 +22,11 @@ public class Utility {
 
   public static <T> Set<T> set(T... objects) {
     return new HashSet<>(Arrays.asList(objects));
+  }
+
+  public static <T> boolean isSubset(Set<T> inside, Set<T> insideOf) {
+    Set<T> copy = new HashSet<>(inside);
+    copy.removeAll(insideOf);
+    return copy.isEmpty();
   }
 }
