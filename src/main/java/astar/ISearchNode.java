@@ -1,10 +1,12 @@
 package astar;
+import com.officelife.planning.Op;
+
 import java.util.*;
 
 /**
  * Interface of a search node.
  */
-public interface ISearchNode {
+public interface ISearchNode<A> {
     // total estimated cost of the node
     double f();
     //"tentative" g, cost from the start node 
@@ -25,7 +27,9 @@ public interface ISearchNode {
     //makes algorithm significantly faster
     //return null if you do not want this feature
     Integer keyCode();
-    
+
+    Op<A> op();
+
     boolean equals(Object other);
 
     int hashCode();

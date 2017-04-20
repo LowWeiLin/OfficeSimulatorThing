@@ -24,6 +24,17 @@ public class Fact {
     this(name, "", "", "", 0);
   }
 
+  public boolean satisfies(Fact other) {
+    if (other.relation.isEmpty()) {
+      return this.name.equals(other.name);
+    }
+
+    return Objects.equals(relation, other.relation)
+            && Objects.equals(subject, other.subject)
+            && Objects.equals(object, other.object)
+            && amount <= other.amount;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

@@ -16,6 +16,12 @@ public class Goals {
   private static final Logger logger = LoggerFactory.getLogger(Goals.class);
   private final Deque<Goal> goals = new ArrayDeque<>();
 
+  private final Goal root;
+
+  public Goals(Goal rootGoal) {
+    this.root = rootGoal;
+  }
+
   public Action plan(State state, boolean previousSucceeded) {
     if (goals.isEmpty()) {
       beginFromRootGoal(state);
@@ -32,7 +38,7 @@ public class Goals {
     goals.clear();
     // TODO root goal is survive?
 //    if (state.actor.physiology > state.actor.belonging) {
-    goals.push(new FillVoidInSoul());
+    goals.push(root);
 //    } else {
 //      goals.push(new FillVoidInStomach());
 //    }

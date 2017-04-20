@@ -50,7 +50,7 @@ public class WoodcutterPlanning extends Planning {
                 .shortestPath(
                     new Node(woodcuttingPlan,
                         0,
-                        woodcuttingPlan.initialState(), woodcuttingPlan.possibleActions(), null ),
+                        woodcuttingPlan.initialState(), woodcuttingPlan.possibleActions(), null,null ),
                     goalCondition);
 
         path.forEach(System.out::println);

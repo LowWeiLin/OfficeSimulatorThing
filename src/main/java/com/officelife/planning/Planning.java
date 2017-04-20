@@ -7,15 +7,12 @@ import static com.officelife.Utility.set;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import astar.*;
 import com.officelife.goals.State;
 import com.officelife.planning.ops.wood.ChopLog;
 import com.officelife.planning.ops.wood.CollectBranches;
 import com.officelife.planning.ops.wood.GetAxe;
-
-import astar.ASearchNode;
-import astar.AStar;
-import astar.IGoalNode;
-import astar.ISearchNode;
+import org.apache.commons.lang3.tuple.Triple;
 
 public abstract class Planning {
 
@@ -31,7 +28,7 @@ public abstract class Planning {
     return null;
   }
 
-  protected static Node cast(ISearchNode other) {
+  public static Node cast(ISearchNode other) {
     if (other instanceof Node) {
       return (Node) other;
     }
@@ -44,7 +41,7 @@ public abstract class Planning {
     return isSubset(toBeMet, known);
   }
 
-  public static class Node extends ASearchNode {
+  public static class Node extends ASearchNode implements OpNode<Node> {
 
     public final Set<Fact> facts;
 
@@ -58,13 +55,17 @@ public abstract class Planning {
 
     Planning planningContext;
 
-    public Node(Planning planningContext, int costFromPred, Set<Fact> facts, List<Op<Node>> possibleActions, State state) {
+    Op<Node> op;
+
+    public Node(
+            Planning planningContext, int costFromPred, Set<Fact> facts, List<Op<Node>> possibleActions, State state,
+            Op<Node> op) {
       this.planningContext = planningContext;
       this.facts = facts;
       this.costFromPred = costFromPred;
       this.possibleActions = possibleActions;
       this.state = state;
-
+      this.op = op;
     }
 
     @Override
@@ -97,8 +98,9 @@ public abstract class Planning {
 //      return null;
 //
       return chosen.stream()
-              .map(o -> new AbstractMap.SimpleEntry<>(o.weight(this), o.transition(facts)))
-              .map(e -> new Node(planningContext, e.getKey(), e.getValue(), possibleActions, state))
+              .map(o -> Triple.of(o.weight(this), o.transition(facts), o))
+              .map(e -> new Node(
+                      planningContext, e.getLeft(), e.getMiddle(), possibleActions, state, e.getRight()))
               .collect(Collectors.toList());
     }
 
@@ -131,6 +133,11 @@ public abstract class Planning {
       return String.format("[%s]", facts.stream()
         .map(Object::toString)
         .collect(Collectors.joining(", ")));
+    }
+
+    @Override
+    public Op<Node> op() {
+      return op;
     }
   }
 

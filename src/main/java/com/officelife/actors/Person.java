@@ -5,11 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import astar.AStar;
+import astar.IGoalNode;
+import astar.ISearchNode;
+import astar.OpNode;
 import com.officelife.World;
 import com.officelife.actions.Action;
+import com.officelife.goals.Goal;
 import com.officelife.goals.Goals;
 import com.officelife.goals.State;
 import com.officelife.items.Item;
+import com.officelife.planning.Op;
+import com.officelife.planning.Planning;
+import com.officelife.planning.ops.wildling.WildlingPlanning;
+
+import static com.officelife.Utility.isSubset;
 
 public class Person implements Actor {
 
@@ -18,7 +28,6 @@ public class Person implements Actor {
 
   public int energy = 100;
 
-  private final Goals g = new Goals();
 
   private final String id;
 
@@ -44,6 +53,27 @@ public class Person implements Actor {
 
   @Override
   public Action act(World world, boolean succeeded) {
+    WildlingPlanning plan = new WildlingPlanning();
+    IGoalNode goalCondition = node -> {
+      // TODO world reduction
+      return isSubset(plan.goalState(), Planning.cast(node).facts);
+    };
+
+    List<ISearchNode> path = new AStar()
+            .shortestPath(
+                    new Planning.Node(plan,
+                            0,
+                            plan.initialState(), plan.possibleActions(), null,null ),
+                    goalCondition);
+
+    if (path.size() < 2) {
+      throw new RuntimeException("Does shortestPath return the starting node? Does it return a No-op?");
+    }
+//    return g.plan(new State(world, this), succeeded);
+    ISearchNode chosen = path.get(1);
+    Op<Planning.Node> op = chosen.op();
+
+    Goals g = new Goals(op.goal());
     return g.plan(new State(world, this), succeeded);
   }
 

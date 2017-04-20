@@ -3,6 +3,8 @@ import java.util.*;
 
 import astar.ASearchNode;
 import astar.ISearchNode;
+import com.officelife.planning.Op;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SearchNode2D extends ASearchNode {
     private int x;
@@ -70,5 +72,10 @@ public class SearchNode2D extends ASearchNode {
 
     public Integer keyCode() {
     	return null;
+    }
+
+    @Override
+    public Op op() {
+        throw new NotImplementedException();
     }
 }

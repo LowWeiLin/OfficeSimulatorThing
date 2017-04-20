@@ -3,6 +3,8 @@ import java.util.*;
 
 import astar.ASearchNode;
 import astar.ISearchNode;
+import com.officelife.planning.Op;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Test case from wikipedia
@@ -82,6 +84,11 @@ public class SearchNodeCity extends ASearchNode{
     
     public Integer keyCode() {
     	return this.name.hashCode();
+    }
+
+    @Override
+    public Op op() {
+        throw new NotImplementedException();
     }
 
     public boolean equals(Object other) {
