@@ -1,8 +1,5 @@
 package com.officelife.planning;
 
-import static com.officelife.Utility.isSubset;
-import static com.officelife.Utility.list;
-import static com.officelife.Utility.set;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,6 +10,8 @@ import com.officelife.planning.ops.wood.ChopLog;
 import com.officelife.planning.ops.wood.CollectBranches;
 import com.officelife.planning.ops.wood.GetAxe;
 import org.apache.commons.lang3.tuple.Triple;
+
+import static com.officelife.Utility.isSubset;
 
 public abstract class Planning {
 

@@ -9,6 +9,7 @@ import astar.AStar;
 import astar.IGoalNode;
 import astar.ISearchNode;
 import astar.OpNode;
+import com.officelife.Main;
 import com.officelife.World;
 import com.officelife.actions.Action;
 import com.officelife.goals.Goal;
@@ -18,10 +19,14 @@ import com.officelife.items.Item;
 import com.officelife.planning.Op;
 import com.officelife.planning.Planning;
 import com.officelife.planning.ops.wildling.WildlingPlanning;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.officelife.Utility.isSubset;
 
 public class Person implements Actor {
+
+  private static final Logger logger = LoggerFactory.getLogger(Person.class);
 
   public int physiology = 10;
   public int belonging = 10;
@@ -72,6 +77,8 @@ public class Person implements Actor {
 //    return g.plan(new State(world, this), succeeded);
     ISearchNode chosen = path.get(1);
     Op<Planning.Node> op = chosen.op();
+
+    logger.info("[op]" + op);
 
     Goals g = new Goals(op.goal());
     return g.plan(new State(world, this), succeeded);

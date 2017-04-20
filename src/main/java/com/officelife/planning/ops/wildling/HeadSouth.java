@@ -38,4 +38,8 @@ public class HeadSouth implements Op<Planning.Node> {
     return set(new Fact("I feel safe now"));
   }
 
+  @Override
+  public String toString() {
+    return "Head South";
+  }
 }

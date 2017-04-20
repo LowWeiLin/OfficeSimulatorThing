@@ -35,4 +35,8 @@ public class FightForFood implements Op<Planning.Node> {
     return set(new Fact("i am not that hungry anymore"));
   }
 
+  @Override
+  public String toString() {
+    return "get food";
+  }
 }
