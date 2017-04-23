@@ -22,6 +22,10 @@ public class Goals {
     this.root = rootGoal;
   }
 
+  public boolean hasGoals() {
+    return !goals.isEmpty();
+  }
+
   public Action plan(State state, boolean previousSucceeded) {
     if (goals.isEmpty()) {
       beginFromRootGoal(state);

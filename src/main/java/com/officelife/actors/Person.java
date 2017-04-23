@@ -33,6 +33,7 @@ public class Person implements Actor {
 
   public int energy = 100;
 
+  public Goals g;
 
   private final String id;
 
@@ -58,30 +59,34 @@ public class Person implements Actor {
 
   @Override
   public Action act(World world, boolean succeeded) {
-    WildlingPlanning plan = new WildlingPlanning();
-    IGoalNode goalCondition = node -> {
-      // TODO world reduction
-      return isSubset(plan.goalState(), Planning.cast(node).facts);
-    };
+    if (g != null && g.hasGoals()) {
+      return g.plan(new State(world, this), succeeded);
+    } else {
+      WildlingPlanning plan = new WildlingPlanning();
+      IGoalNode goalCondition = node -> {
+        // TODO world reduction
+        return isSubset(plan.goalState(), Planning.cast(node).facts);
+      };
 
-    List<ISearchNode> path = new AStar()
-            .shortestPath(
-                    new Planning.Node(plan,
-                            0,
-                            plan.initialState(), plan.possibleActions(), null,null ),
-                    goalCondition);
+      List<ISearchNode> path = new AStar()
+              .shortestPath(
+                      new Planning.Node(plan,
+                              0,
+                              plan.initialState(), plan.possibleActions(), null, null),
+                      goalCondition);
 
-    if (path.size() < 2) {
-      throw new RuntimeException("Does shortestPath return the starting node? Does it return a No-op?");
+      if (path.size() < 2) {
+        throw new RuntimeException("Does shortestPath return the starting node? Does it return a No-op?");
+      }
+
+      ISearchNode chosen = path.get(1);
+      Op<Planning.Node> op = chosen.op();
+
+      logger.info("[op]" + op);
+
+      g = new Goals(op.goal());
+      return g.plan(new State(world, this), succeeded);
     }
-//    return g.plan(new State(world, this), succeeded);
-    ISearchNode chosen = path.get(1);
-    Op<Planning.Node> op = chosen.op();
-
-    logger.info("[op]" + op);
-
-    Goals g = new Goals(op.goal());
-    return g.plan(new State(world, this), succeeded);
   }
 
   @Override
