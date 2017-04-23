@@ -69,13 +69,15 @@ public class Main {
 
     private static World initWorld() {
         World state = new World();
-        String foodGuyId = "Food guy";
+        String foodGuyId = "Tormund Giantsbane";
         Coords origin = new Coords(0, 0);
-        putPersonWithItems(state, foodGuyId, origin, 15, 15, 25, new Pants(), new SharpStick());
+        putPersonWithItems(state, foodGuyId,
+                origin, 15, 15, 25,
+                new Pants(), new SharpStick());
 
-        putPersonWithItems(state, "Talking guy", new Coords(0, 1), 15, 15, 25, new Pants());
-//        putActorWithItems(state, "Talking guy", new Coords(0, 1), 10, 1, 10, new Food());
-
+        putPersonWithItems(state, "Rattleshirt",
+                new Coords(0, 1), 15, 15, 25,
+                new Pants());
 
         putActor(state, new Coords(-1, -2), new FruitTree("Tree"));
 
