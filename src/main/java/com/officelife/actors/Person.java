@@ -8,17 +8,15 @@ import java.util.Map;
 import astar.AStar;
 import astar.IGoalNode;
 import astar.ISearchNode;
-import astar.OpNode;
-import com.officelife.Main;
 import com.officelife.World;
 import com.officelife.actions.Action;
-import com.officelife.goals.Goal;
 import com.officelife.goals.Goals;
 import com.officelife.goals.State;
 import com.officelife.items.Item;
 import com.officelife.planning.Op;
 import com.officelife.planning.Planning;
 import com.officelife.planning.ops.wildling.WildlingPlanning;
+import com.officelife.planning.ops.wildling.WildlingStateScore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +60,7 @@ public class Person implements Actor {
     if (g != null && g.hasGoals()) {
       return g.plan(new State(world, this), succeeded);
     } else {
+      logger.debug(id + " has a new Op");
       WildlingPlanning plan = new WildlingPlanning();
       IGoalNode goalCondition = node -> {
         // TODO world reduction
@@ -72,7 +71,10 @@ public class Person implements Actor {
               .shortestPath(
                       new Planning.Node(plan,
                               0,
-                              plan.initialState(), plan.possibleActions(), null, null),
+                              plan.initialState(),
+                              plan.possibleActions(), new State(world, this), null,
+                              new WildlingStateScore()
+                      ),
                       goalCondition);
 
       if (path.size() < 2) {

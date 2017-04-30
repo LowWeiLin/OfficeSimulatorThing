@@ -51,7 +51,8 @@ public class WildlingPlanning extends Planning {
                 .shortestPath(
                         new Node(plan,
                                 0,
-                                plan.initialState(), plan.possibleActions(), null,null ),
+                                plan.initialState(), plan.possibleActions(), null,null ,
+                                new WildlingStateScore()),
                         goalCondition);
 
         path.forEach(System.out::println);

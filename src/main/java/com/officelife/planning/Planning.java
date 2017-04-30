@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import astar.*;
 import com.officelife.goals.State;
+import com.officelife.planning.ops.wildling.WildlingStateScore;
 import com.officelife.planning.ops.wood.ChopLog;
 import com.officelife.planning.ops.wood.CollectBranches;
 import com.officelife.planning.ops.wood.GetAxe;
@@ -56,15 +57,18 @@ public abstract class Planning {
 
     Op<Node> op;
 
+    StateScore stateScore;
+
     public Node(
             Planning planningContext, int costFromPred, Set<Fact> facts, List<Op<Node>> possibleActions, State state,
-            Op<Node> op) {
+            Op<Node> op, StateScore stateScore) {
       this.planningContext = planningContext;
       this.facts = facts;
       this.costFromPred = costFromPred;
       this.possibleActions = possibleActions;
       this.state = state;
       this.op = op;
+      this.stateScore = stateScore;
     }
 
     @Override
@@ -99,13 +103,14 @@ public abstract class Planning {
       return chosen.stream()
               .map(o -> Triple.of(o.weight(this), o.transition(facts), o))
               .map(e -> new Node(
-                      planningContext, e.getLeft(), e.getMiddle(), possibleActions, state, e.getRight()))
+                      planningContext, e.getLeft(), e.getMiddle(),
+                      possibleActions, state, e.getRight(), new WildlingStateScore()))
               .collect(Collectors.toList());
     }
 
     @Override
     public double c(ISearchNode successor) {
-      return cast(successor).costFromPred;
+      return cast(successor).costFromPred + -1 * stateScore.make(state).score();
     }
 
     // More trivial stuff

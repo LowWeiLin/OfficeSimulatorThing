@@ -7,6 +7,7 @@ import astar.ISearchNode;
 import com.officelife.planning.Fact;
 import com.officelife.planning.Op;
 import com.officelife.planning.Planning;
+import com.officelife.planning.ops.wildling.WildlingStateScore;
 
 import java.util.List;
 import java.util.Set;
@@ -50,7 +51,8 @@ public class WoodcutterPlanning extends Planning {
                 .shortestPath(
                     new Node(woodcuttingPlan,
                         0,
-                        woodcuttingPlan.initialState(), woodcuttingPlan.possibleActions(), null,null ),
+                        woodcuttingPlan.initialState(), woodcuttingPlan.possibleActions(), null,null,
+                            new WildlingStateScore()),
                     goalCondition);
 
         path.forEach(System.out::println);
