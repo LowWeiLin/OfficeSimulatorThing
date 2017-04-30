@@ -40,7 +40,7 @@ public abstract class Planning {
     return isSubset(toBeMet, known);
   }
 
-  public static class Node extends ASearchNode implements OpNode<Node> {
+  public static class Node extends ASearchNode {
 
     public final Set<Fact> facts;
 
