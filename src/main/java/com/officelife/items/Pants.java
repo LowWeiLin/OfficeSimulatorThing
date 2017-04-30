@@ -14,7 +14,7 @@ public class Pants implements Item {
 
     @Override
     public char[][] textRepresentation() {
-        return new char[][] {{'P'}};
+        return new char[][] {{'V'}};
     }
 
     @Override
