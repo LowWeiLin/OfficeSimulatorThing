@@ -18,4 +18,7 @@
   <root level="debug">
     <appender-ref ref="STDOUT" />
   </root>
+
+  <!-- Silence annoying preamble -->
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
 </configuration>
