@@ -1,15 +1,17 @@
 package com.officelife.planning.ops.wood;
 
 import static com.officelife.Utility.set;
-import com.officelife.goals.Goal;
-import com.officelife.planning.Fact;
-import com.officelife.planning.Op;
-import com.officelife.planning.Planning;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Set;
 
-public class GetAxe implements Op<Planning.Node> {
+import com.officelife.goals.Goal;
+import com.officelife.planning.Fact;
+import com.officelife.planning.Node;
+import com.officelife.planning.Op;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+public class GetAxe implements Op<Node> {
 
   @Override
   public Set<Fact> preconditions() {
@@ -17,7 +19,7 @@ public class GetAxe implements Op<Planning.Node> {
   }
 
   @Override
-  public int weight(Planning.Node state) {
+  public int weight(Node state) {
     return 0;
   }
 

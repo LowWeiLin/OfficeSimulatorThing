@@ -1,26 +1,29 @@
 package com.officelife.actors;
 
+import static com.officelife.Utility.isSubset;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import astar.AStar;
-import astar.IGoalNode;
-import astar.ISearchNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.officelife.World;
 import com.officelife.actions.Action;
 import com.officelife.goals.Goals;
 import com.officelife.goals.State;
 import com.officelife.items.Item;
+import com.officelife.planning.Node;
 import com.officelife.planning.Op;
 import com.officelife.planning.Planning;
 import com.officelife.planning.ops.wildling.WildlingPlanning;
 import com.officelife.planning.ops.wildling.WildlingStateScore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static com.officelife.Utility.isSubset;
+import astar.AStar;
+import astar.IGoalNode;
+import astar.ISearchNode;
 
 public class Person implements Actor {
 
@@ -70,7 +73,7 @@ public class Person implements Actor {
       State state = new State(world, this);
       List<ISearchNode> path = new AStar()
               .shortestPath(
-                      new Planning.Node(plan,
+                      new Node(plan,
                               0,
                               new WildlingStateScore(state).facts(),
                               plan.possibleActions(), state, null,
@@ -83,7 +86,7 @@ public class Person implements Actor {
       }
 
       ISearchNode chosen = path.get(1);
-      Op<Planning.Node> op = chosen.op();
+      Op<Node> op = chosen.op();
 
       logger.info("[op]" + op);
 

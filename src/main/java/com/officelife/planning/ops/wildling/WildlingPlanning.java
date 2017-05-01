@@ -4,6 +4,7 @@ import astar.AStar;
 import astar.IGoalNode;
 import astar.ISearchNode;
 import com.officelife.planning.Fact;
+import com.officelife.planning.Node;
 import com.officelife.planning.Op;
 import com.officelife.planning.Planning;
 

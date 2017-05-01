@@ -1,17 +1,16 @@
 package com.officelife.planning.ops.wildling;
 
-import com.officelife.goals.Goal;
-import com.officelife.goals.subgoals.FillVoidInSoul;
-import com.officelife.planning.Fact;
-import com.officelife.planning.Op;
-import com.officelife.planning.Planning;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import static com.officelife.Utility.set;
 
 import java.util.Set;
 
-import static com.officelife.Utility.set;
+import com.officelife.goals.Goal;
+import com.officelife.goals.subgoals.FillVoidInSoul;
+import com.officelife.planning.Fact;
+import com.officelife.planning.Node;
+import com.officelife.planning.Op;
 
-public class FightForFood implements Op<Planning.Node> {
+public class FightForFood implements Op<Node> {
 
   @Override
   public Set<Fact> preconditions() {
@@ -21,7 +20,7 @@ public class FightForFood implements Op<Planning.Node> {
   }
 
   @Override
-  public int weight(Planning.Node state) {
+  public int weight(Node state) {
     return 1;
   }
 
