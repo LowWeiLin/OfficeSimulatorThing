@@ -72,11 +72,11 @@ public class Main {
         String foodGuyId = "Tormund Giantsbane";
         Coords origin = new Coords(0, 0);
         putPersonWithItems(state, foodGuyId,
-                origin, 15, 15, 25,
+                origin, 15, 15, 1,
                 new Pants(), new SharpStick());
 
         putPersonWithItems(state, "Rattleshirt",
-                new Coords(0, 1), 15, 15, 25,
+                new Coords(0, 1), 15, 15, 1,
                 new Pants());
 
         putActor(state, new Coords(-1, -2), new FruitTree("Tree"));

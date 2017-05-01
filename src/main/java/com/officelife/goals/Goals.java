@@ -28,7 +28,7 @@ public class Goals {
 
   public Action plan(State state, boolean previousSucceeded) {
     if (goals.isEmpty()) {
-      beginFromRootGoal(state);
+      beginFromRootGoal();
     } else if (!previousSucceeded) {
       goals.pop();
     }
@@ -36,16 +36,12 @@ public class Goals {
   }
 
   // TODO generalise this. it should depend on actor
-  private void beginFromRootGoal(State state) {
-//    logger.debug("RESET");
+  private void beginFromRootGoal() {
 
     goals.clear();
-    // TODO root goal is survive?
-//    if (state.actor.physiology > state.actor.belonging) {
+
     goals.push(root);
-//    } else {
-//      goals.push(new FillVoidInStomach());
-//    }
+
   }
 
   /**
@@ -65,7 +61,7 @@ public class Goals {
           goals.pop();
           continue;
         case SUCCESS:
-          beginFromRootGoal(state);
+          beginFromRootGoal();
           continue;
       }
 

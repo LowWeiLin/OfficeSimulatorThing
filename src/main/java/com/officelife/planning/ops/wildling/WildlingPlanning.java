@@ -24,7 +24,7 @@ import static com.officelife.Utility.set;
 public class WildlingPlanning extends Planning {
 
     @Override
-    public Set<Fact> initialState() {
+    public Set<Fact> initialFacts() {
         return set(new Fact("I am starving", "me", null, "hunger", 50));
     }
 
@@ -39,22 +39,5 @@ public class WildlingPlanning extends Planning {
         return list(new FightForFood(), new HeadSouth());
     }
 
-    public static void main(String[] args) {
 
-        WildlingPlanning plan = new WildlingPlanning();
-        IGoalNode goalCondition = node -> {
-            // TODO world reduction
-            return isSubset(plan.goalState(), cast(node).facts);
-        };
-
-        List<ISearchNode> path = new AStar()
-                .shortestPath(
-                        new Node(plan,
-                                0,
-                                plan.initialState(), plan.possibleActions(), null,null ,
-                                new WildlingStateScore()),
-                        goalCondition);
-
-        path.forEach(System.out::println);
-    }
 }

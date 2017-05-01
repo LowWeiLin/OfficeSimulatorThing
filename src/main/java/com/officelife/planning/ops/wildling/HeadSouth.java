@@ -15,10 +15,6 @@ public class HeadSouth implements Op<Planning.Node> {
   @Override
   public Set<Fact> preconditions() {
     return set(
-//        new Fact("I am not starving",
-//                "me", null, "hunger", 10),
-//        new Fact("So many zombies",
-//                    "me", null, "danger", 50)
             new Fact("i am not that hungry anymore")
     );
   }

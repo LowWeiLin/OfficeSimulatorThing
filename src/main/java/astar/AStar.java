@@ -7,6 +7,9 @@ import astar.datastructures.ClosedSetHash;
 import astar.datastructures.IClosedSet;
 import astar.datastructures.IOpenSet;
 import astar.datastructures.OpenSet;
+import com.officelife.actors.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Uses the A* Algorithm to find the shortest path from 
@@ -14,6 +17,10 @@ import astar.datastructures.OpenSet;
  *
  */
 public class AStar {
+
+    private static final Logger logger = LoggerFactory.getLogger(AStar.class);
+
+
     // Amount of debug output 0,1,2
     private int verbose = 0;
     // The maximum number of completed nodes. After that number the algorithm returns null.

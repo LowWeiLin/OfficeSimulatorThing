@@ -67,12 +67,13 @@ public class Person implements Actor {
         return isSubset(plan.goalState(), Planning.cast(node).facts);
       };
 
+      State state = new State(world, this);
       List<ISearchNode> path = new AStar()
               .shortestPath(
                       new Planning.Node(plan,
                               0,
-                              plan.initialState(),
-                              plan.possibleActions(), new State(world, this), null,
+                              new WildlingStateScore(state).facts(),
+                              plan.possibleActions(), state, null,
                               new WildlingStateScore()
                       ),
                       goalCondition);

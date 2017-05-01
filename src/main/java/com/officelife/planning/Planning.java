@@ -17,7 +17,7 @@ import static com.officelife.Utility.isSubset;
 public abstract class Planning {
 
 
-  public abstract Set<Fact> initialState();
+  public abstract Set<Fact> initialFacts();
 
   public abstract Set<Fact> goalState();
 
@@ -101,10 +101,14 @@ public abstract class Planning {
 //      return null;
 //
       return chosen.stream()
-              .map(o -> Triple.of(o.weight(this), o.transition(facts), o))
-              .map(e -> new Node(
-                      planningContext, e.getLeft(), e.getMiddle(),
-                      possibleActions, state, e.getRight(), new WildlingStateScore()))
+              .map(o -> new Node(
+                      planningContext,
+                      o.weight(this),
+                      o.transition(facts),
+                      possibleActions,
+                      state,
+                      o,
+                      new WildlingStateScore()))
               .collect(Collectors.toList());
     }
 
