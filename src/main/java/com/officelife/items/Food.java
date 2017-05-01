@@ -1,8 +1,11 @@
 package com.officelife.items;
 
+import com.officelife.actors.Actor;
+import com.officelife.actors.Person;
+
 import java.util.UUID;
 
-public class Food implements Item {
+public class Food implements Consumable {
     private final String id;
 
     public Food() {
@@ -22,5 +25,12 @@ public class Food implements Item {
     @Override
     public String toString() {
         return String.format("Food %s", id);
+    }
+
+    @Override
+    public void consumedBy(Actor actor) {
+        if (actor instanceof Person) {
+            ((Person)actor).energy += 15;
+        }
     }
 }

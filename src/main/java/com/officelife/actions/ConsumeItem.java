@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.officelife.Main;
 import com.officelife.actors.Person;
 import com.officelife.goals.State;
+import com.officelife.items.Consumable;
 import com.officelife.items.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,9 @@ public class ConsumeItem<T> extends Action {
     // TODO better data structure
 
     logger.info("before consuming, energy was " + ((Person)state.actor).energy);
-    ((Person)state.actor).energy += 15;
+    if (item instanceof Consumable) {
+      ((Consumable)item).consumedBy(state.actor);
+    }
     logger.info("after consuming, energy was " + ((Person)state.actor).energy);
 
     state.actor.inventory().remove(item);
