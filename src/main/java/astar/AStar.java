@@ -1,13 +1,12 @@
 package astar;
 import java.util.*;
 
-import astar.ISearchNode;
 import astar.datastructures.ClosedSet;
 import astar.datastructures.ClosedSetHash;
 import astar.datastructures.IClosedSet;
 import astar.datastructures.IOpenSet;
 import astar.datastructures.OpenSet;
-import com.officelife.actors.Person;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

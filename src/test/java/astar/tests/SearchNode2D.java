@@ -3,7 +3,7 @@ import java.util.*;
 
 import astar.ASearchNode;
 import astar.ISearchNode;
-import com.officelife.planning.Op;
+import com.officelife.core.planning.Op;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class SearchNode2D extends ASearchNode {

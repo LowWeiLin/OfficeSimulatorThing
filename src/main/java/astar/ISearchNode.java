@@ -1,5 +1,5 @@
 package astar;
-import com.officelife.planning.Op;
+import com.officelife.core.planning.Op;
 
 import java.util.*;
 

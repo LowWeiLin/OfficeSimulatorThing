@@ -3,18 +3,22 @@ package com.officelife;
 import java.io.IOException;
 import java.util.*;
 
-import com.officelife.actors.FruitTree;
-import com.officelife.items.Pants;
-import com.officelife.items.Food;
-import com.officelife.items.SharpStick;
+import com.officelife.core.Director;
+import com.officelife.core.FirstWorld;
+import com.officelife.core.Scenario;
+import com.officelife.scenarios.items.Pants;
+import com.officelife.scenarios.items.Food;
+import com.officelife.scenarios.items.SharpStick;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.officelife.actions.Action;
-import com.officelife.actors.Actor;
-import com.officelife.actors.Person;
-import com.officelife.items.Item;
+import com.officelife.core.Actor;
+import com.officelife.scenarios.Person;
+import com.officelife.scenarios.items.Item;
+import com.officelife.scenarios.wood.WoodcutterScenario;
 import com.officelife.ui.Renderer;
+import com.officelife.utility.*;
+import com.officelife.utility.Timer;
 
 public class Main {
 
@@ -22,8 +26,8 @@ public class Main {
 
     private boolean paused = false;
 
-    private void update(World state) {
-        Map<String, Boolean> actionResults = new HashMap<>();
+    private void update(FirstWorld state) {
+//        Map<String, Boolean> actionResults = new HashMap<>();
 
         List<Actor> actors = new ArrayList<>(state.actors());
 
@@ -31,16 +35,17 @@ public class Main {
         Collections.shuffle(actors);
 
         for (Actor actor : actors) {
-            Action action;
-            if (actionResults.containsKey(actor.id())) {
-                action = actor.act(state, actionResults.get(actor.id()));
-            } else {
-                action = actor.act(state);
-            }
+//            Action action;
+//            if (actionResults.containsKey(actor.id())) {
+//                action = actor.act(state);
+//            } else {
+//                action =
+                  actor.act(state);
+//            }
 
-            logger.debug("{}: {}", actor.id(), action);
+//            logger.debug("{}: {}", actor.id(), action);
 
-            actionResults.put(actor.id(), action.accept());
+//            actionResults.put(actor.id(), action.actUpon());
         }
 
         for (Actor actor : actors) {
@@ -67,65 +72,11 @@ public class Main {
         logger.info("");
     }
 
-    private static World initWorld() {
-        World state = new World();
-        String foodGuyId = "Tormund Giantsbane";
-        Coords origin = new Coords(0, 0);
-        putPersonWithItems(state, foodGuyId,
-                origin, 15, 15, 1,
-                new Pants(), new SharpStick());
-
-        putPersonWithItems(state, "Rattleshirt",
-                new Coords(0, 1), 15, 15, 1,
-                new Pants());
-
-        putActor(state, new Coords(-1, -2), new FruitTree("Tree"));
-
-        Item coffee = new Food();
-        Coords coffeeLocation = new Coords(origin.x + 1, origin.y - 1);
-
-        putItems(state, coffee, coffeeLocation);
-
-        return state;
+    private static FirstWorld initWorld() {
+        return new WoodcutterScenario().world();
     }
 
-    private static void putItems(World state, Item itemsToAdd, Coords location) {
-        List<Item> items = new ArrayList<>();
-        items.add(itemsToAdd);
-        state.itemsAtLocation(location).addAll(items);
-    }
-
-    private static void putPerson(World state, String personId, Coords coords ) {
-        Actor person = new Person(personId);
-        state.actorLocations.put(coords, person);
-    }
-
-    private static void putPerson(
-            World state, String personId, Coords coords, int physiology, int belonging, int energy) {
-        Actor person = new Person(personId, physiology, belonging, energy);
-        state.actorLocations.put(coords, person);
-    }
-
-    private static void putPersonWithItems(
-            World state, String personId, Coords coords, int physiology, int belonging, int energy,
-            Item... items) {
-        Actor person = new Person(personId, physiology, belonging, energy);
-        putActorWithItems(state, coords, person, items);
-    }
-
-    private static void putActor(World state, Coords coords, Actor person) {
-        putActorWithItems(state, coords, person);
-    }
-
-    private static void putActorWithItems(World state, Coords coords, Actor person, Item... items) {
-        state.actorLocations.put(coords, person);
-
-        for (Item item : items) {
-            person.addItem(item);
-        }
-    }
-
-    private void gameLoop(Renderer renderer, World world) {
+    private void gameLoop(Renderer renderer, FirstWorld world) {
         if (!paused) {
             update(world);
             renderer.render(world);
@@ -146,7 +97,7 @@ public class Main {
     private void init() throws IOException {
         final Renderer renderer = new Renderer();
 
-        final World world = initWorld();
+        final FirstWorld world = initWorld();
 
         renderer.getGUI()
           .onRepl(new Scripting(world)::run)
