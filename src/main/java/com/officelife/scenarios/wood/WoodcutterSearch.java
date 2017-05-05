@@ -4,10 +4,8 @@ package com.officelife.scenarios.wood;
 import static com.officelife.core.planning.Node.cast;
 import static com.officelife.utility.Utility.list;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.officelife.core.Action;
 import com.officelife.core.WorldState;
@@ -49,14 +47,14 @@ public class WoodcutterSearch implements Search {
     path.forEach(System.out::println);
 
     // TODO wut why does this crash
-//        List<Action> ops = path.stream()
-//          .filter(Objects::nonNull)
-//          .map(ISearchNode::op)
-//          .map(Op::action)
-//          .collect(Collectors.toList());
+        List<Action> ops = path.stream()
+          .map(ISearchNode::op)
+          .filter(Objects::nonNull)
+          .map(Op::action)
+          .collect(Collectors.toList());
 
     // TODO check list size
-    List<Action> ops = Arrays.asList(path.get(1).op().action());
+//    List<Action> ops = Arrays.asList(path.get(1).op().action());
 
     return new ArrayDeque<>(ops);
   }
