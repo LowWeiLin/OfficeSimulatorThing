@@ -3,6 +3,7 @@ package com.officelife.core;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import com.officelife.core.changes.Languish;
 import com.officelife.core.planning.Facts;
 import com.officelife.core.planning.Search;
 import com.officelife.scenarios.wood.WoodcutterSearch;
@@ -21,6 +22,9 @@ public class Planning {
   public Action getAction(WorldState state, Facts goal) {
     if (actions.isEmpty()) {
       replan(state, goal);
+    }
+    if (actions.isEmpty()) {
+      return new Languish();
     }
     return actions.peek();
   }

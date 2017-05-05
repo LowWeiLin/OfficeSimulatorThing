@@ -44,17 +44,17 @@ public class WoodcutterSearch implements Search {
           facts, operations()),
         goalCondition);
 
-    path.forEach(System.out::println);
+    if (path != null) {
+      path.forEach(System.out::println);
+    }
 
-    // TODO wut why does this crash
-        List<Action> ops = path.stream()
-          .map(ISearchNode::op)
-          .filter(Objects::nonNull)
-          .map(Op::action)
-          .collect(Collectors.toList());
+    List<Action> ops = path.stream()
+      .map(ISearchNode::op)
+      .filter(Objects::nonNull)
+      .map(Op::action)
+      .collect(Collectors.toList());
 
-    // TODO check list size
-//    List<Action> ops = Arrays.asList(path.get(1).op().action());
+
 
     return new ArrayDeque<>(ops);
   }

@@ -37,11 +37,11 @@ public class AStar {
      * Returns the shortest Path from a start node to an end node according to 
      * the A* heuristics (h must not overestimate). initialNode and last found node included.
      */
-    public ArrayList<ISearchNode> shortestPath(ISearchNode initialNode, IGoalNode goalNode) {
+    public List<ISearchNode> shortestPath(ISearchNode initialNode, IGoalNode goalNode) {
         //perform search and save the 
         ISearchNode endNode = this.search(initialNode, goalNode);
         if(endNode == null) 
-            return null;
+            return Collections.emptyList();
         //return shortest path according to AStar heuristics
         return AStar.path(endNode);
     }

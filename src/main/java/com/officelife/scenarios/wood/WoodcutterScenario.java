@@ -26,7 +26,7 @@ public class WoodcutterScenario implements Scenario {
     Coords origin = new Coords(0, 0);
     world.putPersonWithItems(director, foodGuyId,
       origin, 15, 15, 1,
-      new Pants(), new SharpStick());
+      new SharpStick());
 
 //    world.putPersonWithItems(director, "Rattleshirt",
 //      new Coords(0, 1), 15, 15, 1,
