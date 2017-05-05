@@ -10,10 +10,10 @@ import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.ComponentRenderer;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.TextGUIGraphics;
-import com.officelife.Coords;
-import com.officelife.World;
-import com.officelife.actors.Actor;
-import com.officelife.items.Item;
+import com.officelife.utility.Coords;
+import com.officelife.core.FirstWorld;
+import com.officelife.core.Actor;
+import com.officelife.scenarios.items.Item;
 
 public class Renderer {
 
@@ -57,7 +57,7 @@ public class Renderer {
         return s;
     }
 
-    private String renderText(World state) {
+    private String renderText(FirstWorld state) {
         clearBuffer();
 
         for (Item item : state.items()) {
@@ -101,7 +101,7 @@ public class Renderer {
             location.x < windowSize.getColumns() && location.y < windowSize.getRows();
     }
 
-    public void render(World state) {
+    public void render(FirstWorld state) {
         // Called for side effect
         // TODO separate effects?
         renderText(state);
