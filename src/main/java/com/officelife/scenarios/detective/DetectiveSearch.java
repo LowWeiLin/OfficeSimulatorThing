@@ -44,7 +44,7 @@ public class DetectiveSearch implements Search {
           facts, operations()),
 
         // we're at the goal if the goal is completely contained in this node
-        node -> goal.matches(cast(node).facts));
+        node -> cast(node).facts.matches(goal));
 
     if (path == null) {
       return new ArrayDeque<>();
