@@ -63,6 +63,7 @@ public class Node extends ASearchNode {
     List<Op<Node>> chosen = this.possibleActions.stream()
       .filter(o -> meetsPreconditions(o.preconditions(), facts))
       .collect(Collectors.toList());
+//    chosen.get(0).preconditions().
     return chosen.stream()
 
       .map(o -> new Node(

@@ -11,10 +11,13 @@ public class Fact {
   public final String relation;
   public final Object object;
 
+  public final Object[] fields;
+
   public Fact(String subject, String relation, Object object) {
     this.subject = subject;
     this.object = object;
     this.relation = relation;
+    fields = new Object[] {subject, object, relation};
   }
 
   public int amount() {
