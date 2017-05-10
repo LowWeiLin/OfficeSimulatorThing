@@ -4,6 +4,7 @@ import static com.officelife.utility.Utility.set;
 import static java.util.stream.Collectors.joining;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -117,12 +118,14 @@ public class Facts {
   }
 
   Facts transitionWith(Op<?> op, Map<String, Object> bindings) {
-    Set<Fact> copy = facts.stream()
+    Set<Fact> copy = new HashSet<>(facts);
+
+    Set<Fact> preconditions = op.preconditions().facts.stream()
       .map(f -> f.instantiate(bindings))
       .collect(Collectors.toSet());
 
     // TODO use a persistent set
-    copy.removeAll(op.preconditions().facts);
+    copy.removeAll(preconditions);
     copy.addAll(op.postconditions(bindings).facts);
 
     return new Facts(copy);
