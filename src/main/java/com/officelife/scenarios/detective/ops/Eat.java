@@ -14,9 +14,10 @@ import javaslang.collection.Map;
 
 public class Eat implements Op<Node> {
 
+  private final String food = v();
+
   @Override
   public Facts preconditions() {
-    String food = v();
     return facts(
       fact(food, "is", "edible"),
       fact("actor", "has", food));
