@@ -24,7 +24,7 @@ public class Planning {
       replan(state, goal);
     }
     if (actions.isEmpty()) {
-      return new Languish();
+      actions.push(new Languish());
     }
     return actions.peek();
   }
