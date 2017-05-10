@@ -3,9 +3,12 @@ package com.officelife.scenarios.wood;
 
 import static com.officelife.core.planning.Node.cast;
 import static com.officelife.utility.Utility.list;
+import static java.util.stream.Collectors.toList;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.List;
+import java.util.Objects;
 
 import com.officelife.core.Action;
 import com.officelife.core.WorldState;
@@ -44,18 +47,14 @@ public class WoodcutterSearch implements Search {
           facts, operations()),
         goalCondition);
 
-    if (path != null) {
-      path.forEach(System.out::println);
+    if (path == null) {
+      return new ArrayDeque<>();
     }
 
-    List<Action> ops = path.stream()
+    return new ArrayDeque<>(path.stream()
       .map(ISearchNode::op)
       .filter(Objects::nonNull)
       .map(Op::action)
-      .collect(Collectors.toList());
-
-
-
-    return new ArrayDeque<>(ops);
+      .collect(toList()));
   }
 }
