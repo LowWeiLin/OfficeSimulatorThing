@@ -1,6 +1,5 @@
 package com.officelife.scenarios.wood;
 
-
 import static com.officelife.core.planning.Node.cast;
 import static com.officelife.utility.Utility.list;
 import static java.util.stream.Collectors.toList;
@@ -21,6 +20,7 @@ import com.officelife.scenarios.wood.ops.GetPants;
 import astar.AStar;
 import astar.IGoalNode;
 import astar.ISearchNode;
+import javaslang.collection.HashMap;
 
 public class WoodcutterSearch implements Search {
 
@@ -44,6 +44,7 @@ public class WoodcutterSearch implements Search {
         new Node(this,
           0,
           null,
+          HashMap.of(),
           facts, operations()),
         goalCondition);
 

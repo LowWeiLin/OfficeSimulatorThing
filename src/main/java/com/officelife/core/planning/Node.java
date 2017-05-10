@@ -1,14 +1,13 @@
 package com.officelife.core.planning;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import astar.ASearchNode;
 import astar.ISearchNode;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.collection.HashMap;
 import javaslang.collection.Map;
 
 /**
@@ -30,13 +29,23 @@ public class Node extends ASearchNode {
 
   Search searchContext;
 
-  public Node(Search searchContext, int costFromPred, Op<Node> opFromPred, Facts facts, List<Op<Node>>
+  private static int count;
+
+  private final int id;
+
+  public final Map<String, Object> bindings;
+
+  public Node(Search searchContext, int costFromPred,
+              Op<Node> opFromPred, Map<String, Object> bindings,
+              Facts facts, List<Op<Node>>
     possibleActions) {
     this.searchContext = searchContext;
     this.facts = facts;
     this.costFromPred = costFromPred;
     this.opFromPred = opFromPred;
+    this.bindings = bindings;
     this.possibleActions = possibleActions;
+    this.id = count++;
   }
 
   @Override
@@ -63,9 +72,9 @@ public class Node extends ASearchNode {
     return 0;
   }
 
-  @Override
-  public List<ISearchNode> getSuccessors() {
+  private List<ISearchNode> successors = null;
 
+  public List<ISearchNode> generateSuccessors() {
     // TODO intermediate collections are just for debugging
     List<Tuple2<Op<Node>, List<Map<String, Object>>>> candidates = possibleActions.stream()
       .map(o -> Tuple.of(o, facts.execute(o.preconditions())))
@@ -79,11 +88,20 @@ public class Node extends ASearchNode {
             searchContext,
             o._1.weight(this),
             o._1,
+            solution,
             facts.transitionWith(o._1, solution),
             possibleActions)))
       .collect(Collectors.toList());
 
     return result;
+  }
+
+  @Override
+  public List<ISearchNode> getSuccessors() {
+    if (successors == null) {
+      successors = generateSuccessors();
+    }
+    return successors;
   }
 
   @Override
@@ -107,7 +125,7 @@ public class Node extends ASearchNode {
 
   @Override
   public Integer keyCode() {
-    return null;
+    return id;
   }
 
   @Override

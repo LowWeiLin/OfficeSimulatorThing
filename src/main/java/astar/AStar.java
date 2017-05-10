@@ -1,4 +1,6 @@
 package astar;
+import static com.officelife.utility.Utility.renderClosedSet;
+
 import java.util.*;
 
 import astar.datastructures.ClosedSet;
@@ -75,6 +77,7 @@ public class AStar {
             if(goalNode.inGoal(currentNode)) {
                 //we know the shortest path to the goal node, done
                 this.bestNodeAfterSearch = currentNode;
+                System.out.println(renderClosedSet(closedSet));
                 return currentNode;
             }
             //get successor nodes

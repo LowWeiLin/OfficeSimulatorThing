@@ -1,11 +1,14 @@
 package astar.datastructures;
 
+import java.util.List;
+
 import astar.ISearchNode;
 
 public interface IClosedSet {
 
-	public boolean contains(ISearchNode node);
-	public void add(ISearchNode node);
-	public ISearchNode min();
+	boolean contains(ISearchNode node);
+	void add(ISearchNode node);
+	ISearchNode min();
 
+	List<ISearchNode> get();
 }

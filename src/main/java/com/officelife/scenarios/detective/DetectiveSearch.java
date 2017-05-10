@@ -26,6 +26,7 @@ import com.officelife.scenarios.detective.ops.Take;
 
 import astar.AStar;
 import astar.ISearchNode;
+import javaslang.collection.HashMap;
 
 public class DetectiveSearch implements Search {
 
@@ -43,6 +44,7 @@ public class DetectiveSearch implements Search {
         new Node(this,
           0,
           null,
+          HashMap.of(),
           facts, operations()),
 
         // we're at the goal if the goal is completely contained in this node

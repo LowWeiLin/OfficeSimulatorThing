@@ -3,6 +3,7 @@ package astar.datastructures;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import astar.ISearchNode;
 
@@ -29,6 +30,11 @@ public class ClosedSet implements IClosedSet {
 	@Override
 	public ISearchNode min() {
 		return Collections.min(this.list, this.comp);
+	}
+
+	@Override
+	public List<ISearchNode> get() {
+		return list;
 	}
 
 }

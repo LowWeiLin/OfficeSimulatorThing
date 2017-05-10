@@ -1,8 +1,10 @@
 package astar.datastructures;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 
 import astar.ISearchNode;
 
@@ -29,6 +31,11 @@ public class ClosedSetHash implements IClosedSet {
 	@Override
 	public ISearchNode min() {
 		return Collections.min(hashMap.values(), comp);
+	}
+
+	@Override
+	public List<ISearchNode> get() {
+		return new ArrayList<>(hashMap.values());
 	}
 
 }
