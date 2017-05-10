@@ -1,10 +1,12 @@
 package com.officelife.core.planning;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import astar.ASearchNode;
 import astar.ISearchNode;
+import javaslang.Tuple;
 
 /**
  * A node in the search space.
@@ -60,18 +62,16 @@ public class Node extends ASearchNode {
 
   @Override
   public List<ISearchNode> getSuccessors() {
-    List<Op<Node>> chosen = this.possibleActions.stream()
-      .filter(o -> meetsPreconditions(o.preconditions(), facts))
-      .collect(Collectors.toList());
-//    chosen.get(0).preconditions().
-    return chosen.stream()
-
-      .map(o -> new Node(
-        searchContext,
-        o.weight(this),
-        o,
-        facts.transitionWith(o),
-        possibleActions))
+    return possibleActions.stream()
+      .map(o -> Tuple.of(o, o.preconditions().execute(facts)))
+      .filter(o -> o._2.isPresent())
+      .map(o ->
+        new Node(
+          searchContext,
+          o._1.weight(this),
+          o._1,
+          facts.transitionWith(o._1, o._2.get()),
+          possibleActions))
       .collect(Collectors.toList());
   }
 
@@ -109,13 +109,8 @@ public class Node extends ASearchNode {
     return String.format("[%s]", facts.toString());
   }
 
-//  @Override
-//  public Op<Node> op() {
-//    return op;
-//  }
-
   private static boolean meetsPreconditions(Facts toBeMet, Facts known) {
-    return toBeMet.isSubsetOf(known);
+    return toBeMet.matches(known);
   }
 
   public static Node cast(ISearchNode other) {

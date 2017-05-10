@@ -4,11 +4,11 @@ import static com.officelife.utility.Utility.set;
 import static java.util.stream.Collectors.joining;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.officelife.utility.Utility;
@@ -78,6 +78,10 @@ public class Facts {
     }
   }
 
+  /**
+   * Takes the given set of facts as a query and checks if the database can satisfy it.
+   * Strictly more general than {@link #isSubsetOf(Facts)}.
+   */
   public boolean matches(Facts of) {
     return execute(of).isPresent();
   }
@@ -133,8 +137,10 @@ public class Facts {
     }
   }
 
-  Facts transitionWith(Op<?> op) {
-    Set<Fact> copy = new HashSet<>(facts);
+  Facts transitionWith(Op<?> op, Map<String, Object> bindings) {
+    Set<Fact> copy = facts.stream()
+      .map(f -> f.instantiate(bindings))
+      .collect(Collectors.toSet());
 
     // TODO use a persistent set
     copy.removeAll(op.preconditions().facts);

@@ -2,6 +2,8 @@ package com.officelife.core.planning;
 
 import java.util.Objects;
 
+import javaslang.collection.Map;
+
 /**
  * An RDF triple.
  */
@@ -33,6 +35,14 @@ public class Fact {
             && Objects.equals(subject, other.subject)
             && Objects.equals(object, other.object)
             && amount() <= other.amount();
+  }
+
+  public Fact instantiate(Map<String, Object> bindings) {
+    Object o = object instanceof String
+      ? bindings.get((String) object).getOrElse(object)
+      : object;
+    return new Fact((String) bindings.get(subject).getOrElse(subject),
+      (String) bindings.get(relation).getOrElse(relation), o);
   }
 
   @Override

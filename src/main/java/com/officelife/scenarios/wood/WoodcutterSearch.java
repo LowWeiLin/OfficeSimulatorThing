@@ -36,7 +36,7 @@ public class WoodcutterSearch implements Search {
     // TODO there's no point to IGoalNodes; they're just predicates
     IGoalNode goalCondition = node -> {
       // we're at the goal if the goal is completely contained in this node
-      return goal.isSubsetOf(cast(node).facts);
+      return goal.matches(cast(node).facts);
     };
 
     List<ISearchNode> path = new AStar()
