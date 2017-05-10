@@ -3,8 +3,13 @@ package com.officelife;
 import static com.officelife.core.planning.Facts.fact;
 import static com.officelife.core.planning.Facts.facts;
 import static com.officelife.core.planning.Facts.v;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -28,7 +33,7 @@ public class FactsTest {
       fact("y", "b", "c"));
     Facts query = facts(
       fact(v(), "b", "c"));
-    assertEquals(Optional.of(HashMap.of("?0", "x")),
+    assertEquals(asList(HashMap.of("?0", "x"), HashMap.of("?0", "y")),
       db.execute(query));
   }
 
@@ -44,7 +49,7 @@ public class FactsTest {
       fact(a, "b", b),
       fact(b, c, "c"),
       fact(a, c, "y"));
-    assertEquals(Optional.of(HashMap.of("?0", "x", "?1", "y", "?2", "b")),
+    assertEquals(singletonList(HashMap.of("?0", "x", "?1", "y", "?2", "b")),
       db.execute(query));
   }
 
@@ -60,6 +65,6 @@ public class FactsTest {
       fact(a, "b", b),
       fact(b, c, "c"),
       fact(a, c, "c")); // only difference from the above is y -> c
-    assertEquals(Optional.empty(), db.execute(query));
+    assertEquals(emptyList(), db.execute(query));
   }
 }

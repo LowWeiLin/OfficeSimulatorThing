@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.joining;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -50,32 +49,12 @@ public class Facts {
     return Utility.isSubsetOf(facts, of.facts);
   }
 
-  /**
-   * ¯\_(ツ)_/¯
-   */
-  private static class Result extends Exception {
+  private List<Map<String, Object>> answers;
 
-    final Map<String, Object> bindings;
-
-    Result(Map<String, Object> bindings) {
-      this.bindings = bindings;
-    }
-
-    @Override
-    public synchronized Throwable fillInStackTrace() {
-      // Don't actually generate stack trace
-      // http://www.javaspecialists.eu/archive/Issue129.html
-      return this;
-    }
-  }
-
-  public Optional<Map<String, Object>> execute(Facts of) {
-    try {
-      unify(new ArrayList<>(of.facts), 0, HashMap.empty());
-      return Optional.empty();
-    } catch (Result e) {
-      return Optional.of(e.bindings);
-    }
+  public List<Map<String, Object>> execute(Facts of) {
+    answers = new ArrayList<>();
+    unify(new ArrayList<>(of.facts), 0, HashMap.empty());
+    return answers;
   }
 
   /**
@@ -83,24 +62,24 @@ public class Facts {
    * Strictly more general than {@link #isSubsetOf(Facts)}.
    */
   public boolean matches(Facts of) {
-    return execute(of).isPresent();
+    return !execute(of).isEmpty();
   }
 
   /**
    * Unifies a query (given as a list of non-ground facts) with the current database.
-   * Searches depth-first and backtracks, then returns via exception to clear the stack.
    * Uses a very simple structure for bindings because there are only variables on one side.
    * <p>
    * Tree height = O(query size)
    * Branching factor = O(size of DB subset that unifies)
    * <p>
-   * Only a single solution is returned at the moment. This is fast, but also means that the
-   * search isn't complete.
+   * This returns all solutions. To avoid explosions, give very specific queries which minimise
+   * the branching factor.
    */
-  private void unify(List<Fact> query, int fact, Map<String, Object> bindings) throws Result {
+  private void unify(List<Fact> query, int fact, Map<String, Object> bindings) {
 
     if (fact == query.size()) {
-      throw new Result(bindings);
+      answers.add(bindings);
+      return;
     }
 
     Fact qf = query.get(fact);

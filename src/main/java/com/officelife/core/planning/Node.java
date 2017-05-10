@@ -67,19 +67,20 @@ public class Node extends ASearchNode {
   public List<ISearchNode> getSuccessors() {
 
     // TODO intermediate collections are just for debugging
-    List<Tuple2<Op<Node>, Optional<Map<String, Object>>>> candidates = possibleActions.stream()
+    List<Tuple2<Op<Node>, List<Map<String, Object>>>> candidates = possibleActions.stream()
       .map(o -> Tuple.of(o, facts.execute(o.preconditions())))
       .collect(Collectors.toList());
 
     List<ISearchNode> result = candidates.stream()
-      .filter(o -> o._2.isPresent())
-      .map(o ->
-        new Node(
-          searchContext,
-          o._1.weight(this),
-          o._1,
-          facts.transitionWith(o._1, o._2.get()),
-          possibleActions))
+      .filter(o -> !o._2.isEmpty())
+      .flatMap(o ->
+        o._2.stream().map(solution ->
+          new Node(
+            searchContext,
+            o._1.weight(this),
+            o._1,
+            facts.transitionWith(o._1, solution),
+            possibleActions)))
       .collect(Collectors.toList());
 
     return result;
