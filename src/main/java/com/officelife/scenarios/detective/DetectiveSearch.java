@@ -8,7 +8,9 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Stopwatch;
 import com.officelife.core.Action;
 import com.officelife.core.Director;
 import com.officelife.core.FirstWorld;
@@ -47,6 +49,7 @@ public class DetectiveSearch implements Search {
         node -> cast(node).facts.matches(goal));
 
     if (path == null) {
+      System.out.println("not found");
       return new ArrayDeque<>();
     }
 
@@ -62,7 +65,13 @@ public class DetectiveSearch implements Search {
   public static void main(String[] args) {
     Director director = new DetectiveDirector();
     Person person = new Person(director, "bob");
+
+    Stopwatch stopwatch = Stopwatch.createStarted();
     Deque<Action> actions = new DetectiveSearch().determineActions(new WorldState(new FirstWorld(), person), director.getGoal(person));
+    stopwatch.stop();
+    long millis = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+
+    System.out.println(millis);
     System.out.println("actions = " + actions);
   }
 }

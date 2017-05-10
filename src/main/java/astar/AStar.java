@@ -68,9 +68,9 @@ public class AStar {
             ISearchNode currentNode = openSet.poll();
 
             //debug output according to verbose
-            System.out.println((verbose>1 ? "Open set: " + openSet.toString() + "\n" : "") 
-                        + (verbose>0 ? "Current node: "+currentNode.toString()+"\n": "")
-                        + (verbose>1 ? "Closed set: " + closedSet.toString() : ""));
+//            System.out.println((verbose>1 ? "Open set: " + openSet.toString() + "\n" : "")
+//                        + (verbose>0 ? "Current node: "+currentNode.toString()+"\n": "")
+//                        + (verbose>1 ? "Closed set: " + closedSet.toString() : ""));
 
             if(goalNode.inGoal(currentNode)) {
                 //we know the shortest path to the goal node, done
