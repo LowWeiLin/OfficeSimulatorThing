@@ -144,7 +144,7 @@ public class Facts {
 
     // TODO use a persistent set
     copy.removeAll(op.preconditions().facts);
-    copy.addAll(op.postconditions().facts);
+    copy.addAll(op.postconditions(bindings).facts);
 
     return new Facts(copy);
   }

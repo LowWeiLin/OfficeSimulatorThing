@@ -3,10 +3,13 @@ package com.officelife.core.planning;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import astar.ASearchNode;
 import astar.ISearchNode;
 import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.collection.Map;
 
 /**
  * A node in the search space.
@@ -62,8 +65,13 @@ public class Node extends ASearchNode {
 
   @Override
   public List<ISearchNode> getSuccessors() {
-    return possibleActions.stream()
-      .map(o -> Tuple.of(o, o.preconditions().execute(facts)))
+
+    // TODO intermediate collections are just for debugging
+    List<Tuple2<Op<Node>, Optional<Map<String, Object>>>> candidates = possibleActions.stream()
+      .map(o -> Tuple.of(o, facts.execute(o.preconditions())))
+      .collect(Collectors.toList());
+
+    List<ISearchNode> result = candidates.stream()
       .filter(o -> o._2.isPresent())
       .map(o ->
         new Node(
@@ -73,6 +81,8 @@ public class Node extends ASearchNode {
           facts.transitionWith(o._1, o._2.get()),
           possibleActions))
       .collect(Collectors.toList());
+
+    return result;
   }
 
   @Override

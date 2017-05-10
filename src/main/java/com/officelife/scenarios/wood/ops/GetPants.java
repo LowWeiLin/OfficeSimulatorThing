@@ -19,11 +19,13 @@ import com.officelife.scenarios.items.Pants;
 import com.officelife.utility.Coords;
 import com.officelife.utility.EndCoords;
 
-public class GetAxe implements Op<Node> {
+import javaslang.collection.Map;
+
+public class GetPants implements Op<Node> {
 
   @Override
   public Facts preconditions() {
-    return facts(fact("ground", "has", "axe"));
+    return facts(fact("ground", "has", "pants"));
   }
 
   @Override
@@ -32,8 +34,8 @@ public class GetAxe implements Op<Node> {
   }
 
   @Override
-  public Facts postconditions() {
-    return facts(fact("actor", "has", "axe"));
+  public Facts postconditions(Map<String, Object> bindings) {
+    return facts(fact("actor", "has", "pants"));
   }
 
   @Override

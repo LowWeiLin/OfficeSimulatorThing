@@ -21,7 +21,7 @@ public class WoodcutterReduction implements Reduction {
         .findFirst().flatMap(state.world::itemLocation);
 
     if (coords.isPresent()) {
-      return facts(fact("ground", "has", "axe"));
+      return facts(fact("ground", "has", "pants"));
     } else {
       return facts();
     }

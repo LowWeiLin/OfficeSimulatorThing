@@ -2,6 +2,8 @@ package com.officelife.core.planning;
 
 import com.officelife.core.Action;
 
+import javaslang.collection.Map;
+
 /**
  * Operations on nodes in the search space.
  *
@@ -17,7 +19,7 @@ public interface Op<A> {
   // This gets the facts before transition
   int weight(A state);
 
-  Facts postconditions();
+  Facts postconditions(Map<String, Object> bindings);
 
   Action action();
 }

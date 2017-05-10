@@ -10,6 +10,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 public class Utility {
   public static <T> List<T> list(T... objects) {
@@ -32,4 +33,7 @@ public class Utility {
     copy.removeAll(insideOf);
     return copy.isEmpty();
   }
+
+  public static final Supplier<Error> fit = () ->
+    new AssertionError("something dumb just happened");
 }
