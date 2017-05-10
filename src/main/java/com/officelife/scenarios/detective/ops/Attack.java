@@ -35,8 +35,7 @@ public class Attack implements Op<Node> {
   public Facts postconditions(Map<String, Object> bindings) {
     return facts(
       fact((String) bindings.get(weapon).getOrElseThrow(fit), "is", "weapon"),
-      fact("actor", "has", bindings.get(weapon).getOrElseThrow(fit)),
-      fact("actor", "hates", bindings.get(weapon).getOrElseThrow(fit)));
+      fact("actor", "has", bindings.get(weapon).getOrElseThrow(fit)));
   }
 
   @Override
