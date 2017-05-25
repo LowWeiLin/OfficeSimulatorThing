@@ -103,6 +103,7 @@ public class Facts {
             } else {
               // Instantiate a variable and succeed
               newBindings = newBindings.put(variable, dbf.fields[i]);
+              System.out.println("instantiate " + variable + " : " + dbf.fields[i]);
             }
           } else {
             // Not a variable
