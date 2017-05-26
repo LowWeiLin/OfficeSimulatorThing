@@ -61,6 +61,6 @@ public class Utility {
       }
     }
 
-    return "digraph G {" + sb.toString() + "}";
+    return "digraph G { rankdir=LR; " + sb.toString() + "}";
   }
 }
