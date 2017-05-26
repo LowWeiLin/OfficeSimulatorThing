@@ -4,6 +4,11 @@ import static com.officelife.core.Action.State.CONTINUE;
 import static com.officelife.core.planning.Facts.fact;
 import static com.officelife.core.planning.Facts.facts;
 import static com.officelife.core.planning.Facts.v;
+import static com.officelife.scenarios.detective.Symbols.actor;
+import static com.officelife.scenarios.detective.Symbols.has;
+import static com.officelife.scenarios.detective.Symbols.hates;
+import static com.officelife.scenarios.detective.Symbols.is;
+import static com.officelife.scenarios.detective.Symbols.weapon;
 import static com.officelife.utility.Utility.fit;
 
 import com.officelife.core.Action;
@@ -15,15 +20,15 @@ import javaslang.collection.Map;
 
 public class Attack implements Op<Node> {
 
-  private final String weapon = v();
+  private final String w = v();
   private final String target = v();
 
   @Override
   public Facts preconditions() {
     return facts(
-      fact(weapon, "is", "weapon"),
-      fact("actor", "has", weapon),
-      fact("actor", "hates", target));
+      fact(w, is, weapon),
+      fact(actor, has, w),
+      fact(actor, hates, target));
   }
 
   @Override
@@ -33,9 +38,10 @@ public class Attack implements Op<Node> {
 
   @Override
   public Facts postconditions(Map<String, Object> bindings) {
+    String w = (String) bindings.get(this.w).getOrElseThrow(fit);
     return facts(
-      fact((String) bindings.get(weapon).getOrElseThrow(fit), "is", "weapon"),
-      fact("actor", "has", bindings.get(weapon).getOrElseThrow(fit)));
+      fact(w, is, weapon),
+      fact(actor, has, w));
   }
 
   @Override

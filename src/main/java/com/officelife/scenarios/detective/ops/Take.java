@@ -4,6 +4,9 @@ import static com.officelife.core.Action.State.CONTINUE;
 import static com.officelife.core.planning.Facts.fact;
 import static com.officelife.core.planning.Facts.facts;
 import static com.officelife.core.planning.Facts.v;
+import static com.officelife.scenarios.detective.Symbols.actor;
+import static com.officelife.scenarios.detective.Symbols.ground;
+import static com.officelife.scenarios.detective.Symbols.has;
 import static com.officelife.utility.Utility.fit;
 
 import com.officelife.core.Action;
@@ -21,7 +24,7 @@ public class Take implements Op<Node> {
   @Override
   public Facts preconditions() {
     return facts(
-      fact("ground", "has", item));
+      fact(ground, has, item));
   }
 
   @Override
@@ -31,8 +34,9 @@ public class Take implements Op<Node> {
 
   @Override
   public Facts postconditions(Map<String, Object> bindings) {
+    Object item = bindings.get(this.item).getOrElseThrow(fit);
     return facts(
-      fact("actor", "has", bindings.get(item).getOrElseThrow(fit)));
+      fact(actor, has, item));
   }
 
   @Override

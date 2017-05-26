@@ -4,6 +4,12 @@ import static com.officelife.core.Action.State.CONTINUE;
 import static com.officelife.core.planning.Facts.fact;
 import static com.officelife.core.planning.Facts.facts;
 import static com.officelife.core.planning.Facts.v;
+import static com.officelife.scenarios.detective.Symbols.actor;
+import static com.officelife.scenarios.detective.Symbols.edible;
+import static com.officelife.scenarios.detective.Symbols.feels;
+import static com.officelife.scenarios.detective.Symbols.full;
+import static com.officelife.scenarios.detective.Symbols.has;
+import static com.officelife.scenarios.detective.Symbols.is;
 
 import com.officelife.core.Action;
 import com.officelife.core.planning.Facts;
@@ -19,8 +25,8 @@ public class Eat implements Op<Node> {
   @Override
   public Facts preconditions() {
     return facts(
-      fact(food, "is", "edible"),
-      fact("actor", "has", food));
+      fact(food, is, edible),
+      fact(actor, has, food));
   }
 
   @Override
@@ -31,7 +37,7 @@ public class Eat implements Op<Node> {
   @Override
   public Facts postconditions(Map<String, Object> bindings) {
     return facts(
-      fact("actor", "feels", "full"));
+      fact(actor, feels, full));
   }
 
   @Override
